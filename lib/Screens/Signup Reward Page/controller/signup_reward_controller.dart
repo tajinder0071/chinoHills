@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:get/get.dart';
-
 import '../../../Model/signup_reward_model.dart';
 import '../../../util/base_services.dart';
 import '../../../util/local_store_data.dart';
@@ -34,22 +33,19 @@ class RewardUnlockedController extends GetxController {
   }
 
   //! 🔹 Fetch Rewards API and Manage Slider
-  Future<void> getRewardAPI() async {
+  Future<void> getRewardAPI(client_id) async {
     isLoading.value = true;
     startAutoSlider();
     rewardData.clear();
     try {
-      var client_id =await localStorage.getCId();
-      SignupRewardModel response = await hitSignUpRewardAPI(client_id);
+      SignupRewardModel response = await hitSignUpRewardAPI();
       if (response.success == true) {
         rewardData.addAll(response.data!);
         rewardPoints.value =
-            "\$ ${rewardData[0].discountType == "btn-amount" ? "\$" : ""}${rewardData[0].discountAmount!}${rewardData[0].discountType == "btn-amount" ? "" : ""}";
+        "\$ ${rewardData[0].discountType == "btn-amount" ? "\$" : ""}${rewardData[0].discountAmount!}${rewardData[0].discountType == "btn-amount" ? "" : ""}";
         localStorage.saveData("rewardPoints", rewardPoints.value.toString());
         localStorage.saveData("client_id", response.clientId.toString());
         //read user_id from local storage
-        var user_id = await localStorage.getUId();
-        print("Reward Point :${user_id}");
 
         //! 🔹 Delay before stopping slider (smooth transition)
         await Future.delayed(Duration(milliseconds: 300));

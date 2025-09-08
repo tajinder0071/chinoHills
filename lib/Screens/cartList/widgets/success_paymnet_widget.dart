@@ -4,17 +4,15 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import '../../../CSS/color.dart';
-import '../../../../../util/local_store_data.dart';
+import '../../../util/local_store_data.dart';
 import '../../../util/route_manager.dart';
 
 class PaymentSuccessPopup extends StatelessWidget {
-  final String amount;
   final String transactionId;
   final String transactionType;
 
   const PaymentSuccessPopup({
     super.key,
-    required this.amount,
     required this.transactionId,
     required this.transactionType,
   });
@@ -54,7 +52,7 @@ class PaymentSuccessPopup extends StatelessWidget {
               style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8.h),
-            Text.rich(TextSpan(children: [
+            /*Text.rich(TextSpan(children: [
               TextSpan(
                 text: "Successfully paid",
                 style: TextStyle(fontSize: 14.sp, color: Colors.black54),
@@ -67,7 +65,7 @@ class PaymentSuccessPopup extends StatelessWidget {
                     fontWeight: FontWeight.bold),
               )
             ])),
-            SizedBox(height: 20.h),
+            SizedBox(height: 20.h),*/
             Container(
               padding: EdgeInsets.all(16.w),
               decoration: BoxDecoration(
@@ -90,11 +88,11 @@ class PaymentSuccessPopup extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () async{
+                onPressed: () {
                   Get.back();
                   Get.back();
                   LocalStorage localStorage = LocalStorage();
-                  await localStorage.removeData("order_id");
+                  localStorage.removeData("order_id");
                   Get.toNamed(RouteManager.orderPage);
                 },
                 style: ElevatedButton.styleFrom(
@@ -132,25 +130,25 @@ class _DetailRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final valueWidget = status
         ? Row(
-            children: [
-              Icon(Icons.check_circle, size: 16.sp, color: Colors.green),
-              SizedBox(width: 4.w),
-              Text(
-                'Success',
-                style: TextStyle(color: Colors.green, fontSize: 14.sp),
-              ),
-            ],
-          )
+      children: [
+        Icon(Icons.check_circle, size: 16.sp, color: Colors.green),
+        SizedBox(width: 4.w),
+        Text(
+          'Success',
+          style: TextStyle(color: Colors.green, fontSize: 14.sp),
+        ),
+      ],
+    )
         : Text(
-            value,
-            style: TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 14.sp,
-            ),
-            textAlign: TextAlign.right,
-            maxLines: 2,
-            overflow: TextOverflow.visible,
-          );
+      value,
+      style: TextStyle(
+        fontWeight: FontWeight.w500,
+        fontSize: 14.sp,
+      ),
+      textAlign: TextAlign.right,
+      maxLines: 2,
+      overflow: TextOverflow.visible,
+    );
 
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 4.h),

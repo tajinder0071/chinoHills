@@ -1,4 +1,4 @@
-import 'dart:developer';
+import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:geocoding/geocoding.dart';
@@ -7,35 +7,42 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import '../../../CSS/color.dart';
 import '../../../Model/cart_model.dart';
+import '../../../Model/offer_detail_model.dart';
 import '../../../util/base_services.dart';
-import '../../../Model/promode_reward_model.dart';
+import '../../../Model/promode_reward_model.dart' hide Membership;
 import '../../../util/common_page.dart';
-import '../../../../../util/local_store_data.dart';
+import '../../../util/local_store_data.dart';
 import '../widgets/cart_item_widget.dart';
 import '../widgets/success_paymnet_widget.dart';
 
+// Converted to StatelessController (no UI state, only logic)
 class CartController extends GetxController {
   static CartController get cart => Get.find();
 
   // TODO >>. Variable Declaration
 
-  RxBool isLoading = false.obs;
+  String appliedName = '';
   RxBool isUpdateSomething = false.obs;
   RxBool isDelete = false.obs;
-  RxList<CartItem> cartData = <CartItem>[].obs;
+  RxList<Item> cartData = <Item>[].obs;
   var cartModel1 = CartModel1().obs;
   bool isUpdate = false;
   LocalStorage localStorage = LocalStorage();
-  RxInt cartItemCount = 0.obs;
-  var totalCost = "".obs;
-  var finalTotalCost = 0.0.obs;
+  var cartItemCount;
+  var totalCost;
+  var finalTotalCost;
 
-  var totalConvenienceFee = "".obs;
-  var subTotal = "".obs;
+  var totalConvenienceFee;
+  var subTotal;
+
   List cartIdList = [];
   var sendCartID;
+
   var selectedId = Rx<String?>(null); //todo You can also use int if needed
   var offerselectedId = Rx<String?>(null); //todo You can also use int if needed
+
+  bool _isApiCallInProgress = false;
+  Timer? _debounceTimer;
 
   // Determine item type based on data
   RewardType? rewardType;
@@ -46,7 +53,8 @@ class CartController extends GetxController {
   var cartID;
   var itemID;
   var variationId;
-  var variationList = <TreatmentVariation>[];
+
+  // var variationList = <TreatmentVariation>[];
 
   bool isMemberAvailable = false;
   var memberTitle;
@@ -59,79 +67,149 @@ class CartController extends GetxController {
   var currentLat = 0.0.obs;
   var currentLng = 0.0.obs;
 
+  @override
+  void onInit() {
+    super.onInit();
+    // Initialize only once
+    if (couponAvailableData.isEmpty) {
+      couponAvailableRewards();
+    }
+  }
+
   //TODO >>  Fetch the Cart List...
-  cartList() async {
+
+  Future<void> cartList() async {
     cartData.clear();
     cartitemList.clear();
-    isLoading.value = true;
+    isLoading = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      update(); // or your state change
+    });
     try {
-      var orderid =await LocalStorage().getOId();
-      print("order_id:$orderid");
-
       var response = await hitCartListApi();
+
       if (response['success'] == true) {
-        cartData.assignAll((response['cartItems'] as List)
-            .map((e) => CartItem.fromJson(e))
-            .toList());
+        var items = response['data']?['items'];
+        sendCartID = response['data']?['cart_id'];
+        print("cartModel1.value.data?.cartId${sendCartID}");
+        if (items is List) {
+          cartData.assignAll(
+            items.map((e) => Item.fromJson(e as Map<String, dynamic>)).toList(),
+          );
+        } else {
+          cartData.clear();
+        }
         cartModel1.value = CartModel1.fromJson(response);
+        print("cartModel1.value.data?.cartId${cartModel1.value.data!.cartId}");
+        sendCartID = cartModel1.value.data?.cartId;
+        cartItemCount = cartData.length;
+        totalCost = response['data']['sub_total'] ?? 0;
+        finalTotalCost =
+            double.tryParse(response['data']['final_cost'].toString()) ?? 0.0;
+        totalConvenienceFee = response['data']['convenience_fee'] ?? 0;
 
-        // and then can be null
-
-        cartItemCount.value = cartData.length ?? 0;
-        totalCost.value = response['total_price'] ?? 0;
-        finalTotalCost.value =
-            double.tryParse(response['final_cost'].toString()) ?? 0.0;
-        totalConvenienceFee.value = response['totalConvenienceFee'] ?? 0;
         cartIdList.clear();
         isMemberAvailable = false;
         memberTitle = null;
         memberPrice = null;
+
         for (var isData in cartData) {
-          cartIdList.add(isData.cartId);
           cartitemList.add(isData.cartItemId);
-          sendCartID = isData.cartId;
-          // ✅ Check for membership and update values
-          if (isData.membershipName != null) {
-            // isMemberAvailable = true;
+
+          /* if (isData.membershipName != null) {
+            isMemberAvailable = true;
             memberTitle = isData.membershipName ?? '';
             memberPrice = '\$${isData.price ?? '0.00'}';
-          }
+          }*/
         }
-        addToIdList();
+
+        // ✅ Update appliedName based on applied promo/reward/member
+        final appliedPromo = cartModel1.value.promoCode;
+        final appliedReward = cartModel1.value.reward;
+
+        if (appliedPromo != null) {
+          appliedName = appliedPromo.name ?? '';
+        } else if (appliedReward != null) {
+          appliedName = appliedReward.name ?? '';
+        } else if (memberTitle != null &&
+            cartModel1.value.data?.discountPrice != "") {
+          appliedName = memberTitle ?? '';
+        } else {
+          appliedName = '';
+        }
         couponAvailableRewards();
-        Get.log("yes in cart members : $isMemberAvailable");
-        isLoading.value = false;
+        isLoading = false;
         update();
       } else {
         isMemberAvailable = false;
-        cartItemCount.value = 0;
-        isLoading.value = false;
+        cartItemCount = 0;
+        isLoading = false;
         update();
       }
     } on Exception catch (e) {
-      isLoading.value = false;
+      isLoading = false;
       update();
+    }
+  }
+
+  List<Treatment> tratment = [];
+  List<Membership> membership = [];
+  List<Package> package = [];
+  OfferDetailModel offerDetailModel = OfferDetailModel();
+
+  learnMore(id) async {
+    isLoading = true;
+    tratment.clear();
+    membership.clear();
+    package.clear();
+    // update();
+    try {
+      id.toString() == "null"
+          ? null
+          : offerDetailModel = await hitLearnDetail(id);
+      tratment.addAll(offerDetailModel.data!.treatments!);
+      membership.addAll(offerDetailModel.data!.memberships!);
+      package.addAll(offerDetailModel.data!.packages!);
+      isLoading = false;
+      update();
+    } on Exception catch (e) {
+      isLoading = false;
+      update();
+    }
+  }
+
+  // WORKING ON IT //TODO TO UPDATE THE CART ITEM
+  // // Function to unselect promo or reward and update cart
+  Future<void> unselectPromoOrReward() async {
+    if (selectedId.value != null || offerselectedId.value != null) {
+      // If a reward is selected, remove it
+      if (selectedId.value != null) {
+        await removeAppliedReward(selectedId.value);
+        update();
+      }
+      // If a promo is selected, remove it
+      if (offerselectedId.value != null) {
+        await removeSelectedPromo(offerselectedId.value);
+        update();
+      }
     }
   }
 
   // TODO >> Delete the Single Added Item...
   Future deleteCart(id, index) async {
-    cartData[index].isItemDelete = true;
+    isDelete = true.obs;
     update();
     try {
-      var userId =await localStorage.getUId();
-      Map<String, dynamic> map = {"user_id": userId, "cart_id": id};
-      var response = await hitDeleteCartApi(userId, id);
-      cartData[index].isItemDelete = false;
+      var response = await hitDeleteCartApi(id);
+      isDelete = false.obs;
       cartList();
       couponAvailableRewards();
       print("Promo ID : $id");
       update();
     } on Exception catch (e) {
-      cartData[index].isItemDelete = false;
       update();
     }
-  }
+  } //fix this
 
   // TODO >>. Request the Location permission...
   Future<void> requestPermission() async {
@@ -194,34 +272,28 @@ class CartController extends GetxController {
 
   var itemList = {};
 
-  //todo:: tId >> pId >> mId create array of objects and retuen th value like this this "item_id": {
-  //     "treatment_id": [1, 2, 3],
-  //     "package_id": [1],
-  //     "membership_id": [32, 34]
-  //   },
   void addToIdList() {
     tId.clear();
     pId.clear();
     mId.clear();
+
     for (var item in cartData) {
-      if (item.treatmentId != null) {
-        tId.add(item.treatmentVariationId);
-      }
-      if (item.packageId != null) {
-        pId.add(item.packageId);
-      }
-      if (item.memberId != null) {
-        mId.add(item.memberId);
+      if (item.itemType == "treatment") {
+        tId.add(item.itemVariantId);
+      } else if (item.itemType == "package") {
+        pId.add(item.itemVariantId);
+      } else if (item.itemType == "membership") {
+        mId.add(item.itemVariantId);
       }
     }
+
     itemList = {
-      "treatment_id": tId.isEmpty ? [] : tId,
-      // Ensure it's an empty list if null
-      "package_id": pId.isEmpty ? [] : pId,
-      // Ensure it's an empty list if null
-      "membership_id": mId.isEmpty ? [] : mId
-      // Ensure it's an empty list if null
+      "treatment_id": tId,
+      "package_id": pId,
+      "membership_id": mId,
     };
+
+    Get.log("Built itemList: $itemList");
   }
 
   // Todo ?? Getting the current location...
@@ -248,20 +320,20 @@ class CartController extends GetxController {
 
 //TODO >> Update the Product Items..
   Future<void> updateProduct(
-    variationId,
-    cartID,
-    int cartitemID,
-  ) async {
+      variationId,
+      cartID,
+      int cartitemID,
+      ) async {
     isUpdate = true;
-    var userId =await localStorage.getUId();
-    var cId =await localStorage.getCId();
+    var clientId = await localStorage.getCId();
+    var userId = await localStorage.getUId();
     update();
     Map<String, dynamic> map = {
       "user_id": userId,
       "cart_id": cartID ?? 0,
       "treatment_variation_id": variationId,
       "cart_item_id": cartitemID,
-      "client_id": "${cId}"
+      "client_id": "${clientId}"
     };
     print("Update Map : $map");
     try {
@@ -285,28 +357,26 @@ class CartController extends GetxController {
 
   Future<void> createOrder(id, promo_id, orderid) async {
     isUpdate = true;
-    var userId =await localStorage.getUId();
-    var cId =await localStorage.getCId();
+    var clientId = await localStorage.getCId();
+    var userId = await localStorage.getUId();
     update();
     Map<String, dynamic> map = {
       "user_id": userId,
       "cart_id": sendCartID,
-      "client_id": "${cId}",
+      "client_id": "${clientId}",
       "order_id": orderid.toString() == "null" || orderid.toString().isEmpty
           ? ""
           : orderid,
     };
-    print("map: $map");
     try {
       var response = await hitCreateOrder(map);
       if (response['success'] == true) {
         isUpdate = false;
         orderID = response['order_id'];
         //localy store the order id
-        localStorage.saveData("order_id", response['order_id']);
+        localStorage.saveData("order_id", response['order_id'].toString());
         print("Order ID: ${response['order_id']}");
-        makePayment(double.parse(finalTotalCost.value.toString()),
-            response['order_id']);
+        makePayment(orderID);
         update();
       } else {
         isUpdate = false;
@@ -319,19 +389,18 @@ class CartController extends GetxController {
     }
   }
 
-  Future<void> makePayment(double amount, orderId) async {
+  Future<void> makePayment(orderId) async {
     try {
-      String? paymentIntentClientSecret =
-          await _createPaymentIntent(amount, orderId);
+      String? paymentIntentClientSecret = await _createPaymentIntent(orderId);
       if (paymentIntentClientSecret == null) return;
       print("object::$paymentIntentClientSecret");
 
       await Stripe.instance.initPaymentSheet(
           paymentSheetParameters: SetupPaymentSheetParameters(
-        paymentIntentClientSecret: paymentIntentClientSecret,
-        merchantDisplayName: 'CH BUCKS',
-      ));
-      await _processPayment(paymentIntentClientSecret, amount, orderId);
+            paymentIntentClientSecret: paymentIntentClientSecret,
+            merchantDisplayName: 'NIMA',
+          ));
+      await _processPayment(paymentIntentClientSecret, orderId);
     } catch (e) {
       print(e);
     }
@@ -342,35 +411,37 @@ class CartController extends GetxController {
     return (amount * 100).round();
   }
 
-  Future<String?> _createPaymentIntent(double amount, orderId) async {
+  Future<String?> _createPaymentIntent(orderId) async {
     try {
-      var currency = currentLocation!.isoCountryCode == "US" ? "USD" : "INR";
-      var userName =await localStorage.getName();
-      var cId =await localStorage.getCId();
+      var currency = currentLocation?.isoCountryCode == "US" ? "USD" : "INR";
+      var userName = await localStorage.getName();
+      var clientId = await localStorage.getCId();
+
       final Dio dio = Dio();
+
       Map<String, dynamic> map = {
-        "amount": _calculateAmount(amount),
+        "amount": _calculateAmount(finalTotalCost ?? 0),
         "currency": currency,
-        'payment_method_types[]': 'card',
-        'description': 'FLUTTER STRIPE DEMO',
-        'statement_descriptor': 'FLUTTER STRIPE DEMO',
-        'shipping': {
-          'name': userName,
-          'address': {
-            'line1': currentLocation!.street,
-            'line2': currentLocation!.subLocality ?? "",
-            'city': currentLocation!.locality,
-            'state': currentLocation!.administrativeArea,
-            'postal_code': currentLocation!.postalCode,
-            'country': currentLocation!.isoCountryCode
-          },
-        },
-        'metadata': {
-          'order_id': orderId,
-          'client_id': "${cId}",
-        }
+        "payment_method_types[]": "card",
+        "description": "FLUTTER STRIPE DEMO",
+        "statement_descriptor": "FLUTTER STRIPE DEMO",
+
+        // ✅ Flattened shipping fields
+        "shipping[name]": userName ?? '',
+        "shipping[address][line1]": currentLocation?.street ?? '',
+        "shipping[address][line2]": currentLocation?.subLocality ?? '',
+        "shipping[address][city]": currentLocation?.locality ?? '',
+        "shipping[address][state]": currentLocation?.administrativeArea ?? '',
+        "shipping[address][postal_code]": currentLocation?.postalCode ?? '',
+        "shipping[address][country]": currentLocation?.isoCountryCode ?? '',
+
+        // ✅ Flattened metadata
+        "metadata[order_id]": "$orderId",
+        "metadata[client_id]": "$clientId",
       };
-      print("map=>$map");
+
+      print("📤 Sending to Stripe: $map");
+
       var response = await dio.post(
         "https://api.stripe.com/v1/payment_intents",
         data: map,
@@ -378,18 +449,23 @@ class CartController extends GetxController {
           contentType: Headers.formUrlEncodedContentType,
           headers: {
             "Authorization": "Bearer ${CommonPage().stripeSicretKey}",
-            'Content-Type': 'application/x-www-form-urlencoded'
           },
         ),
       );
-      print("Response: ${response.data}");
+
+      print("✅ Stripe Response: ${response.data}");
+
       if (response.data != null) {
-        log("checkout:: ${response.data}");
         return response.data['client_secret'];
       }
       return null;
+    } on DioError catch (e) {
+      print("❌ Stripe API error: ${e.response?.statusCode}");
+      print("❌ Message: ${e.message}");
+      print("❌ Response data: ${e.response?.data}");
+      return null;
     } catch (e) {
-      print(e);
+      print("❌ General error: $e");
       return null;
     }
   }
@@ -403,40 +479,42 @@ class CartController extends GetxController {
     required String paymentMethod,
     required String paymentNotes,
     required var orderId,
-    required var amount,
+    required int paymentAmount, // ✅ New parameter added
   }) async {
     isCartClearLoading = true;
-    var userId =await localStorage.getUId();
-    var cId =await localStorage.getCId();
+    var clientId = await localStorage.getCId();
+    var userId = await localStorage.getUId();
 
     Map<String, dynamic> sendMap = {
       "cart_id": sendCartID,
       "user_id": userId,
-      "payment_amount": amount,
+      "payment_amount": paymentAmount, // ✅ Add payment amount here
       "transaction_id": transactionId,
       "payment_status": paymentStatus,
       "payment_method": paymentMethod,
       "payment_notes": paymentNotes,
       "order_id": orderId,
-      "client_id": cId,
+      "client_id": "$clientId",
     };
-    print("Doe map : ${sendMap}");
+
+    print("📝 Payload to clear cart: $sendMap");
 
     update();
     try {
       var response = await hitClearTheCart(sendMap);
       Get.log("Cart Clear Response: ${response['success']}");
+
       if (response['success'] == true) {
         showDialog(
           context: Get.context!,
           barrierDismissible: false,
           builder: (context) => PaymentSuccessPopup(
-            amount: amount.toString(),
             transactionId: transactionId.toString(),
             transactionType: paymentMethod.toString(),
           ),
         );
-        //remove the order id from local storage
+
+        // Remove the order ID from local storage
         cartList();
       }
     } catch (e) {
@@ -448,38 +526,71 @@ class CartController extends GetxController {
   }
 
   // TODO ? Process the payment
-  Future<void> _processPayment(
-      String clientSecret, double amount, orderId) async {
+
+  Future<void> _processPayment(String clientSecret, String orderId) async {
     try {
-      print("object Payment");
-      await Stripe.instance.presentPaymentSheet();
-      print("✅ Payment Success");
-      // Fetch payment intent details from Stripe after payment
+      print("💳 Starting payment process...");
+
+      // Step 1: Present the payment sheet
+      try {
+        await Stripe.instance.presentPaymentSheet();
+        print("✅ Payment sheet presented successfully.");
+      } on StripeException catch (e) {
+        print("❌ StripeException during payment sheet: $e");
+        return;
+      } catch (e) {
+        print("❌ Unexpected error during payment sheet: $e");
+        return;
+      }
+
+      // Step 2: Extract paymentIntent ID
+      if (clientSecret.isEmpty || !clientSecret.contains('_secret')) {
+        print("❌ Invalid clientSecret format: $clientSecret");
+        return;
+      }
+
+      final String paymentIntentId = clientSecret.split('_secret')[0];
+      print("🔎 Extracted Payment Intent ID: $paymentIntentId");
+
+      // Step 3: Call Stripe API to get payment intent details
       final Dio dio = Dio();
-      var response = await dio.get(
-        "https://api.stripe.com/v1/payment_intents/${clientSecret.split('_secret')[0]}",
-        options: Options(headers: {
-          "Authorization": "Bearer ${CommonPage().stripeSicretKey}",
-        }),
+      final response = await dio.get(
+        "https://api.stripe.com/v1/payment_intents/$paymentIntentId",
+        options: Options(
+          headers: {
+            "Authorization": "Bearer ${CommonPage().stripeSicretKey}",
+          },
+        ),
       );
 
+      // Step 4: Check response and process payment
       if (response.statusCode == 200) {
-        var paymentIntentData = response.data;
-        print("🔍 Stripe PI: $paymentIntentData");
-        // Now call clearTheCartAPI with details
-        clearTheCartAPI(
+        final paymentIntentData = response.data;
+        print("📦 Stripe PaymentIntent: $paymentIntentData");
+
+        final int paymentAmount = paymentIntentData['amount'] ?? 0;
+
+        await clearTheCartAPI(
           transactionId: paymentIntentData['id'],
           paymentStatus: paymentIntentData['status'],
-          // should be 'succeeded'
           paymentMethod:
-              paymentIntentData['payment_method_types']?[0] ?? 'card',
+          paymentIntentData['payment_method_types']?[0] ?? 'card',
           paymentNotes: 'Stripe Payment',
           orderId: orderId,
-          amount: amount,
+          paymentAmount: paymentAmount, // ✅ Added this
         );
+      } else {
+        print(
+            "❌ Failed to retrieve payment intent. Status code: ${response.statusCode}");
       }
+    } on DioError catch (dioError) {
+      print("❌ DioError occurred:");
+      print("🔸 Message: ${dioError.message}");
+      print("🔸 Status Code: ${dioError.response?.statusCode}");
+      print("🔸 Response Data: ${dioError.response?.data}");
+      print("🔸 Headers: ${dioError.response?.headers}");
     } catch (e) {
-      print("❌ Payment Failed: $e");
+      print("❌ Unexpected error during payment processing: $e");
     }
   }
 
@@ -488,6 +599,7 @@ class CartController extends GetxController {
 
   RxString enteredCode = ''.obs;
   var isApplyLoading = false;
+  var isLoading = false;
   var appliedCouponCode = ''.obs;
   var appledCouponID = -1;
   var appledAmount;
@@ -497,48 +609,43 @@ class CartController extends GetxController {
   var promoErrorText = '';
   final promoTextController = TextEditingController();
 
-  void selectPromo(reardId, int index, isPromoCode, offerCode) {
-    print("isSelected :${isPromoCode}");
-    selectedComingId = reardId;
-
-    !isPromoCode
-        ? applyAvailableCode(reardId, index)
-        : applyPromoCode(offerCode);
-  }
-
   void removeSelection(rewardID) {
-    removeAppliedPromo(rewardID);
+    removeAppliedReward(rewardID);
   }
+
+  PromoRewardModel response = PromoRewardModel();
 
   bool get isPromoApplied =>
       selectedPromoIndex.value != -1 || enteredCode.isNotEmpty;
 
-//todo apply promo code.
+//todo apply promo code
   applyPromoCode(code) async {
     isApplyLoading = true;
     update();
     try {
       promoErrorText = ''; // Reset error
-      var userId =await localStorage.getUId();
-      var cId =await localStorage.getCId();
+      var clientId = await localStorage.getCId();
+      var userId = await localStorage.getUId();
       Map<String, dynamic> map = {
         "promo_code": code,
-        "cart_id": cartID,
+        "cart_id": sendCartID,
         "user_id": userId,
-        "client_id": "${cId}"
+        "client_id": "${clientId}"
       };
       Get.log("apply Cart list :$map");
       var response = await hiApplyCouponCodeAPI(map);
       if (response['success'] == true) {
         //todo promo code applied == True,
         appliedCouponCode.value = code;
-        appledCouponID = response['updated_items'][0]['promo_code_id'];
-        appledAmount = response['updated_items'][0]['total_discount'];
+        // appledCouponID = response['updated_items'][0]['promo_code_id'];
+        // appledAmount = response['updated_items'][0]['total_discount'];
         totalAmount.value -= couponDiscount.value;
         isApplyLoading = false;
         promoTextController.clear();
         isUpdateSomething.value = true;
-        cartList();
+        rewardId = '';
+        rewardName = '';
+        await cartList(); // Ensure cartList completes before Get.back()
         Get.back();
         update();
       } else {
@@ -555,8 +662,9 @@ class CartController extends GetxController {
           duration: const Duration(seconds: 3),
         );
         isApplyLoading = false;
-        update();
+        // No need to update here if only showing a snackbar
       }
+      // Removed redundant update() call from here
     } on Exception catch (e) {
       isApplyLoading = false;
       isUpdateSomething.value = false;
@@ -569,80 +677,309 @@ class CartController extends GetxController {
         margin: const EdgeInsets.all(12),
         duration: const Duration(seconds: 3),
       );
+      // No need to update here if only showing a snackbar
+    } finally {
+      // Ensure isApplyLoading is reset and UI updates regardless of success/failure
+      if (isApplyLoading) {
+        // Only update if it was true, to avoid unnecessary rebuilds
+        isApplyLoading = false;
+        update();
+      }
+    }
+  }
+
+  // selectPromoCode(code, index, offerId, isSelected, cartId) async {
+  //   isApplyLoading = true;
+  //   update();
+  //   try {
+  //     print("Apply offer to cart1 $cartId");
+  //     promoErrorText = ''; //todo Reset error
+  //     var clientId = await localStorage.getCId();
+  //     var userId = await localStorage.getUId();
+  //
+  //     Map<String, dynamic> map = {
+  //       "promo_code": code,
+  //       "cart_id": cartId.toString(),
+  //       "user_id": userId.toString(),
+  //       "client_id": clientId.toString(),
+  //     };
+  //     print("Apply offer to cart1");
+  //     Get.log("apply Cart list :$map");
+  //     var response = await hiApplyCouponCodeAPI(map);
+  //     if (response['success'] == true) {
+  //       selectedPromoIndex.value = index;
+  //       offerselectedId.value = isSelected.toString();
+  //       isApplyLoading = false;
+  //       isUpdateSomething.value = true;
+  //       promoErrorText = ''; // Reset error
+  //       appliedName = couponAvailableData[index].title ?? '';
+  //       applyPromo = true;
+  //       applyReward = false;
+  //       rewardId = '';
+  //       rewardName = '';
+  //       update();
+  //       cartList();
+  //       Get.back();
+  //     } else {
+  //       isUpdateSomething.value = false;
+  //       // promoErrorText = "Invalid code. Please enter a valid promo code.";
+  //       print("object: ${promoErrorText}");
+  //       isApplyLoading = false;
+  //       update();
+  //     }
+  //   } on Exception catch (e) {
+  //     isUpdateSomething.value = false;
+  //     isApplyLoading = false;
+  //     update();
+  //   }
+  // }
+  var isLoadingPromo = false;
+
+// Improved selectPromoCode method
+  Future<void> selectPromoCode(code, index, offerId, isSelected, cartId) async {
+    if (isLoadingPromo) return;
+    isLoadingPromo = true;
+    update();
+    try {
+      print("Apply offer to cart1 $cartId");
+      promoErrorText = '';
+      var clientId = await localStorage.getCId();
+      var userId = await localStorage.getUId();
+      Map<String, dynamic> map = {
+        "promo_code": code,
+        "cart_id": cartId.toString(),
+        "user_id": userId.toString(),
+        "client_id": clientId.toString(),
+      };
+      Get.log("apply Cart list :$map");
+      var response = await hiApplyCouponCodeAPI(map);
+
+      if (response['success'] == true) {
+        selectedPromoIndex.value = index;
+        offerselectedId.value = isSelected.toString();
+        isUpdateSomething.value = true;
+        promoErrorText = '';
+        appliedName = couponAvailableData[index].title ?? '';
+        applyPromo = true;
+        applyReward = false;
+        isLoadingPromo = false;
+        rewardId = '';
+        rewardName = '';
+        await cartList();
+        update();
+        Get.back();
+      } else {
+        isUpdateSomething.value = false;
+        Get.snackbar(
+          "Invalid Promo Code",
+          "Please enter a valid promo code.",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red.shade400,
+          colorText: Colors.white,
+          margin: const EdgeInsets.all(12),
+          duration: const Duration(seconds: 3),
+        );
+      }
+    } catch (e) {
+      print("Error selecting promo code: $e");
+      isUpdateSomething.value = false;
+      Get.snackbar(
+        "Error",
+        "Something went wrong. Please try again.",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.shade400,
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(12),
+        duration: const Duration(seconds: 3),
+      );
+    } finally {
+      isLoadingPromo = false;
       update();
     }
   }
 
-  selectPromoCode(code, index, offerId, isSelected) async {
+  // applyAvailableCode(rewardId, index, cartId) async {
+  //   isApplyLoading = true;
+  //   update();
+  //   try {
+  //     var clientId = await localStorage.getCId();
+  //     var userId = await localStorage.getUId();
+  //     Map<String, dynamic> map = {
+  //       "reward_id": rewardId,
+  //       "cart_id": cartId,
+  //       "user_id": userId,
+  //       "client_id": "${clientId}",
+  //     };
+  //     Get.log("apply Cart list :$map");
+  //     var response = await hiApplyAvailableAPI(map);
+  //     if (response['success'] == true) {
+  //       isUpdateSomething.value = true;
+  //       selectedPromoIndex.value = index;
+  //       selectedId.value = rewardId.toString();
+  //       applyReward = true;
+  //       applyPromo = false;
+  //       isApplyLoading = false;
+  //       promoId = '';
+  //       promoname = '';
+  //       promoErrorText = ''; // Reset error
+  //       cartList();
+  //       Get.back();
+  //       update();
+  //     } else {
+  //       isUpdateSomething.value = false;
+  //       print("object: ${promoErrorText}");
+  //       isApplyLoading = false;
+  //       update();
+  //     }
+  //   } on Exception catch (e) {
+  //     isUpdateSomething.value = false;
+  //     isApplyLoading = false;
+  //     update();
+  //   }
+  // }
+
+  // applyMembership(memId, cartId) async {
+  //   isApplyLoading = true;
+  //   update();
+  //   try {
+  //     var clientId = await localStorage.getCId();
+  //     var userId = await localStorage.getUId();
+  //     Map<String, dynamic> map = {
+  //       "membership_id": memId,
+  //       "cart_id": cartId,
+  //       "user_id": userId,
+  //       "client_id": "${clientId}",
+  //     };
+  //     Get.log("apply Cart list :$map");
+  //     var response = await hiApplyMembershipAPI(map);
+  //     if (response == null || response.toString() == "null") {
+  //       cartList();
+  //       Get.back();
+  //     }
+  //     if (response['success'] == true) {
+  //       isUpdateSomething.value = true;
+  //       selectedId.value = rewardId.toString();
+  //       rewardId = '';
+  //       applyReward = true;
+  //       isApplyLoading = false;
+  //       cartList();
+  //       Get.back();
+  //       update();
+  //     } else {
+  //       isUpdateSomething.value = false;
+  //       print("object: ${promoErrorText}");
+  //       isApplyLoading = false;
+  //       Get.back();
+  //       update();
+  //     }
+  //   } on Exception catch (e) {
+  //     isUpdateSomething.value = false;
+  //     isApplyLoading = false;
+  //     Get.back();
+  //     update();
+  //   }
+  // }
+// Improved applyMembership method
+  // Improved applyAvailableCode method
+  Future<void> applyAvailableCode(rewardId, index, cartId) async {
+    if (isApplyLoading) return; // Prevent multiple calls
+
     isApplyLoading = true;
-    var cId=await localStorage.getCId();
     update();
+
     try {
-      promoErrorText = ''; //todo Reset error
-      var userId =await localStorage.getUId();
+      var clientId = await localStorage.getCId();
+      var userId = await localStorage.getUId();
       Map<String, dynamic> map = {
-        "promo_code": code,
-        "cart_id": cartID,
+        "reward_id": rewardId,
+        "cart_id": cartId,
         "user_id": userId,
-        "client_id": "${cId}",
+        "client_id": "${clientId}",
       };
+
       Get.log("apply Cart list :$map");
-      var response = await hiApplyCouponCodeAPI(map);
+      var response = await hiApplyAvailableAPI(map);
+
       if (response['success'] == true) {
-        selectedPromoIndex.value = index;
-        offerselectedId.value = isSelected.toString();
-        isApplyLoading = false;
         isUpdateSomething.value = true;
-        promoErrorText = ''; // Reset error
-        update();
-        cartList();
+        selectedPromoIndex.value = index;
+        selectedId.value = rewardId.toString();
+        applyReward = true;
+        applyPromo = false;
+        promoId = '';
+        promoname = '';
+        promoErrorText = '';
+        await cartList();
         Get.back();
       } else {
         isUpdateSomething.value = false;
-        // promoErrorText = "Invalid code. Please enter a valid promo code.";
-        print("object: ${promoErrorText}");
-        isApplyLoading = false;
-        update();
+        Get.snackbar(
+          "Error",
+          "Failed to apply reward. Please try again.",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red.shade400,
+          colorText: Colors.white,
+          margin: const EdgeInsets.all(12),
+          duration: const Duration(seconds: 3),
+        );
       }
-    } on Exception catch (e) {
+    } catch (e) {
+      print("Error applying available code: $e");
       isUpdateSomething.value = false;
+    } finally {
       isApplyLoading = false;
       update();
     }
   }
 
-  applyAvailableCode(rewardId, index) async {
+  @override
+  void onClose() {
+    _debounceTimer?.cancel();
+    super.onClose();
+  }
+
+  Future<void> applyMembership(memId, cartId) async {
+    if (isApplyLoading) return; // Prevent multiple calls
+
     isApplyLoading = true;
     update();
+
     try {
-      var userId =await localStorage.getUId();
-      var cId =await localStorage.getCId();
+      var clientId = await localStorage.getCId();
+      var userId = await localStorage.getUId();
       Map<String, dynamic> map = {
-        "reward_id": rewardId,
-        "cart_item_id":
-            cartitemList.toString().replaceAll('[', "").replaceAll(']', ""),
+        "membership_id": memId,
+        "cart_id": cartId,
         "user_id": userId,
-        "client_id": "${cId}",
+        "client_id": "${clientId}",
       };
+
       Get.log("apply Cart list :$map");
-      var response = await hiApplyAvailableAPI(map);
+      var response = await hiApplyMembershipAPI(map);
+
+      if (response == null || response.toString() == "null") {
+        await cartList();
+        Get.back();
+        return;
+      }
+
       if (response['success'] == true) {
         isUpdateSomething.value = true;
-        selectedPromoIndex.value = index;
         selectedId.value = rewardId.toString();
-        isApplyLoading = false;
-        promoErrorText = ''; // Reset error
-        cartList();
+        rewardId = '';
+        applyReward = true;
+        await cartList();
         Get.back();
-        update();
       } else {
         isUpdateSomething.value = false;
-        print("object: ${promoErrorText}");
-        isApplyLoading = false;
-        update();
+        print("Membership application failed: ${response.toString()}");
+        Get.back();
       }
-    } on Exception catch (e) {
+    } catch (e) {
+      print("Error applying membership: $e");
       isUpdateSomething.value = false;
+      Get.back();
+    } finally {
       isApplyLoading = false;
       update();
     }
@@ -655,22 +992,28 @@ class CartController extends GetxController {
     appledCouponID = -1;
   }
 
-  removeAppliedPromo(rewardId) async {
+  removeAppliedReward(rewardid) async {
     isApplyLoading = true;
     update();
     try {
-      var userId =await localStorage.getUId();
-      var response =
-          await hiRemoveCouponCodeAPI(rewardId, userId, cartIdList[0]);
-      print(response['success']);
-      if (response['success'] == true) {
+      var respons =
+      await hiRemoveCouponCodeAPI(rewardid, cartModel1.value.data!.cartId);
+      print(respons['success']);
+      if (respons['success'] == true) {
         isUpdateSomething.value = true;
         selectedPromoIndex.value = -1;
+        rewardName = '';
+        promoname = '';
+        promoId = '';
+        rewardId = '';
+        applyPromo = false;
+        applyReward = false;
         selectedId.value = null;
         isApplyLoading = false;
         selectedComingId = '';
-        cartList();
-        Get.back();
+        memberTitle = response.membership!.membershipTitle;
+        applyMembership(
+            response.membership!.membershipId, cartModel1.value.data!.cartId);
         update();
       } else {
         isUpdateSomething.value = false;
@@ -689,34 +1032,23 @@ class CartController extends GetxController {
     isApplyLoading = true;
     update();
     try {
-      var userId =await localStorage.getUId();
-      var response =
-          await hitRemoveAddedCouponAPI(promoID, userId, cartIdList[0]);
-      if (response['success'] == true) {
+      var respons =
+      await hitRemoveAddedCouponAPI(promoID, cartModel1.value.data!.cartId);
+      if (respons['success'] == true) {
         isUpdateSomething.value = true;
+        memberTitle = response.membership!.membershipTitle;
+        promoErrorText = '';
+        promoname = '';
+        applyPromo = false;
+        applyReward = false;
+        rewardName = '';
+        rewardName = '';
+        applyMembership(
+            response.membership!.membershipId, cartModel1.value.data!.cartId);
         isApplyLoading = false;
-        cartList();
+        await cartList(); // Ensure cartList completes before Get.back()
         Get.back();
-      }
-    } finally {
-      isUpdateSomething.value = false;
-      isApplyLoading = false;
-      update();
-    }
-  }
-
-  Future<void> removeAddedPromo(var promoID) async {
-    isApplyLoading = true;
-    update();
-    try {
-      var userId =await localStorage.getUId();
-      var response =
-          await hitRemoveAddedCouponAPI(promoID, userId, cartIdList[0]);
-      if (response['success'] == true) {
-        isUpdateSomething.value = true;
-        appliedCouponCode.value = ''; //todo Clear applied promo
-        couponDiscount.value = 0.0;
-        promoTextController.clear(); //todo Clear input
+        update();
       }
     } finally {
       isUpdateSomething.value = false;
@@ -734,26 +1066,91 @@ class CartController extends GetxController {
   var pId = [];
   var mId = [];
 
+  var memId = '';
+
+  var memDiscount = '';
+
+  String? promoname = '';
+
+  var applyPromo;
+
+  var promoId = '';
+
+  var rewardId = '';
+
+  var rewardName = '';
+
+  var applyReward;
+
+  // Future<void> couponAvailableRewards() async {
+  //   isRewardLoading = true;
+  //   try {
+  //     couponAvailableData.clear();
+  //     availableData.clear();
+  //
+  //     addToIdList();
+  //
+  //     response = await hitPromoRewardAPI(
+  //       tId,
+  //       pId,
+  //       mId,
+  //     );
+  //
+  //     isRewardLoading = false;
+  //     couponAvailableData.addAll(response.offers ?? []);
+  //     availableData.addAll(response.rewards ?? []);
+  //
+  //     Get.log("Available reward list => ${response.toJson()}");
+  //     update();
+  //   } catch (e) {
+  //     isRewardLoading = false;
+  //     update();
+  //   }
+  // }
+  // Improved couponAvailableRewards with debounce
   Future<void> couponAvailableRewards() async {
+    // Prevent multiple simultaneous API calls
+    if (_isApiCallInProgress) {
+      print("API call already in progress, skipping...");
+      return;
+    }
+
+    // Cancel any pending debounced calls
+    _debounceTimer?.cancel();
+
+    // Debounce the API call
+    _debounceTimer = Timer(Duration(milliseconds: 300), () async {
+      await _performCouponAvailableRewardsAPI();
+    });
+  }
+
+  Future<void> _performCouponAvailableRewardsAPI() async {
+    if (_isApiCallInProgress) return;
+
+    _isApiCallInProgress = true;
     isRewardLoading = true;
+
     try {
-      var userId =await localStorage.getUId();
       couponAvailableData.clear();
       availableData.clear();
-      couponAvailableData = [];
-      availableData = [];
-      PromoRewardModel response = await hitPromoRewardAPI(
-          userId,
-          tId.isEmpty ? [] : tId,
-          pId.isEmpty ? [] : pId,
-          mId.isEmpty ? [] : mId);
+
+      addToIdList();
+
+      response = await hitPromoRewardAPI(
+        tId,
+        pId,
+        mId,
+      );
+
+      couponAvailableData.addAll(response.offers ?? []);
+      availableData.addAll(response.rewards ?? []);
+
+      Get.log("Available reward list => ${response.toJson()}");
+    } catch (e) {
+      print("Error in couponAvailableRewards: $e");
+    } finally {
       isRewardLoading = false;
-      couponAvailableData.addAll(response.offers!);
-      availableData.addAll(response.rewards!);
-      Get.log("Available reward list==>${response}");
-      update();
-    } on Exception catch (e) {
-      isRewardLoading = false;
+      _isApiCallInProgress = false;
       update();
     }
   }

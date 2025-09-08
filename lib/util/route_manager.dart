@@ -1,6 +1,8 @@
 import 'package:get/get.dart';
+
+import '../Model/detail_browse_model.dart';
 import '../Model/discover_model.dart' as discover;
-import '../Model/special_offers_model.dart';
+
 import '../Screens/Account/widget/accountDetail.dart';
 import '../Screens/Account/widget/setting_page.dart';
 import '../Screens/Complete Profile/complete_profile.dart';
@@ -25,11 +27,7 @@ import '../Screens/cartList/cart_list.dart';
 import '../Screens/order/order_list.dart';
 import '../Screens/shop/Pages/BrowseByConcern/widgets/brows_concern_detail.dart';
 import '../Screens/shop/Pages/Treatment Page/widgets/treatment_details_page.dart';
-import '../binding/account_Binding.dart';
 import '../binding/cart_billing.dart';
-import '../binding/complete_profile_binding.dart';
-import '../binding/otp_binding.dart';
-import '../binding/treartmentDetailsBinding.dart';
 
 class RouteManager {
   //TODO >> define route name
@@ -64,6 +62,7 @@ class RouteManager {
   // TODO >> define route page
   static final routes = [
     // TODO << SearchPage
+
     GetPage(
       name: searchPage,
       page: () => SearchPage(),
@@ -80,9 +79,7 @@ class RouteManager {
         var id = args['id'];
         var title = args['title'];
         return RewardDetailScreen(
-          id: id,
-          title: title,
-        ); // Pass `id` if required by the screen
+            id: id, title: title); // Pass `id` if required by the screen
       },
       transition: Transition.fadeIn,
       maintainState: false,
@@ -136,7 +133,9 @@ class RouteManager {
       name: membersShipDetailsPage,
       page: () {
         var onlyShow = Get.parameters['onlyShow'];
-        return MembersShipDetailsPage(onlyShow: onlyShow == "0" ? false : true);
+        return MembersShipDetailsPage(
+          onlyShow: onlyShow == "0" ? false : true,
+        );
       },
       transition: Transition.fadeIn,
       maintainState: false,
@@ -170,7 +169,7 @@ class RouteManager {
       page: () => CartList(),
       transition: Transition.fadeIn,
       maintainState: true,
-      binding: CartBinding(),
+      binding: CommonBinding(),
       transitionDuration: Duration(milliseconds: 500),
       popGesture: true,
       showCupertinoParallax: true,
@@ -179,20 +178,17 @@ class RouteManager {
       name: learnMore,
       page: () {
         final args = Get.arguments as Map<String, dynamic>;
+        final OfferCards? data = args['specialOffer'];
+        final int? id = args['id'];
         final discover.ContentCard? cardData = args['cardData'];
         final bool isExpired = args['isExpired'] ?? false;
-
-        // Handle both specialOffer and offerCard
-        discover.OfferCard? offerCard;
-
         if (args.containsKey('specialOffer')) {
-          final special = args['specialOffer'] as SpecialOffersData;
           discover.ServiceType parseServiceType(String? value) {
             if (value == null) return discover.ServiceType.PACKAGE;
 
             return discover.ServiceType.values.firstWhere(
-              (val) =>
-                  val.name.toUpperCase() ==
+                  (val) =>
+              val.name.toUpperCase() ==
                   value.replaceAll("ServiceType.", "").trim().toUpperCase(),
               orElse: () {
                 print("Unknown type: $value");
@@ -200,38 +196,11 @@ class RouteManager {
               },
             );
           }
-
-          offerCard = discover.OfferCard(
-            serviceName: special.serviceName
-                ?.map(
-                  (e) => discover.ServiceName(
-                    serviceName: e.serviceName,
-                    serviceId: e.serviceId,
-                    serviceType: parseServiceType(e.serviceType?.toString()),
-                  ),
-                )
-                .toList(),
-
-            // Ensures it's List<ServiceName>
-            description: special.description,
-            promoCode: special.promoCode,
-            offerimage: special.offerimage,
-            discountValue: special.discountValue,
-            endDate: special.endDate,
-            title: special.title,
-            startDate: special.startDate,
-            promoCodeId: special.promoCodeId,
-            discountType: special.discountType,
-            isPromoCodeApplied: special.isPromoCodeApplied,
-            // Add more fields here if OfferCard has more required params
-          );
-        } else if (args.containsKey('offerCard')) {
-          offerCard = args['offerCard'] as discover.OfferCard;
         }
         return LearnMorePage(
-          cardData: cardData,
-          offerCard: offerCard,
           isExpire: isExpired,
+          id: id,
+          cardData: cardData,
         );
       },
       transition: Transition.fadeIn,
@@ -261,7 +230,7 @@ class RouteManager {
       },
       transition: Transition.fadeIn,
       maintainState: false,
-      binding: AccountBinding(),
+      binding: CommonBinding(),
       transitionDuration: Duration(milliseconds: 500),
       popGesture: true,
       showCupertinoParallax: true,
@@ -273,7 +242,7 @@ class RouteManager {
       },
       transition: Transition.fadeIn,
       maintainState: false,
-      binding: AccountBinding(),
+      binding: CommonBinding(),
       transitionDuration: Duration(milliseconds: 500),
       popGesture: true,
       showCupertinoParallax: true,
@@ -295,7 +264,7 @@ class RouteManager {
       },
       transition: Transition.fadeIn,
       maintainState: false,
-      binding: OTPBindings(),
+      binding: CommonBinding(),
       transitionDuration: Duration(milliseconds: 100),
       popGesture: false,
       showCupertinoParallax: true,
@@ -343,12 +312,9 @@ class RouteManager {
         print("User ID: $userId | OTP: $otp");
 
         return CompleteProfile(
-          userId: userId,
-          otp: otp,
-          id: id,
-        ); // assuming both are needed
+            userId: userId, otp: otp, id: id); // assuming both are needed
       },
-      binding: CompleteProfileBinding(),
+      binding: CommonBinding(),
       transition: Transition.fadeIn,
       maintainState: true,
       transitionDuration: Duration(milliseconds: 500),
@@ -369,9 +335,9 @@ class RouteManager {
       popGesture: false,
       showCupertinoParallax: true,
     ),
-
     // 6163193856
     // TODO ??  The Page is Share is Caring...
+
     GetPage(
       name: referFriendPage,
       page: () {
@@ -397,10 +363,11 @@ class RouteManager {
     ),
 
     //Todo ??  Treatment Details Page.
+
     GetPage(
       name: treatmentDetails,
       page: () => TreatmentDetailsPage(),
-      binding: TreatmentDetailsBinding(),
+      binding: CommonBinding(),
       transition: Transition.fadeIn,
       maintainState: true,
       transitionDuration: Duration(milliseconds: 500),

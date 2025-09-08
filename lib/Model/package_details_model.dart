@@ -1,200 +1,207 @@
 class PackageDetailsModel {
+  String? message;
   bool? success;
-  List<Datum>? data;
+  Package? package;
 
   PackageDetailsModel({
+    this.message,
     this.success,
-    this.data,
+    this.package,
   });
 
   factory PackageDetailsModel.fromJson(Map<String, dynamic> json) =>
       PackageDetailsModel(
+        message: json["message"],
         success: json["success"],
-        data: json["data"] == null
-            ? []
-            : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),
+        package:
+            json["package"] == null ? null : Package.fromJson(json["package"]),
       );
 
   Map<String, dynamic> toJson() => {
+        "message": message,
         "success": success,
-        "data": data == null
-            ? []
-            : List<dynamic>.from(data!.map((x) => x.toJson())),
+        "package": package?.toJson(),
       };
 }
 
-class Datum {
-  String? pricing;
-  var displayOrder;
-  String? careInstructions;
-  List<String>? treatmentQuantity;
-  List<String>? packageImages;
-  FetchPackageInstructions? fetchPackageInstructions;
-  String? membershipDiscountAmount;
+class Package {
+  String? offeroffText;
+  var price;
+  MembershipInfo? membershipInfo;
+  List<dynamic>? instructions;
+  var packageQty;
+  List<IncludedTreatment>? includedTreatments;
+  List<String>? images;
   String? description;
-  var qty;
+  List<String>? concerns;
   List<String>? bodyAreas;
-  String? addedAt;
-  List<String>? addedTreatment;
   String? packageName;
-  List<Concern>? concern;
   var packageId;
-  MembershipData? membershipData;
 
-  Datum({
-    this.pricing,
-    this.displayOrder,
-    this.careInstructions,
-    this.treatmentQuantity,
-    this.packageImages,
-    this.fetchPackageInstructions,
-    this.membershipDiscountAmount,
+  Package({
+    this.offeroffText,
+    this.price,
+    this.membershipInfo,
+    this.instructions,
+    this.packageQty,
+    this.includedTreatments,
+    this.images,
     this.description,
-    this.qty,
+    this.concerns,
     this.bodyAreas,
-    this.addedAt,
-    this.addedTreatment,
     this.packageName,
-    this.concern,
     this.packageId,
-    this.membershipData,
   });
 
-  factory Datum.fromJson(Map<String, dynamic> json) => Datum(
-        pricing: json["pricing"],
-        displayOrder: json["display_order"],
-        careInstructions: json["care_instructions"],
-        treatmentQuantity: json["treatment_quantity"] == null
-            ? []
-            : List<String>.from(json["treatment_quantity"]!.map((x) => x)),
-        packageImages: json["package_images"] == null
-            ? []
-            : List<String>.from(json["package_images"]!.map((x) => x)),
-        fetchPackageInstructions: json["fetchPackageInstructions"] == null
+  factory Package.fromJson(Map<String, dynamic> json) => Package(
+        offeroffText: json["offeroffText"],
+        price: json["price"],
+        membershipInfo: json["membership_info"] == null
             ? null
-            : FetchPackageInstructions.fromJson(
-                json["fetchPackageInstructions"]),
-        membershipDiscountAmount: json["membershipDiscountAmount"],
+            : MembershipInfo.fromJson(json["membership_info"]),
+        instructions: json["instructions"] == null
+            ? []
+            : List<dynamic>.from(json["instructions"]!.map((x) => x)),
+        packageQty: json["package_qty"],
+        includedTreatments: json["included_treatments"] == null
+            ? []
+            : List<IncludedTreatment>.from(json["included_treatments"]!
+                .map((x) => IncludedTreatment.fromJson(x))),
+        images: json["images"] == null
+            ? []
+            : List<String>.from(json["images"]!.map((x) => x)),
         description: json["description"],
-        qty: json["qty"],
+        concerns: json["concerns"] == null
+            ? []
+            : List<String>.from(json["concerns"]!.map((x) => x)),
         bodyAreas: json["body_areas"] == null
             ? []
             : List<String>.from(json["body_areas"]!.map((x) => x)),
-        addedAt: json["added_at"],
-        addedTreatment: json["added_treatment"] == null
-            ? []
-            : List<String>.from(json["added_treatment"]!.map((x) => x)),
         packageName: json["package_name"],
-        concern: json["concern"] == null
-            ? []
-            : List<Concern>.from(
-                json["concern"]!.map((x) => Concern.fromJson(x))),
         packageId: json["package_id"],
-        membershipData: json["membershipData"] == null
-            ? null
-            : MembershipData.fromJson(json["membershipData"]),
       );
 
   Map<String, dynamic> toJson() => {
-        "pricing": pricing,
-        "display_order": displayOrder,
-        "care_instructions": careInstructions,
-        "treatment_quantity": treatmentQuantity == null
+        "offeroffText": offeroffText,
+        "price": price,
+        "membership_info": membershipInfo?.toJson(),
+        "instructions": instructions == null
             ? []
-            : List<dynamic>.from(treatmentQuantity!.map((x) => x)),
-        "package_images": packageImages == null
+            : List<dynamic>.from(instructions!.map((x) => x)),
+        "package_qty": packageQty,
+        "included_treatments": includedTreatments == null
             ? []
-            : List<dynamic>.from(packageImages!.map((x) => x)),
-        "fetchPackageInstructions": fetchPackageInstructions?.toJson(),
-        "membershipDiscountAmount": membershipDiscountAmount,
+            : List<dynamic>.from(includedTreatments!.map((x) => x.toJson())),
+        "images":
+            images == null ? [] : List<dynamic>.from(images!.map((x) => x)),
         "description": description,
-        "qty": qty,
+        "concerns":
+            concerns == null ? [] : List<dynamic>.from(concerns!.map((x) => x)),
         "body_areas": bodyAreas == null
             ? []
             : List<dynamic>.from(bodyAreas!.map((x) => x)),
-        "added_at": addedAt,
-        "added_treatment": addedTreatment == null
-            ? []
-            : List<dynamic>.from(addedTreatment!.map((x) => x)),
         "package_name": packageName,
-        "concern": concern == null
-            ? []
-            : List<dynamic>.from(concern!.map((x) => x.toJson())),
         "package_id": packageId,
-        "membershipData": membershipData?.toJson(),
       };
 }
 
-class Concern {
-  var concernId;
-  String? concernName;
+class IncludedTreatment {
+  String? unitName;
+  var quantity;
+  String? description;
+  String? treatmentName;
 
-  Concern({
-    this.concernId,
-    this.concernName,
+  IncludedTreatment({
+    this.unitName,
+    this.quantity,
+    this.description,
+    this.treatmentName,
   });
 
-  factory Concern.fromJson(Map<String, dynamic> json) => Concern(
-        concernId: json["concern_id"],
-        concernName: json["concern_name"],
+  factory IncludedTreatment.fromJson(Map<String, dynamic> json) =>
+      IncludedTreatment(
+        unitName: json["unitName"],
+        quantity: json["quantity"],
+        description: json["description"],
+        treatmentName: json["treatment_name"],
       );
 
   Map<String, dynamic> toJson() => {
-        "concern_id": concernId,
-        "concern_name": concernName,
+        "unitName": unitName,
+        "quantity": quantity,
+        "description": description,
+        "treatment_name": treatmentName,
       };
 }
 
-class FetchPackageInstructions {
-  List<String>? columns;
-  List<List<String>>? data;
-
-  FetchPackageInstructions({
-    this.columns,
-    this.data,
-  });
-
-  factory FetchPackageInstructions.fromJson(Map<String, dynamic> json) =>
-      FetchPackageInstructions(
-        columns: json["COLUMNS"] == null
-            ? []
-            : List<String>.from(json["COLUMNS"]!.map((x) => x)),
-        data: json["DATA"] == null
-            ? []
-            : List<List<String>>.from(
-                json["DATA"]!.map((x) => List<String>.from(x.map((x) => x)))),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "COLUMNS":
-            columns == null ? [] : List<dynamic>.from(columns!.map((x) => x)),
-        "DATA": data == null
-            ? []
-            : List<dynamic>.from(
-                data!.map((x) => List<dynamic>.from(x.map((x) => x)))),
-      };
-}
-
-class MembershipData {
-  String? membership;
+class MembershipInfo {
+  String? membershipName;
+  var membershipOfferPrice;
   var membershipPrice;
-  var memberId;
+  String? includedServiceName;
+  var membershipId;
+  var membershipBenefitId;
+  var benefitIncludedTreatmentId;
+  String? discountType;
+  var amount;
+  var discountedPrice;
+  var discountAmount;
+  var discountPercent;
+  var serviceVariationId;
+  bool? found;
+  String? discountText;
 
-  MembershipData({
-    this.membership,
+  MembershipInfo({
+    this.membershipName,
+    this.membershipOfferPrice,
     this.membershipPrice,
-    this.memberId,
+    this.includedServiceName,
+    this.membershipId,
+    this.membershipBenefitId,
+    this.benefitIncludedTreatmentId,
+    this.discountType,
+    this.amount,
+    this.discountedPrice,
+    this.discountAmount,
+    this.discountPercent,
+    this.serviceVariationId,
+    this.found,
+    this.discountText,
   });
 
-  factory MembershipData.fromJson(Map<String, dynamic> json) => MembershipData(
-        membership: json["membership"],
-        membershipPrice: json["membership_price"],
-        memberId: json["memberID"],
+  factory MembershipInfo.fromJson(Map<String, dynamic> json) => MembershipInfo(
+        membershipName: json["membership_name"],
+        membershipOfferPrice: json["membership_offer_price"],
+        membershipPrice: json["membership_pricing"],
+        includedServiceName: json["included_service_name"],
+        membershipId: json["membership_id"],
+        membershipBenefitId: json["membership_benefit_id"],
+        benefitIncludedTreatmentId: json["benefit_included_treatment_id"],
+        discountType: json["discount_type"],
+        amount: json["amount"],
+        discountedPrice: json["discounted_price"],
+        discountAmount: json["discount_amount"],
+        discountPercent: json["discount_percent"],
+        serviceVariationId: json["service_variation_id"],
+        found: json["found"],
+        discountText: json["discount_text"],
       );
 
   Map<String, dynamic> toJson() => {
-        "membership": membership,
-        "membership_price": membershipPrice,
-        "memberID": memberId,
+        "membership_name": membershipName,
+        "membership_offer_price": membershipOfferPrice,
+        "membership_pricing": membershipPrice,
+        "included_service_name": includedServiceName,
+        "membership_id": membershipId,
+        "membership_benefit_id": membershipBenefitId,
+        "benefit_included_treatment_id": benefitIncludedTreatmentId,
+        "discount_type": discountType,
+        "amount": amount,
+        "discounted_price": discountedPrice,
+        "discount_amount": discountAmount,
+        "discount_percent": discountPercent,
+        "service_variation_id": serviceVariationId,
+        "found": found,
+        "discount_text": discountText,
       };
 }

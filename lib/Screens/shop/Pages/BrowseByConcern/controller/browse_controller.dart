@@ -1,11 +1,11 @@
 import 'package:get/get.dart';
+
 import '../../../../../Model/brows_detail_model.dart';
 import '../../../../../util/base_services.dart';
 
 class BrowseController extends GetxController {
   bool isLoading = false;
-  List<Treatment> treatment = [];
-  List<Package> package = [];
+  List<BrowseDatum> treatment = [];
   BrowseDetailModel? response;
   bool _isBothEmpty = false;
 
@@ -20,7 +20,7 @@ class BrowseController extends GetxController {
   List<String> selectedOptions = [];
   List<String> selectedArea = [];
   List filter = [
-   /* {"title": "Featured"},
+    /* {"title": "Featured"},
     {"title": "Best sellers"},
     {"title": "On Sale"},*/
     {"title": "Price: Low to High"},
@@ -37,7 +37,7 @@ class BrowseController extends GetxController {
   ];
 
   List filterBack = [
-   /* {"title": "Featured"},
+    /* {"title": "Featured"},
     {"title": "Best_sellers"},
     {"title": "On_sale"},*/
     {"title": "Low_to_high"},
@@ -53,12 +53,10 @@ class BrowseController extends GetxController {
     if (!isSearch) {
       try {
         treatment.clear();
-        package.clear();
         response = await hitAlBrowsBConcernAPI(
             uid.toString(), selectedArea, selectFilter);
-        treatment.addAll(response!.treatments!);
-        package.addAll(response!.packages!);
-        _isBothEmpty = package.isNotEmpty && treatment.isNotEmpty;
+        treatment.addAll(response!.data!);
+        _isBothEmpty = treatment.isNotEmpty;
         Get.log("is both : ${_isBothEmpty}");
         isLoading = false;
         print("the length : ${treatment.length}");
@@ -70,11 +68,10 @@ class BrowseController extends GetxController {
     } else {
       try {
         treatment.clear();
-        package.clear();
+
         response = await hitAlBrowsBConcernAPI(
             uid.toString(), selectedArea, selectFilter);
-        treatment.addAll(response!.treatments!);
-        package.addAll(response!.packages!);
+        treatment.addAll(response!.data!);
         isLoading = false;
         print("the le : ${treatment.length}");
         update();

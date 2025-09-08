@@ -5,7 +5,7 @@ import '../../../../Model/member_ship_details_model.dart';
 import '../../../../Model/term_condition_model.dart';
 import '../../../../common_Widgets/added_to_cart_bottom_sheet.dart';
 import '../../../../util/base_services.dart';
-import '../../../../../util/local_store_data.dart';
+import '../../../../util/local_store_data.dart';
 import '../../../../util/route_manager.dart';
 import '../../../../util/services.dart';
 import '../../../cartList/Controller/cart_controller.dart';
@@ -37,7 +37,8 @@ class MembershipDetailController extends GetxController {
     }
   }
 
-  Future addToCart(BuildContext context, int? membershipPricing) async {
+  Future addToCart(
+      BuildContext context, membershipPricing, String? membershipTitle) async {
     isAddingCart = true;
     update();
 
@@ -50,14 +51,15 @@ class MembershipDetailController extends GetxController {
         });
       } else {
         var userId = await localStorage.getUId();
-        var cId = await LocalStorage().getCId();
+        var clientId = await localStorage.getCId();
         Map<String, dynamic> map = {
+          "client_id": clientId,
           "user_id": userId,
-          "item_type": "Memberships",
-          "item_id": membershipId ?? 0,
-          "item_variant_id": "0",
-          "membership_check": "0",
-          "client_id": "${cId}",
+          "CartDetails": {
+            "type": "Memberships",
+            "membership_id": membershipId,
+            "membership_price": membershipPricing.toString()
+          }
         };
 
         Get.log("Add To Cart Map  :$map");
@@ -68,7 +70,7 @@ class MembershipDetailController extends GetxController {
           await Get.bottomSheet(
             backgroundColor: AppColor().whiteColor,
             AddedToCartBottomSheet(
-              titleName: response['item_name'] ?? "",
+              titleName: membershipTitle ?? "",
               quantityName: 'Membership',
               price: membershipPricing ?? 0,
               membeTitleName: '',
@@ -87,15 +89,13 @@ class MembershipDetailController extends GetxController {
     } on Exception catch (e) {
       print("the rror : $e");
       showMessage(
-        e.toString().replaceAll("Exception: ", "").toUpperCase(),
-        context,
-      );
+          e.toString().replaceAll("Exception: ", "").toUpperCase(), context);
       isAddingCart = false;
       update();
     }
   }
 
-  //? TODO ??  here we show the Members Details API....
+//? TODO ??  here we show the Members Details API....
   bool isMemberLoading = false;
 
   Future<void> fetchMemberShipDetails() async {
@@ -107,7 +107,6 @@ class MembershipDetailController extends GetxController {
       membershipId = memberShipID;
       print("memberShip ID :$memberShipID");
       memberDetailsModel = await hitMemberShipDetailsAPI(memberShipID);
-      Get.log("Member Data :${memberDetailsModel.data}");
       isMemberLoading = false;
       update();
     } on Exception catch (e) {

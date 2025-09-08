@@ -59,7 +59,8 @@ dependencies:
   shimmer: ^3.0.0
   change_app_package_name: ^1.5.0
   public_ip_address: ^1.2.1
-  upgrader: ^11.4.0
+  upgrader: ^11.5.0
+  flutter_phone_direct_caller: ^2.2.1
 
 dev_dependencies:
   flutter_test:

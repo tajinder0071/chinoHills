@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../CSS/color.dart';
+import '../../../../Model/detail_browse_model.dart';
+import '../../../../common_Widgets/common_horizontal_list.dart';
 import '../../../../common_Widgets/common_network_image_widget.dart';
 import '../../../../loading/become_a_member_loading.dart';
 import '../../../../util/common_page.dart';
@@ -12,14 +14,18 @@ import '../../../shop/controller/shop_controller.dart';
 class SpecialOffersWidget extends StatelessWidget {
   final VoidCallback discoverMoreTap;
   bool isShowAll;
+  List<OfferCards>? offerData;
 
-  SpecialOffersWidget(
-      {super.key, required this.discoverMoreTap, this.isShowAll = false});
+  SpecialOffersWidget({
+    super.key,
+    required this.discoverMoreTap,
+    this.isShowAll = false,
+    this.offerData,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<ShopController>(
-        builder: (controller) {
+    return GetBuilder<ShopController>(builder: (controller) {
       return Container(
         padding: EdgeInsets.only(top: 25.h, left: 0.w, bottom: 10.0.h),
         width: double.infinity,
@@ -45,69 +51,93 @@ class SpecialOffersWidget extends StatelessWidget {
               height: isTablet(context)
                   ? MediaQuery.of(context).size.height * .38
                   : MediaQuery.of(context).size.height < 812
+                  ? MediaQuery.of(context).size.height * .36
+                  : 273.h,
+              child: controller.isSpecialOfferLoading
+                  ? SizedBox(
+                  height: isTablet(context)
+                      ? MediaQuery.of(context).size.height * .38
+                      : MediaQuery.of(context).size.height < 812
                       ? MediaQuery.of(context).size.height * .36
                       : 273.h,
-              child: controller.isSpecialOfferLoading
-                  ? BecomeAMemberLoading()
+                  child: BecomeAMemberLoading())
+                  : offerData!.isEmpty || offerData == null
+                  ? CommonHorizontalList(
+                  items: offerData!,
+                  itemBuilder: (context, data, index) =>
+                      _buildOfferCard(data.image, data.title,
+                          getTimeDifference(data.endDate ?? ""), () {
+                            Get.log("Is tapped");
+                            Get.toNamed(
+                              RouteManager.learnMore,
+                              arguments: {
+                                "specialOffer": [],
+                                "isExpired": true,
+                                "cartData": [],
+                                "cartDatas": offerData![index],
+                                "id": offerData![index].id
+                              },
+                            );
+                          }))
                   : ListView.builder(
-                      padding: EdgeInsets.only(left: 5.h),
-                      scrollDirection: Axis.horizontal,
-                      physics: BouncingScrollPhysics(),
-                      itemCount: controller.specialDataList.length,
-                      itemBuilder: (context, index) {
-                        var data = controller.specialDataList[index];
-                        return data.isPromoCodeApplied!
-                            ? SizedBox.shrink()
-                            : _buildOfferCard(data.offerimage, data.title,
-                                getTimeDifference(data.endDate ?? ""), () {
-                                Get.log("Is tapped");
-                                Get.toNamed(
-                                  RouteManager.learnMore,
-                                  arguments: {
-                                    "specialOffer": data,
-                                    "isExpired": true,
-                                  },
-                                );
-                              });
-                      },
-                    ),
+                padding: EdgeInsets.only(left: 5.h),
+                scrollDirection: Axis.horizontal,
+                physics: BouncingScrollPhysics(),
+                itemCount: offerData!.length,
+                itemBuilder: (context, index) {
+                  var data = offerData![index];
+                  return _buildOfferCard(data.image, data.title,
+                      getTimeDifference(data.endDate ?? ""), () {
+                        Get.log("Is tapped");
+                        Get.toNamed(
+                          RouteManager.learnMore,
+                          arguments: {
+                            "specialOffer": data,
+                            "isExpired": true,
+                            "cartData": [],
+                            "id": data.id
+                          },
+                        );
+                      });
+                },
+              ),
             ),
             SizedBox(height: 20.h),
             // 364926490
             // Todo >> move to discover sections...
             isShowAll
                 ? Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton(
+                  onPressed: discoverMoreTap,
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.all(8),
+                    minimumSize: Size(0, 0),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      TextButton(
-                        onPressed: discoverMoreTap,
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.all(8),
-                          minimumSize: Size(0, 0),
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              "Discover more offers",
-                              style: GoogleFonts.roboto(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16.sp,
-                                color: AppColor.dynamicColor,
-                              ),
-                            ),
-                            SizedBox(width: 4),
-                            Icon(
-                              Icons.arrow_forward_ios,
-                              color: AppColor.dynamicColor,
-                              size: 15.h,
-                            ),
-                          ],
+                      Text(
+                        "Discover more offers",
+                        style: GoogleFonts.roboto(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16.sp,
+                          color: AppColor.dynamicColor,
                         ),
                       ),
+                      SizedBox(width: 4),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        color: AppColor.dynamicColor,
+                        size: 15.h,
+                      ),
                     ],
-                  )
+                  ),
+                ),
+              ],
+            )
                 : SizedBox.shrink(),
             SizedBox(height: isShowAll ? 10.h : 0.0),
           ],
@@ -146,7 +176,7 @@ class SpecialOffersWidget extends StatelessWidget {
                   height: 150.0.h,
                   width: double.infinity,
                   borderRadius:
-                      BorderRadius.vertical(top: Radius.circular(6.0.r)),
+                  BorderRadius.vertical(top: Radius.circular(6.0.r)),
                   fit: BoxFit.fill,
                 ),
                 Padding(

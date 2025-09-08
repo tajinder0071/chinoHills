@@ -7,7 +7,7 @@ import '../../../../../util/local_store_data.dart';
 class TreatmentController extends GetxController {
   static TreatmentController get instance => Get.find();
 
-  List<TreatmentListData> treatmentData = [];
+  List<Treatment> treatmentData = [];
   var loading = false;
   LocalStorage localStorage = LocalStorage();
   TreatmentListModel treatmentListModel = TreatmentListModel();
@@ -17,7 +17,7 @@ class TreatmentController extends GetxController {
   List<String> selectedOptions = [];
   List<String> selectedArea = [];
   List filter = [
-  /*  {"title": "Featured"},
+    /*  {"title": "Featured"},
     {"title": "Best sellers"},
     {"title": "On Sale"},*/
     {"title": "Price: Low to High"},
@@ -34,12 +34,13 @@ class TreatmentController extends GetxController {
   ];
 
   final GlobalKey<RefreshIndicatorState> refreshIndicatorKey =
-      GlobalKey<RefreshIndicatorState>();
+  GlobalKey<RefreshIndicatorState>();
+
+  var isTreatmentCheck = false.obs;
 
   Future<void> handleRefresh() async {
     await getTreatmentList([], [], "");
   }
-
 
   Future<void> getTreatmentList(
       var selectedOptions, selectedArea, selectFilter) async {
@@ -48,9 +49,9 @@ class TreatmentController extends GetxController {
     try {
       treatmentData.clear();
       treatmentListModel =
-          await hitAllTreatmentAPI(selectedOptions, selectedArea, selectFilter);
-      treatmentData.addAll(treatmentListModel.data!);
-      packageHeaderImage = treatmentListModel.headerImage ??
+      await hitAllTreatmentAPI(selectedOptions, selectedArea, selectFilter);
+      treatmentData.addAll(treatmentListModel.treatments!);
+      packageHeaderImage = treatmentListModel.headerDetails!.headerimage ??
           "https://assets.repeatmd.app/00005468-656d-6552-6573-6f7572636532.jpg";
       loading = false;
       print("the le : ${treatmentData.length}");

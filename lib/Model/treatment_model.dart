@@ -8,15 +8,15 @@ class TreatmentModel {
   });
 
   factory TreatmentModel.fromJson(Map<String, dynamic> json) => TreatmentModel(
-        success: json["success"],
-        data: List<TreatmentData>.from(
-            json["data"].map((x) => TreatmentData.fromJson(x))),
-      );
+    success: json["success"],
+    data: List<TreatmentData>.from(
+        json["data"].map((x) => TreatmentData.fromJson(x))),
+  );
 
   Map<String, dynamic> toJson() => {
-        "success": success,
-        "data": List<dynamic>.from(data!.map((x) => x.toJson())),
-      };
+    "success": success,
+    "data": List<dynamic>.from(data!.map((x) => x.toJson())),
+  };
 }
 
 class TreatmentData {
@@ -35,18 +35,18 @@ class TreatmentData {
   });
 
   factory TreatmentData.fromJson(Map<String, dynamic> json) => TreatmentData(
-        treatmentId: json["treatmentID"],
-        createdAt: json["created_at"],
-        description: json["description"],
-        treatment: json["treatment"],
-        serviceUnitType: json["service_unit_type"],
-      );
+    treatmentId: json["treatmentID"],
+    createdAt: json["created_at"],
+    description: json["description"],
+    treatment: json["treatment"],
+    serviceUnitType: json["service_unit_type"],
+  );
 
   Map<String, dynamic> toJson() => {
-        "treatmentID": treatmentId,
-        "created_at": createdAt,
-        "description": description,
-        "treatment": treatment,
-        "service_unit_type": serviceUnitType,
-      };
+    "treatmentID": treatmentId,
+    "created_at": createdAt,
+    "description": description,
+    "treatment": treatment,
+    "service_unit_type": serviceUnitType,
+  };
 }

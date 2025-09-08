@@ -2,16 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../Model/cart_model.dart';
 import '../../../common_Widgets/common_terms_condition_widget.dart';
 import '../../../util/common_page.dart';
 import '../Controller/cart_controller.dart';
 import 'conveniece_feet_bottom_sheet.dart';
 
 class OrderSummaryCard extends StatelessWidget {
-  const OrderSummaryCard({super.key});
+  List<Item> cartData;
+  var offerType;
+
+  OrderSummaryCard(this.cartData, this.offerType, {super.key});
 
   @override
   Widget build(BuildContext context) {
+    List discountList = cartData.map((item) => item.discountPrice).toList();
+    double totalDiscount = discountList.fold(0, (sum, d) => sum + d);
+    print("totalDiscount${totalDiscount}");
     return Container(
       margin: const EdgeInsets.all(0),
       decoration: BoxDecoration(
@@ -34,49 +41,28 @@ class OrderSummaryCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Order Summary (${CartController.cart.cartItemCount.value})',
+                  'Order Summary (${CartController.cart.cartItemCount})',
                   style: GoogleFonts.roboto(
                       fontSize: 16.sp, fontWeight: FontWeight.bold),
                 ),
                 Divider(height: 24.h, thickness: 1.2),
-                _buildRow('Subtotal',
-                    formatCurrency(CartController.cart.totalCost.value)),
-                Obx(() {
-                  final promoCode =
-                      CartController.cart.cartModel1.value.promoCode;
-                  final availableReward =
-                      CartController.cart.cartModel1.value.reward;
-
-                  if (promoCode != null || availableReward != null) {
-                    final discount = CartController
-                        .cart.cartModel1.value.appliedCartDiscountValue;
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 12.0),
-                          child: Row(
-                            children: [
-                              Text(
-                                'Discount (Promotion)',
-                                style:
-                                    GoogleFonts.merriweather(fontSize: 13.sp),
-                              ),
-                              SizedBox(width: 4.w),
-                            ],
-                          ),
-                        ),
-                        Text(
-                          "- ${formatCurrency(discount)}",
-                          style:
-                              TextStyle(fontSize: 13.sp, color: Colors.green),
-                        ),
-                      ],
-                    );
-                  } else {
-                    return SizedBox.shrink();
-                  }
-                }),
+                _buildRow(
+                    'Subtotal',
+                    formatCurrency(CartController.cart.totalCost),
+                    Colors.black),
+                '${totalDiscount}' == "0.0"
+                    ? SizedBox.shrink()
+                    : SizedBox(height: 12.h),
+                '${totalDiscount}' == "0.0"
+                    ? SizedBox.shrink()
+                    : _buildRow(
+                    offerType.toString() == "Promo Code"
+                        ? 'Discount (Promotion)'
+                        : offerType.toString() == 'Membership'
+                        ? 'Membership Discount'
+                        : 'Discount (Reward)',
+                    formatCurrency('-${totalDiscount}'),
+                    Colors.green),
                 SizedBox(height: 12.h),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -101,9 +87,9 @@ class OrderSummaryCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                        formatCurrency(
-                            CartController.cart.totalConvenienceFee.value),
-                        style: TextStyle(fontSize: 13.sp)),
+                      formatCurrency(CartController.cart.totalConvenienceFee),
+                      style: TextStyle(fontSize: 13.sp),
+                    ),
                   ],
                 ),
                 Divider(height: 32.h, thickness: 1.2),
@@ -114,7 +100,7 @@ class OrderSummaryCard extends StatelessWidget {
                         style: GoogleFonts.roboto(
                             fontSize: 13.sp, fontWeight: FontWeight.bold)),
                     Text(
-                      formatCurrency(CartController.cart.finalTotalCost.value),
+                      formatCurrency(CartController.cart.finalTotalCost),
                       style: TextStyle(
                           fontSize: 13.sp, fontWeight: FontWeight.bold),
                     ),
@@ -124,7 +110,7 @@ class OrderSummaryCard extends StatelessWidget {
                 GetBuilder<CartController>(builder: (controller) {
                   DateTime now = DateTime.now();
                   DateTime nextMonthDate =
-                      DateTime(now.year, now.month + 1, now.day);
+                  DateTime(now.year, now.month + 1, now.day);
 
                   String formattedDate =
                       "${nextMonthDate.day.toString().padLeft(2, '0')}/${nextMonthDate.month.toString().padLeft(2, '0')}/${nextMonthDate.year.toString().substring(2)}";
@@ -134,12 +120,12 @@ class OrderSummaryCard extends StatelessWidget {
                     children: [
                       controller.isMemberAvailable
                           ? Text(
-                              '${controller.memberTitle} will renew on $formattedDate at ${controller.memberPrice}/month',
-                              style: GoogleFonts.roboto(
-                                  fontSize: 10.sp,
-                                  color: Colors.black54,
-                                  fontWeight: FontWeight.bold),
-                            )
+                        '${controller.memberTitle} will renew on $formattedDate at ${controller.memberPrice}/month',
+                        style: GoogleFonts.roboto(
+                            fontSize: 10.sp,
+                            color: Colors.black54,
+                            fontWeight: FontWeight.bold),
+                      )
                           : SizedBox.shrink(),
                       controller.isMemberAvailable
                           ? SizedBox(height: 10.h)
@@ -149,7 +135,7 @@ class OrderSummaryCard extends StatelessWidget {
                 }),
                 Padding(
                   padding:
-                      EdgeInsets.symmetric(horizontal: 0.0.w, vertical: 6.0.h),
+                  EdgeInsets.symmetric(horizontal: 0.0.w, vertical: 6.0.h),
                   child: Text(
                     "Important Terms and Conditions: All financing subject to credit approval. APRs depend on creditworthiness, term length, and other factors. “As low as” does not guarantee your rate or payment options as this is dependent on your creditworthiness. Check with your provider about additional amounts required for procedure that may be ineligible for financing. Scheduled payments in example based on the full 24-month term. Length of financing is up to you and/or your creditworthiness.",
                     style: GoogleFonts.roboto(
@@ -161,7 +147,7 @@ class OrderSummaryCard extends StatelessWidget {
               ],
             ),
           ),
-          //TODO ?? Here we define treatment on click
+          // Terms and conditions
           Padding(
             padding: const EdgeInsets.only(left: 10.0),
             child: CommonTermsConditionWidget(),
@@ -173,13 +159,13 @@ class OrderSummaryCard extends StatelessWidget {
     );
   }
 
-  Widget _buildRow(String label, String amount) {
+  Widget _buildRow(String label, String amount, Color color) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(label, style: GoogleFonts.merriweather(fontSize: 13.sp)),
-        Text(amount, style: TextStyle(fontSize: 13.sp)),
+        Text(amount, style: TextStyle(fontSize: 13.sp, color: color)),
       ],
     );
   }
-} //
+}

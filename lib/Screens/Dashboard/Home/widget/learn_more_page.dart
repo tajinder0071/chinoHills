@@ -2,503 +2,414 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:icons_plus/icons_plus.dart';
 import '../../../../CSS/color.dart';
 import '../../../../Model/discover_model.dart';
-import '../../../../binding/package_details_binding.dart';
-import '../../../../binding/treartmentDetailsBinding.dart';
+import '../../../../Model/offer_detail_model.dart';
+import '../../../../binding/cart_billing.dart';
 import '../../../../common_Widgets/cacheNetworkImage.dart';
-import '../../../../common_Widgets/common_button_widget.dart';
-import '../../../../common_Widgets/common_network_image_widget.dart';
 import '../../../../util/common_page.dart';
-import '../../../../../util/local_store_data.dart';
-import '../../../../util/route_manager.dart';
 import '../../../Discover/controller/discover_controller.dart';
-import '../../../Discover/widgets/offer_applied_widget.dart';
-import '../../../Discover/widgets/offer_unavailable_widget.dart';
-import '../../../Reward/controller/reward_details_controller.dart';
 import '../../../cartList/Controller/cart_controller.dart';
 import '../../../shop/Pages/Package Page/Widgets/package_detail_page.dart';
 import '../../../shop/Pages/Treatment Page/widgets/treatment_details_page.dart';
-import '../../../shop/controller/shop_controller.dart';
+import 'members_ship_details_page.dart';
 
 class LearnMorePage extends StatelessWidget {
   final bool isExpire;
   final ContentCard? cardData;
-  final OfferCard? offerCard;
+  final int? id;
 
   const LearnMorePage({
     super.key,
     this.isExpire = false,
     this.cardData,
-    this.offerCard,
+    required this.id,
   });
 
   @override
   Widget build(BuildContext context) {
-    final cartController = Get.put(CartController());
-    cartController.cartList();
+    return cardData == null
+        ? _OfferDetailSection(id: id!)
+        : _DiscoverSection(cardData: cardData!);
+  }
+}
 
+// ----------------- DISCOVER SECTION -----------------
+class _DiscoverSection extends StatelessWidget {
+  final ContentCard cardData;
+
+  const _DiscoverSection({required this.cardData});
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColor().background,
       appBar: commonAppBar(isLeading: true, title: "Learn More", action: []),
-      body: isExpire
-          ? ListView(
+      body: ListView(
+        children: [
+          ConstantNetworkImage(
+            isLoad: true,
+            imageUrl: CommonPage().image_url + cardData.imagePath.toString(),
+            width: double.infinity,
+            height: 200.h,
+            boxFit: BoxFit.cover,
+          ),
+          Padding(
+            padding: EdgeInsets.all(12.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                //TODO >>  Image And Expire Section
-                SizedBox(
-                  height: 220.h,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      // TODO >> Image
-                      CommonNetworkImageWidget(
-                        imageUrl: (offerCard?.offerimage ?? ''),
-                        height: 200.h,
-                        width: double.infinity,
-                        borderRadius: BorderRadius.zero,
-                        fit: BoxFit.cover,
-                        // boxFit: BoxFit.cover,
-                      ),
-                      // TODO >>  Expires badge on top
-                      /*Positioned(
-                        top: 10.h,
-                        left: 15.w,
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 8.w, vertical: 6.h),
-                          decoration: BoxDecoration(
-                            color: Colors.black,
-                            borderRadius: BorderRadius.circular(20.r),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              FadeTransition(
-                                opacity:
-                                    Get.find<ShopController>().blinkAnimation,
-                                child: ScaleTransition(
-                                  scale:
-                                      Get.find<ShopController>().scaleAnimation,
-                                  child: Container(
-                                    width: 8.w,
-                                    height: 8.w,
-                                    decoration: const BoxDecoration(
-                                      color: Colors.red,
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 8.w),
-                              // Text(
-                              //   'Expire in ${getTimeDifference(offerCard!.endDate.toString())}',
-                              //   style: GoogleFonts.roboto(
-                              //     color: Colors.white,
-                              //     fontSize: 12.sp,
-                              //     fontWeight: FontWeight.w500,
-                              //   ),
-                              // ),
-                            ],
-                          ),
-                        ),
-                      ),*/
-                    ],
+                Text(
+                  cardData.title?.capitalizeFirst ?? '',
+                  style: GoogleFonts.merriweather(
+                    fontSize: 28.sp,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                Padding(
-                  padding: EdgeInsets.only(left: 10.0.w, right: 10.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        offerCard?.title?.capitalizeFirst ?? '',
-                        style: GoogleFonts.roboto(
-                          fontSize: 28.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 10.h),
-                      // TODO: Reusable Text Widget for description content across the app.
-                      Text(
-                        offerCard?.description ?? "",
-                        style: GoogleFonts.roboto(
-                            fontSize: 15.sp,
-                            color: Colors.black87,
-                            fontWeight: FontWeight.w400),
-                      ),
-
-                      //. TODO >>
-                    ],
-                  ),
-                ),
-                // Display here
-                GetBuilder<DiscoverController>(
-                    init: Get.put(DiscoverController()),
-                    builder: (dController) {
-                      final List<ServiceName> membershipServices = (offerCard
-                                  ?.serviceName ??
-                              [])
-                          .where((s) => s.serviceType == ServiceType.MEMBERSHIP)
-                          .toList();
-
-                      final List<ServiceName> packageServices = (offerCard
-                                  ?.serviceName ??
-                              [])
-                          .where((s) => s.serviceType == ServiceType.PACKAGE)
-                          .toList();
-
-                      final List<ServiceName> treatmentServices = (offerCard
-                                  ?.serviceName ??
-                              [])
-                          .where((s) => s.serviceType == ServiceType.TREATMENT)
-                          .toList();
-                      print('---- MEMBERSHIP ----');
-                      membershipServices.forEach((s) => print(s.serviceName));
-
-                      print('---- PACKAGE ----');
-                      packageServices.forEach((s) => print(s.serviceName));
-
-                      print('---- TREATMENT ----');
-                      treatmentServices.forEach((s) => print(s.serviceName));
-                      // 2. Combine with headers
-                      List<Map<String, dynamic>> combined = [];
-
-                      if (membershipServices.isNotEmpty) {
-                        combined
-                            .add({'type': 'header', 'title': 'Memberships'});
-                        combined.addAll(membershipServices.map((e) => {
-                              'type': 'item',
-                              'data': {
-                                'id': e.serviceId,
-                                'name': e.serviceName
-                              },
-                              'section': 'Members',
-                            }));
-                      }
-                      if (packageServices.isNotEmpty) {
-                        combined.add({'type': 'header', 'title': 'Packages'});
-                        combined.addAll(packageServices.map((e) => {
-                              'type': 'item',
-                              'data': {
-                                'id': e.serviceId,
-                                'name': e.serviceName
-                              },
-                              'section': 'Packages',
-                            }));
-                      }
-                      if (treatmentServices.isNotEmpty) {
-                        combined.add({'type': 'header', 'title': 'Treatments'});
-                        combined.addAll(treatmentServices.map((e) => {
-                              'type': 'item',
-                              'data': {
-                                'id': e.serviceId,
-                                'name': e.serviceName
-                              },
-                              'section': 'Treatments',
-                            }));
-                      }
-
-// 3. Split visible + hidden items based on controller state
-                      final visibleItems = dController.showMore
-                          ? combined
-                          : combined.take(6).toList();
-
-                      return Container(
-                        margin: EdgeInsets.all(10.0.h),
-                        decoration: BoxDecoration(
-                          color: AppColor.geryBackGroundColor,
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.all(10.0.h),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Iconsax.gift_outline,
-                                    color: AppColor.dynamicColor,
-                                    size: 25.sp,
-                                  ),
-                                  SizedBox(width: 15.w),
-                                  Expanded(
-                                    child: Text(
-                                      "Apply this reward at checkout to get a discount on eligible in-app services. Don’t forget to redeem it before it expires!",
-                                      style: GoogleFonts.roboto(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 15.sp,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            ...visibleItems.map((entry) {
-                              if (entry['type'] == 'header') {
-                                return Padding(
-                                  padding: EdgeInsets.only(
-                                    top: 10.h,
-                                    bottom: 5.h,
-                                    left: 10.w,
-                                  ),
-                                  child: Text(
-                                    entry['title'],
-                                    style: GoogleFonts.roboto(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16.sp,
-                                    ),
-                                  ),
-                                );
-                              } else {
-                                var item = entry['data'];
-                                var section = entry['section'];
-
-                                return Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 5.h, horizontal: 15.w),
-                                  child: InkWell(
-                                    overlayColor: WidgetStatePropertyAll(
-                                        AppColor().transparent),
-                                    onTap: () {
-                                      if (section == 'Treatments') {
-                                        Get.to(() => TreatmentDetailsPage(),
-                                            binding: TreatmentDetailsBinding(),
-                                            arguments: item['id'],
-                                            transition: Transition.fadeIn,
-                                            duration:
-                                                Duration(milliseconds: 500));
-                                      } else if (section == 'Packages') {
-                                        Get.to(
-                                            () => PackageDetailPage(
-                                                sectionName: "Package"),
-                                            arguments: item['id'],
-                                            binding: PackageDetailsBinding(),
-                                            transition: Transition.fadeIn,
-                                            duration:
-                                                Duration(milliseconds: 500));
-                                      } else if (section == 'Members') {
-                                        Get.toNamed(
-                                          RouteManager.membersShipDetailsPage,
-                                          arguments: item['id'],
-                                          parameters: {"onlyShow": "0"},
-                                        );
-                                      }
-                                    },
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Flexible(
-                                          child: Text.rich(
-                                            TextSpan(children: [
-                                              TextSpan(
-                                                text: "• ",
-                                                style: GoogleFonts.poppins(
-                                                    fontSize: 14.sp,
-                                                    color:
-                                                        AppColor().blackColor),
-                                              ),
-                                              TextSpan(
-                                                text: "${item['name']}",
-                                                style: GoogleFonts.poppins(
-                                                    fontSize: 14.sp,
-                                                    color:
-                                                        AppColor().blackColor),
-                                              ),
-                                            ]),
-                                          ),
-                                        ),
-                                        Icon(Icons.arrow_forward_ios,
-                                            size: 16,
-                                            color: AppColor.dynamicColor),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              }
-                            }),
-                            SizedBox(height: 10.0.h),
-                            if (combined.length > 6)
-                              InkWell(
-                                onTap: () {
-                                  dController.showMore = !dController.showMore;
-                                  dController.update();
-                                },
-                                child: Container(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 10.0.w),
-                                  height: 45.0.h,
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey.withOpacity(0.3),
-                                    borderRadius: BorderRadius.vertical(
-                                      bottom: Radius.circular(10.0.r),
-                                    ),
-                                    boxShadow: dController.showMore
-                                        ? []
-                                        : [
-                                            BoxShadow(
-                                              offset: Offset(0, -3),
-                                              color:
-                                                  Colors.grey.withOpacity(0.2),
-                                              spreadRadius: 1.0,
-                                              blurRadius: 3.0,
-                                            ),
-                                          ],
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        dController.showMore
-                                            ? "Show less"
-                                            : "Show more",
-                                        style: GoogleFonts.merriweather(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 17,
-                                            color: AppColor.dynamicColor),
-                                      ),
-                                      Icon(
-                                        dController.showMore
-                                            ? Icons.keyboard_arrow_up_outlined
-                                            : Icons.keyboard_arrow_down_rounded,
-                                        color: AppColor.dynamicColor,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                      );
-                    }),
-
-                SizedBox(height: 20.0.h),
-                Center(child: Text("This offer can be used multiple times.")),
                 SizedBox(height: 10.h),
-              ],
-            )
-          : ListView(
-              children: [
-                ConstantNetworkImage(
-                    isLoad: true,
-                    imageUrl:
-                        CommonPage().image_url + cardData!.imagePath.toString(),
-                    width: double.infinity,
-                    height: 200.h,
-                    boxFit: BoxFit.cover),
-                // Divider(color: AppColor().blackColor),
-
-                Padding(
-                  padding: EdgeInsets.only(left: 10.0.w, right: 10.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        offerCard?.title?.capitalizeFirst ?? '',
-                        style: GoogleFonts.merriweather(
-                          fontSize: 28.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        cardData?.title?.capitalizeFirst ?? '',
-                        style: GoogleFonts.merriweather(
-                          fontSize: 28.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 10.h),
-                      // TODO: Reusable Text Widget for description content across the app.
-                      Text(
-                        cardData!.description.toString(),
-                        style: GoogleFonts.roboto(
-                            fontSize: 15.sp,
-                            color: Colors.black87,
-                            fontWeight: FontWeight.w600),
-                      ),
-                    ],
+                Text(
+                  cardData.description ?? '',
+                  style: GoogleFonts.roboto(
+                    fontSize: 15.sp,
+                    color: Colors.black87,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
             ),
+          ),
+        ],
+      ),
       bottomNavigationBar: SafeArea(
         minimum: EdgeInsets.only(bottom: 8.h),
-        child: isExpire
-            ? Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: CommonButtonWidget(
-                    onTap: offerCard!.isPromoCodeApplied == null
-                        ? null
-                        : () {
-                            final cartController = Get.find<CartController>();
-                            var isItemInCart =
-                                cartController.cartItemCount.value != 0
-                                    ? true
-                                    : false;
-                            isItemInCart
-                                ? Get.find<DiscoverController>().addPromoCode(
-                                    offerCard?.promoCode ?? "",
-                                    () {
-                                      Get.offAllNamed(
-                                          RouteManager.dashBoardPage,
-                                          arguments: 2);
-                                      LocalStorage local = LocalStorage();
-                                      local.saveData("shopIndex", 0);
-                                    },
-                                    context,
-                                    treatement: offerCard!.serviceName,
-                                  )
-                                : showModalBottomSheet(
-                                    context: context,
-                                    isScrollControlled: false,
-                                    backgroundColor: AppColor().whiteColor,
-                                    builder: (context) => OfferUnavailablePage(
-                                      onTapShop: () {
-                                        Get.offAllNamed(
-                                            RouteManager.dashBoardPage,
-                                            arguments: 2);
-                                        LocalStorage local = LocalStorage();
-                                        local.saveData("shopIndex", 0);
-                                      },
-                                    ),
-                                  );
-                          }, //
-                    isDisabled: offerCard?.isPromoCodeApplied ?? false,
-                    isOutlineButton: false,
-                    buttonName: "Apply offer to cart"),
-              )
-            : GetBuilder<DiscoverController>(builder: (controller) {
-                return InkWell(
-                  overlayColor: WidgetStatePropertyAll(AppColor().transparent),
-                  onTap: () {
-                    // TODO: Ensure that launching URL is handled.
-                    controller.launchURL(cardData!.customUrl!);
-                  },
-                  child: Container(
-                    margin: EdgeInsets.all(8.0.h),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10.0.r),
-                        color: AppColor.dynamicColor),
-                    width: double.infinity,
-                    height: 55.h,
-                    alignment: Alignment.center,
-                    child: Text(
-                      cardData!.customCallToAction!.toString(),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18.h,
-                          fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                );
-              }),
+        child: GetBuilder<DiscoverController>(builder: (controller) {
+          return _BottomButton(
+            label: cardData.callToAction ?? "Learn More",
+            onTap: () => controller.launchURL(cardData.customUrl!),
+          );
+        }),
       ),
+    );
+  }
+}
+
+// ----------------- OFFER DETAIL SECTION -----------------
+class _OfferDetailSection extends StatelessWidget {
+  final int id;
+
+  const _OfferDetailSection({required this.id});
+
+  @override
+  Widget build(BuildContext context) {
+    return GetBuilder<CartController>(
+      init: Get.find<CartController>()
+        ..cartList()
+        ..learnMore(id.toString()),
+      builder: (controller) {
+        if (controller.isLoading) {
+          return _LoadingState();
+        }
+        if (controller.offerDetailModel.data == null) {
+          return _EmptyState();
+        }
+
+        final offer = controller.offerDetailModel.data!;
+        return Scaffold(
+          backgroundColor: AppColor().background,
+          appBar:
+          commonAppBar(isLeading: true, title: "Learn More", action: []),
+          body: ListView(
+            padding: EdgeInsets.all(12.w),
+            children: [
+              ConstantNetworkImage(
+                isLoad: true,
+                imageUrl: offer.image ?? "",
+                width: double.infinity,
+                height: 200.h,
+                boxFit: BoxFit.cover,
+              ),
+              SizedBox(height: 12.h),
+              Text(
+                offer.title?.capitalizeFirst ?? '',
+                style: GoogleFonts.merriweather(
+                  fontSize: 28.sp,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              offer.description == ""
+                  ? SizedBox.shrink()
+                  : SizedBox(height: 10.h),
+              offer.description == ""
+                  ? SizedBox.shrink()
+                  : Text(
+                offer.description.toString() ?? '',
+                style: GoogleFonts.merriweather(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              offer.description == ""
+                  ? SizedBox.shrink()
+                  : SizedBox(height: 10.h),
+              offer.discountType == ""
+                  ? SizedBox.shrink()
+                  : Text(
+                offer.discountType.toString() ?? '',
+                style: GoogleFonts.merriweather(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 16.h),
+              if ((offer.treatments?.isNotEmpty ?? false) ||
+                  (offer.packages?.isNotEmpty ?? false) ||
+                  (offer.memberships?.isNotEmpty ?? false))
+                Container(
+                  padding: EdgeInsets.all(12.w),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _SectionTitle("Treatments"),
+                      _TreatmentList(offer.treatments ?? []),
+                      _SectionTitle("Packages"),
+                      _PackageList(offer.packages ?? []),
+                      _SectionTitle("Memberships"),
+                      _MembershipList(offer.memberships ?? []),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+          bottomNavigationBar: controller.cartModel1.value.data == null || controller.cartModel1.value.data!.items!.isEmpty || controller.cartModel1.value.data!.cartId.toString() == "0"
+              ? SizedBox.shrink()
+              : controller.isApplyLoading
+              ? Center(
+            child: CircularProgressIndicator(),
+          )
+              : SafeArea(
+            minimum: EdgeInsets.only(bottom: 8.h),
+            child: _BottomButton(
+              label: "Apply offer to cart",
+              onTap: () => controller.selectPromoCode(
+                offer.promoCode,
+                0,
+                offer.id,
+                controller,
+                controller.cartModel1.value.data?.cartId ?? "",
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+// ----------------- REUSABLE COMPONENTS -----------------
+class _BottomButton extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+
+  const _BottomButton({required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      overlayColor: WidgetStatePropertyAll(AppColor().transparent),
+      onTap: onTap,
+      child: Container(
+        margin: EdgeInsets.all(8.h),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10.r),
+          color: AppColor.dynamicColor,
+        ),
+        height: 55.h,
+        alignment: Alignment.center,
+        child: Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18.h,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SectionTitle extends StatelessWidget {
+  final String title;
+
+  const _SectionTitle(this.title);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 8.h),
+      child: Text(
+        title,
+        style: GoogleFonts.merriweather(
+          fontSize: 15.sp,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+}
+
+class _TreatmentList extends StatelessWidget {
+  final List<Treatment> treatments;
+
+  const _TreatmentList(this.treatments);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: treatments.map((treatment) {
+        return _ListItem(
+          title: treatment.treatmentName ?? '',
+          onTap: () => Get.to(
+                () => TreatmentDetailsPage(),
+            arguments: treatment.treatmentId,
+            binding: CommonBinding(),
+            transition: Transition.fadeIn,
+            duration: const Duration(milliseconds: 500),
+          ),
+          children: treatment.variations?.map((v) {
+            return Padding(
+              padding: EdgeInsets.only(left: 16.w, top: 4.h),
+              child: Text("• ${v.variationName}",
+                  style: GoogleFonts.roboto(fontSize: 14.sp)),
+            );
+          }).toList() ??
+              [],
+        );
+      }).toList(),
+    );
+  }
+}
+
+class _PackageList extends StatelessWidget {
+  final List<Package> packages;
+
+  const _PackageList(this.packages);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: packages.map((package) {
+        return _ListItem(
+          title: package.packageName ?? '',
+          onTap: () => Get.to(
+                () => PackageDetailPage(),
+            arguments: package.packageId,
+            binding: CommonBinding(),
+            transition: Transition.fadeIn,
+            duration: const Duration(milliseconds: 500),
+          ),
+        );
+      }).toList(),
+    );
+  }
+}
+
+class _MembershipList extends StatelessWidget {
+  final List<Membership> memberships;
+
+  const _MembershipList(this.memberships);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: memberships.map((membership) {
+        return _ListItem(
+          title: membership.membershipName ?? '',
+          onTap: () => Get.to(
+                () => MembersShipDetailsPage(onlyShow: false),
+            arguments: membership.membershipId,
+            binding: CommonBinding(),
+            transition: Transition.fadeIn,
+            duration: const Duration(milliseconds: 500),
+          ),
+        );
+      }).toList(),
+    );
+  }
+}
+
+class _ListItem extends StatelessWidget {
+  final String title;
+  final VoidCallback onTap;
+  final List<Widget> children;
+
+  const _ListItem({
+    required this.title,
+    required this.onTap,
+    this.children = const [],
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 6.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                  child:
+                  Text(title, style: GoogleFonts.roboto(fontSize: 15.sp))),
+              IconButton(
+                icon: Icon(Icons.arrow_forward_ios,
+                    size: 16.sp, color: AppColor().blueColor),
+                onPressed: onTap,
+              ),
+            ],
+          ),
+          ...children,
+        ],
+      ),
+    );
+  }
+}
+
+// ----------------- EMPTY & LOADING STATES -----------------
+class _EmptyState extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColor().background,
+      appBar: commonAppBar(isLeading: true, title: "Learn More", action: []),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.search, size: 40.sp, color: Colors.grey),
+            SizedBox(height: 12.h),
+            Text("No details available", style: TextStyle(fontSize: 18.sp)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LoadingState extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColor().background,
+      appBar: commonAppBar(isLeading: true, title: "Learn More", action: []),
+      body: Center(
+          child: CircularProgressIndicator(color: AppColor.dynamicColor)),
     );
   }
 }

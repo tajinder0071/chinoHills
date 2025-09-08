@@ -35,6 +35,7 @@ class PackageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("memberPrice$memberPrice");
     return InkWell(
       overlayColor: WidgetStatePropertyAll(AppColor().transparent),
       onTap: onPressed,
@@ -68,59 +69,48 @@ class PackageCard extends StatelessWidget {
                           children: [
                             Row(
                               children: [
-                                if (discount > 0 &&
-                                    DiscountType == "btn-percent")
-                                  Container(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 8.w, vertical: 4.h),
-                                    decoration: BoxDecoration(
-                                      color: AppColor.dynamicColor,
-                                      borderRadius: BorderRadius.circular(5.r),
-                                    ),
-                                    child: Text(
-                                      'Upto $discount% OFF',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 10.sp,
-                                      ),
-                                    ),
-                                  )
-                                else if (discount > 0 &&
-                                    DiscountType == "btn-amount")
-                                  Container(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 8.w, vertical: 4.h),
-                                    decoration: BoxDecoration(
-                                      color: AppColor.dynamicColor,
-                                      borderRadius: BorderRadius.circular(5.r),
-                                    ),
-                                    child: Text(
-                                      'Upto \$$discount OFF',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 10.sp,
-                                      ),
-                                    ),
-                                  ),
-                                if (discount > 0) SizedBox(width: 5.w),
-                                Container(
+                                unitType == ""
+                                    ? SizedBox.shrink()
+                                    : Container(
                                   padding: EdgeInsets.symmetric(
-                                      horizontal: 8.w, vertical: 4.h),
+                                      horizontal: 8.w, vertical: 8.h),
                                   decoration: BoxDecoration(
-                                    color: AppColor.dynamicColor.withAlpha(30),
-                                    borderRadius: BorderRadius.circular(5.r),
+                                    color: AppColor.dynamicColor
+                                        .withOpacity(.2),
+                                    borderRadius:
+                                    BorderRadius.circular(5.r),
                                   ),
                                   child: Text(
-                                    sectionName.toString().toUpperCase(),
+                                    unitType,
                                     style: TextStyle(
                                       color: AppColor.dynamicColor,
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 12.sp,
+                                      fontSize: 10.sp,
                                     ),
                                   ),
                                 ),
+                                SizedBox(
+                                  width: 20.w,
+                                ),
+                                discount == "" || discount.toString() == "0"
+                                    ? SizedBox.shrink()
+                                    : Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 8.w, vertical: 8.h),
+                                  decoration: BoxDecoration(
+                                    color: AppColor.dynamicColor,
+                                    borderRadius:
+                                    BorderRadius.circular(5.r),
+                                  ),
+                                  child: Text(
+                                    discount.toString(),
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 10.sp,
+                                    ),
+                                  ),
+                                )
                               ],
                             ),
                             SizedBox(height: 10.h),
@@ -176,10 +166,10 @@ class PackageCard extends StatelessWidget {
                                 child: Center(
                                   child: Platform.isAndroid
                                       ? commonLoader(
-                                          color: AppColor.dynamicColor)
+                                      color: AppColor.dynamicColor)
                                       : CupertinoActivityIndicator(
-                                          color: AppColor.dynamicColor,
-                                        ),
+                                    color: AppColor.dynamicColor,
+                                  ),
                                 ),
                               );
                             },
@@ -230,7 +220,7 @@ class PackageCard extends StatelessWidget {
                       unit: unitType,
                     ),
                   ),
-                  SizedBox(width: 10.w),
+                  SizedBox(width: 5.w),
                   Spacer(),
                   IconButton(
                     onPressed: onPressed,

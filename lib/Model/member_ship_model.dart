@@ -1,117 +1,116 @@
-// To parse this JSON data, do
-//
-//     final memberShipModel = memberShipModelFromJson(jsonString);
-
-import 'dart:convert';
-
-MemberShipModel memberShipModelFromJson(String str) =>
-    MemberShipModel.fromJson(json.decode(str));
-
-String memberShipModelToJson(MemberShipModel data) =>
-    json.encode(data.toJson());
-
 class MemberShipModel {
-  List<MemberDatum>? data;
-  String? categoryDescription;
-  String? categoryHeader;
-  String? getMembershipHeader;
-  String? categoryHeaderCloudUrl;
-  int? totalCount;
+  HeaderDetails? headerDetails;
+  bool? success;
+  List<MembershipData>? memberships;
 
   MemberShipModel({
-    this.data,
-    this.categoryDescription,
-    this.categoryHeaderCloudUrl,
-    this.categoryHeader,
-    this.getMembershipHeader,
-    this.totalCount,
+    this.headerDetails,
+    this.success,
+    this.memberships,
   });
 
   factory MemberShipModel.fromJson(Map<String, dynamic> json) =>
       MemberShipModel(
-        data: json["data"] == null
+        headerDetails: json["headerDetails"] == null
+            ? null
+            : HeaderDetails.fromJson(json["headerDetails"]),
+        success: json["success"],
+        memberships: json["memberships"] == null
             ? []
-            : List<MemberDatum>.from(
-                json["data"]!.map((x) => MemberDatum.fromJson(x))),
-        categoryDescription: json["category_description"],
-        categoryHeader: json["category_header"],
-        categoryHeaderCloudUrl: json["category_header_cloudUrl"],
-        totalCount: json["TotalCount"],
-        getMembershipHeader: json["getMembershipHeader"],
+            : List<MembershipData>.from(
+                json["memberships"]!.map((x) => MembershipData.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
-        "data": data == null
+        "headerDetails": headerDetails?.toJson(),
+        "success": success,
+        "memberships": memberships == null
             ? []
-            : List<dynamic>.from(data!.map((x) => x.toJson())),
-        "category_description": categoryDescription,
-        "category_header_cloudUrl": categoryHeaderCloudUrl,
-        "category_header": categoryHeader,
-        "TotalCount": totalCount,
-        "getMembershipHeader": getMembershipHeader,
+            : List<dynamic>.from(memberships!.map((x) => x.toJson())),
       };
 }
 
-class MemberDatum {
-  String? location;
-  String? treatmentOptionGroup;
-  String? membershipHeader;
-  var price;
-  String? createdAt;
-  var memberId;
-  String? deletedAt;
-  String? commitmentLength;
-  String? minimumPeriod;
-  String? membershipImage;
-  String? membership;
-  String? status;
-  String? description;
+class HeaderDetails {
+  String? headerTitle;
+  String? headerDescription;
+  String? headerimage;
 
-  MemberDatum({
-    this.location,
-    this.treatmentOptionGroup,
-    this.membershipHeader,
-    this.price,
-    this.createdAt,
-    this.memberId,
-    this.deletedAt,
-    this.commitmentLength,
-    this.minimumPeriod,
-    this.membershipImage,
-    this.membership,
-    this.status,
-    this.description,
+  HeaderDetails({
+    this.headerTitle,
+    this.headerDescription,
+    this.headerimage,
   });
 
-  factory MemberDatum.fromJson(Map<String, dynamic> json) => MemberDatum(
-        location: json["location"],
-        treatmentOptionGroup: json["treatment_option_group"],
-        membershipHeader: json["membership_title"],
-        price: json["membership_pricing"],
-        createdAt: json["created_at"],
-        memberId: json["membership_id"],
-        deletedAt: json["deleted_at"],
-        commitmentLength: json["commitment_length"],
-        minimumPeriod: json["minimum_period"],
-        membershipImage: json["membership_image"],
-        membership: json["membership_title"],
-        status: json["status"],
-        description: json["benefit_descriptions"].toString(),
+  factory HeaderDetails.fromJson(Map<String, dynamic> json) => HeaderDetails(
+        headerTitle: json["headerTitle"],
+        headerDescription: json["headerDescription"],
+        headerimage: json["headerimage"],
       );
 
   Map<String, dynamic> toJson() => {
-        "location": location,
-        "treatment_option_group": treatmentOptionGroup,
-        "membership_title": membershipHeader,
-        "membership_pricing": price,
-        "created_at": createdAt,
-        "membership_id": memberId,
-        "deleted_at": deletedAt,
-        "commitment_length": commitmentLength,
-        "minimum_period": minimumPeriod,
+        "headerTitle": headerTitle,
+        "headerDescription": headerDescription,
+        "headerimage": headerimage,
+      };
+}
+
+class MembershipData {
+  int? membershipPricing;
+  String? offeroffText;
+  int? membershipId;
+  String? membershipTitle;
+  String? membershipDescription;
+  String? membershipImage;
+  List<Benefit>? benefits;
+
+  MembershipData({
+    this.membershipPricing,
+    this.offeroffText,
+    this.membershipId,
+    this.membershipTitle,
+    this.membershipDescription,
+    this.membershipImage,
+    this.benefits,
+  });
+
+  factory MembershipData.fromJson(Map<String, dynamic> json) => MembershipData(
+        membershipPricing: json["membership_pricing"],
+        offeroffText: json["offeroffText"],
+        membershipId: json["membership_id"],
+        membershipTitle: json["membership_title"],
+        membershipDescription: json["membership_description"],
+        membershipImage: json["membership_image"],
+        benefits: json["benefits"] == null
+            ? []
+            : List<Benefit>.from(
+                json["benefits"]!.map((x) => Benefit.fromJson(x))),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "membership_pricing": membershipPricing,
+        "offeroffText": offeroffText,
+        "membership_id": membershipId,
+        "membership_title": membershipTitle,
+        "membership_description": membershipDescription,
         "membership_image": membershipImage,
-        // "membership_title": membership,
-        "status": status,
-        "benefit_descriptions": description,
+        "benefits": benefits == null
+            ? []
+            : List<dynamic>.from(benefits!.map((x) => x.toJson())),
+      };
+}
+
+class Benefit {
+  String? benefitTitle;
+
+  Benefit({
+    this.benefitTitle,
+  });
+
+  factory Benefit.fromJson(Map<String, dynamic> json) => Benefit(
+        benefitTitle: json["benefit_title"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "benefit_title": benefitTitle,
       };
 }

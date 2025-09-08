@@ -7,34 +7,89 @@ import '../../../../../util/local_store_data.dart';
 import '../../../../cartList/Controller/cart_controller.dart';
 
 class TreatmentDetailsController extends GetxController {
+  // Existing variables
+  var selectedIndexKey = 0;
   var treatmentId;
   var isLoading = false;
   var treatmentName = "Select treatment";
   bool isSelectedAny = false;
   bool isMemberChecked = false;
-
+  String? isActive;
   TreatmentDetailsModel treatmentDetailsModel = TreatmentDetailsModel();
-
   PageController pageController = PageController();
   var currentPage = 0.obs;
-  var selectedIndex = (-1); // -1 means no selection
-
+  var selectedIndex = 0;
   bool isAddingCart = false;
   LocalStorage localStorage = LocalStorage();
+  var memberShipPrice,
+      memberShip,
+      treatmentPrice,
+      discountPrice,
+      membershipName,
+      discountamount,
+      discounttext;
+  var membershipId;
+  List<Variation> variationList = [];
+
+  var selectedQtyLabel;
+  var selectedQtyPrice;
+  var selectedMembershipPrice;
+
+  Map<String, dynamic>? selectedtype;
+
+  var isTreatmentCheck = false;
 
   void selectTreatment(int index) {
     selectedIndex = index;
     update();
   }
 
-  //? Todo // Scroll the image
   void changePage(int index) {
     currentPage.value = index;
-    pageController.animateToPage(
-      index,
-      duration: Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
+    pageController.animateToPage(index,
+        duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+  }
+
+  void clearSelectedQuantity() {
+    selectedQtyLabel = null;
+    selectedQtyPrice = null;
+    selectedMembershipPrice = null;
+    selectedtype = null;
+    update();
+  }
+
+  void updateValidQuantity({
+    required String qtyLabel,
+    required var price,
+    required var membershipPrice,
+    required String unitType,
+    required var qty,
+  }) {
+    selectedQtyLabel = qtyLabel;
+    selectedQtyPrice = price;
+    selectedMembershipPrice = membershipPrice;
+    // memberShipPrice = membershipPrice;
+    selectedtype = {
+      "qty": qty,
+      "unit_type": unitType,
+    };
+    update();
+  }
+
+  void updateSelectedQuantity({
+    required var price,
+    required var membershipPrice,
+    required String unitType,
+    required var qty,
+  }) {
+    selectedQtyPrice = price;
+    selectedMembershipPrice = membershipPrice;
+    memberShipPrice = membershipPrice;
+    selectedtype = {
+      "qty": qty,
+      "unit_type": unitType,
+    };
+    update();
   }
 
   @override
@@ -43,7 +98,7 @@ class TreatmentDetailsController extends GetxController {
     super.onClose();
   }
 
-  // Todo ?? Below All Method is define...
+  // ✅ fetch treatment details
   fetchDetailsTreatment() async {
     isLoading = true;
     // update();
@@ -54,72 +109,147 @@ class TreatmentDetailsController extends GetxController {
       }
 
       treatmentDetailsModel = await hitAllTreatmentDetailsAPI(treatmentId);
+
+      // Clear old state
+      variationList.clear();
+      selectedIndex = 0;
+      clearSelectedQuantity();
+      isMemberChecked = false;
+
+      variationList.addAll(treatmentDetailsModel.treatment?.variations ?? []);
+      if (variationList.isNotEmpty) {
+        final firstVariation = variationList.first;
+
+        if (firstVariation.prices != null &&
+            firstVariation.prices!.isNotEmpty) {
+          final firstPrice = firstVariation.prices!.first;
+
+          // set treatment base price
+          treatmentPrice = firstPrice.price ?? 0;
+
+          // ✅ select only these by default
+          selectedQtyPrice = firstPrice.price ?? 0;
+          selectedtype = {
+            "qty": firstPrice.qty ?? "",
+            "unit_type": treatmentDetailsModel.treatment?.unitType ?? "",
+          };
+
+          // membership info
+          if (firstPrice.membershipInfo != null) {
+            memberShipPrice =
+                firstPrice.membershipInfo!.membershipOfferPrice ?? "";
+            memberShip = firstPrice.membershipInfo!.membershipPrice ?? "";
+            discountPrice = firstPrice.membershipInfo!.discountedPrice ?? "";
+            discountamount = firstPrice.membershipInfo!.discountamount ?? "";
+            discounttext = firstPrice.membershipInfo!.discounttext ?? "";
+            membershipName = firstPrice.membershipInfo!.membershipName ?? "";
+            membershipId = firstPrice.membershipInfo!.membershipId ?? "";
+          } else {
+            memberShipPrice = 0;
+          }
+        }
+      }
+
       isLoading = false;
       update();
-    } on Exception catch (e) {
+    } on Exception catch (_) {
       isLoading = false;
       update();
     }
   }
 
-  // Let's hit the addToCart API ...
-  Future addToCart(packageId, treatmentID, treatmentVarientId) async {
+// ✅ add to cart method with new payload
+  Future addToCart(var packageId, var treatmentID, var treatmentVarientId,
+      var treatmentPriceId, var treatmentPrice, var qty) async {
     isAddingCart = true;
-    update();
     try {
+      var clientId = await localStorage.getCId();
       var userId = await localStorage.getUId();
-      var cId = await localStorage.getCId();
-      Map<String, dynamic> map = {
+      print("Tretment price id :$treatmentPriceId");
+
+      Map<String, dynamic> map = isTreatmentCheck
+          ? {
+        "client_id": clientId,
         "user_id": userId,
-        "item_type": "Treatments",
-        "item_id": treatmentID ?? 0,
-        "item_variant_id": treatmentVarientId.toString(),
-        "membership_check": isMemberChecked ? "1" : "0",
-        "client_id": "${cId}",
+        "CartDetails": {
+          "type": "Treatments",
+          "treatment_id": treatmentID ?? 0,
+          "treatment_variation_id": treatmentVarientId ?? 0,
+          "treatment_price_id": treatmentPriceId ?? 0,
+          "treatment_price": treatmentPrice ?? 0.0,
+          "treatment_qty": qty ?? 0.0,
+          "become_membership": {
+            "membership_id": isTreatmentCheck ? membershipId : "",
+            "membership_price": isTreatmentCheck ? memberShip : ""
+          }
+        }
+      }
+          : {
+        "client_id": clientId,
+        "user_id": userId,
+        "CartDetails": {
+          "type": "Treatments",
+          "treatment_id": treatmentID ?? 0,
+          "treatment_variation_id": treatmentVarientId ?? 0,
+          "treatment_price_id": treatmentPriceId ?? 0,
+          "treatment_price": treatmentPrice ?? 0.0,
+          "treatment_qty": qty ?? 0.0,
+        },
       };
-      Get.log("Add To Cart Map  :$map");
+      print(map);
+
+      // include membership details if checked
+      if (isMemberChecked) {
+        map["become_membership_detail"] = {
+          "membership_id": membershipId ?? 0,
+          "membership_price": selectedMembershipPrice ?? 0,
+          "membership_name": membershipName ?? "",
+        };
+      }
+
       var response = await hitAddCartAPI(map);
+      print(isTreatmentCheck ?  selectedQtyPrice:memberShipPrice);
       if (response['success'] == true) {
-        Get.back();
         await Get.bottomSheet(
           AddedToCartBottomSheet(
             titleName: selectedIndex != -1
                 ? treatmentDetailsModel
-                      .data!
-                      .treatmentvarient![selectedIndex]
-                      .treatmentVariationName
-                      .toString()
+                .treatment!.variations![selectedIndex].variationName
+                .toString()
                 : "",
-            quantityName: 'treatment',
-            price: selectedIndex != -1
-                ? treatmentDetailsModel
-                      .data!
-                      .treatmentvarient![selectedIndex]
-                      .treatmentVariationPrice
-                : 0,
-            membeTitleName: isMemberChecked
-                ? treatmentDetailsModel.data!.membershipData!.membershipTitle
-                      .toString()
-                : '',
-            memberPrice: isMemberChecked
-                ? treatmentDetailsModel.data!.membershipData!.membershipPricing
-                : "",
-            isChecked: isMemberChecked ? true : false,
-            quantity: null,
+            quantityName: selectedQtyLabel ?? 'treatment',
+            price: isTreatmentCheck ? memberShipPrice : selectedQtyPrice,
+            membeTitleName: isTreatmentCheck ?  membershipName:"",
+            memberPrice: isTreatmentCheck ?  "$memberShip.00":"",
+            isChecked: isTreatmentCheck,
+            quantity: selectedtype != null
+                ? "${selectedtype?['qty']} ${selectedtype?['unit_type']}"
+                : null,
           ),
           isDismissible: false,
           isScrollControlled: true,
         );
         CartController.cart.cartList();
-
-        isAddingCart = false;
       }
-      isAddingCart = false;
-      update();
-    } on Exception catch (e) {
-      print("the rror : $e");
+    } finally {
       isAddingCart = false;
       update();
     }
   }
 }
+//{
+//   "client_id": 5,
+//   "user_id": 274,
+//   "CartDetails": {
+//     "type": "Treatments",
+//     "treatment_id": 42,
+//     "treatment_variation_id": 101,
+//     "treatment_price_id": 1234,
+//     "treatment_price": 1500.00
+//   }
+// "become_membership_detail":{
+// "membership_id":1,
+// "membership_price":200,
+// "membership_name":""
+// }
+// }

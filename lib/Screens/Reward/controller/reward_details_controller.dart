@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../Model/RewardDetailsModel.dart';
 import '../../../Model/availRewardModel.dart';
-import '../../../Model/visit_model.dart';
 import '../../../util/base_services.dart';
-import '../../../../../util/local_store_data.dart';
+import '../../../util/local_store_data.dart';
 
 class RewardDetailsController extends GetxController {
   static RewardDetailsController get instance => Get.find();
@@ -18,7 +17,7 @@ class RewardDetailsController extends GetxController {
 
   getUser() async {
     LocalStorage localStorage = LocalStorage();
-    userName.value = (await localStorage.getName())! ?? '';
+    userName.value = await localStorage.getName() ?? "";
     // update();
   }
 
@@ -27,25 +26,10 @@ class RewardDetailsController extends GetxController {
   List<CommonModel> packagesList = <CommonModel>[];
   List<CommonModel> membersList = <CommonModel>[];
   var rewardPoints = "";
-  List<Datum> datum = [];
-  List<AvailDatum> avail = [];
+  AvailRewardModel response = AvailRewardModel();
+  List<Reward> avail = [];
+  List<Reward> unloackReward = [];
 
-  Future<void> visitList() async {
-    datum.clear();
-    datum = [];
-    vload = true;
-    update();
-    try {
-      VisitModel response = await hitAllVisitAPI();
-      vload = false;
-      datum.addAll(response.data!);
-      print("response==>${response.data}");
-      update();
-    } on Exception catch (e) {
-      vload = false;
-      update();
-    }
-  }
 
   Future<void> available() async {
     load = true;
@@ -53,11 +37,13 @@ class RewardDetailsController extends GetxController {
     try {
       avail.clear();
       avail = [];
-      visitList();
-      AvailRewardModel response = await hitAvailableRewardAPI();
+      unloackReward.clear();
+      unloackReward = [];
+      // visitList();
+      response = await hitAvailableRewardAPI();
       load = false;
-      avail.addAll(response.data!);
-      print("available==>${response.data}");
+      avail.addAll(response.unlockedRewards!);
+      unloackReward.addAll(response.upcomingRewards!);
       update();
     } on Exception catch (e) {
       load = false;
@@ -73,18 +59,15 @@ class RewardDetailsController extends GetxController {
       rewardPoints = response.data?.reward ?? "";
       treatmentsList = (response.data?.treatments ?? [])
           .map<CommonModel>(
-            (t) => CommonModel(name: t.treatmentName, id: t.treatmentId),
-          )
+              (t) => CommonModel(name: t.treatmentName, id: t.treatmentId))
           .toList();
       packagesList = (response.data?.packages ?? [])
           .map<CommonModel>(
-            (p) => CommonModel(name: p.packageName, id: p.packageId),
-          )
+              (p) => CommonModel(name: p.packageName, id: p.packageId))
           .toList();
       membersList = (response.data?.membership ?? [])
           .map<CommonModel>(
-            (m) => CommonModel(name: m.membership, id: m.memberId),
-          )
+              (m) => CommonModel(name: m.membership, id: m.memberId))
           .toList();
       isLoading = false;
       update();
@@ -96,7 +79,7 @@ class RewardDetailsController extends GetxController {
   }
 
   final GlobalKey<RefreshIndicatorState> refreshIndicatorKey =
-      GlobalKey<RefreshIndicatorState>();
+  GlobalKey<RefreshIndicatorState>();
 
   Future<void> handleRefresh() async {
     await available();

@@ -1,40 +1,22 @@
 class CartModel1 {
   String? message;
   bool? success;
-  var afterOfferPrice;
-  var finalCost;
-  List<CartItem>? cartItems;
-  String? totalPrice;
-  String? totalConvenienceFee;
-  PromoCode? promoCode;
+  Data? data;
   AvailableReward? reward;
-  var appliedCartDiscountValue;
+  PromoCode? promoCode;
 
   CartModel1({
     this.message,
     this.success,
-    this.afterOfferPrice,
-    this.finalCost,
-    this.cartItems,
-    this.totalPrice,
-    this.totalConvenienceFee,
-    this.promoCode,
+    this.data,
     this.reward,
-    this.appliedCartDiscountValue,
+    this.promoCode,
   });
 
   factory CartModel1.fromJson(Map<String, dynamic> json) => CartModel1(
         message: json["message"],
         success: json["success"],
-        afterOfferPrice: json["after_offer_price"],
-        finalCost: json["final_cost"],
-        cartItems: json["cartItems"] == null
-            ? []
-            : List<CartItem>.from(
-                json["cartItems"]!.map((x) => CartItem.fromJson(x))),
-        totalPrice: json["total_price"],
-        totalConvenienceFee: json["totalConvenienceFee"],
-        appliedCartDiscountValue: json["applied_cart_discount_value"],
+        data: json["data"] == null ? null : Data.fromJson(json["data"]),
         promoCode: json["promocode"] == null
             ? null
             : PromoCode.fromJson(json["promocode"]),
@@ -46,140 +28,121 @@ class CartModel1 {
   Map<String, dynamic> toJson() => {
         "message": message,
         "success": success,
-        "after_offer_price": afterOfferPrice,
-        "final_cost": finalCost,
-        "cartItems": cartItems == null
-            ? []
-            : List<dynamic>.from(cartItems!.map((x) => x.toJson())),
-        "total_price": totalPrice,
-        "totalConvenienceFee": totalConvenienceFee,
+        "data": data?.toJson(),
         "promocode": promoCode?.toJson(),
         "reward": reward?.toJson(),
-        "applied_cart_discount_value": appliedCartDiscountValue?.toJson(),
       };
 }
 
-class CartItem {
-  String? membershipName;
-  var cartItemId;
-  dynamic price;
-  var memberId;
+class Data {
+  var itemsCount;
+  var subTotal;
+  var finalCost;
+  var discountPrice;
+  var price;
+  var convenienceFee;
+  List<Item>? items;
   var cartId;
+  var offerName;
+  var offerType;
+
+  Data({
+    this.itemsCount,
+    this.subTotal,
+    this.finalCost,
+    this.discountPrice,
+    this.convenienceFee,
+    this.items,
+    this.cartId,
+    this.offerName,
+    this.offerType
+  });
+
+  factory Data.fromJson(Map<String, dynamic> json) => Data(
+    itemsCount: json["items_count"],
+    offerType: json["offer_type"],
+    subTotal: json["sub_total"],
+    finalCost: _toDouble(json["final_cost"]),
+    discountPrice: json["discount_price"],
+    convenienceFee: _toDouble(json["convenience_fee"]),
+    items: json["items"] == null
+        ? []
+        : List<Item>.from(json["items"].map((x) => Item.fromJson(x))),
+    cartId: json["cart_id"],
+    offerName: json["offer_name"],
+  );
+
+
+  Map<String, dynamic> toJson() => {
+        "items_count": itemsCount,
+        "sub_total": subTotal,
+        "offer_type": offerType,
+        "final_cost": finalCost,
+        "discount_price": discountPrice,
+        "convenience_fee": convenienceFee,
+        "items": items == null
+            ? []
+            : List<dynamic>.from(items!.map((x) => x.toJson())),
+        "cart_id": cartId,
+        "offer_name": offerName,
+      };
+}
+
+class Item {
+  var cartItemId;
+  var price;
+  DateTime? createdAt;
+  var quantity;
+  var discountPrice;
+  var itemVariantId;
+  var itemId;
   String? itemType;
-  String? membershipImage;
+  String? variationName;
+  String? name;
+  String? imageUrl;
 
-  List<String>? treatmentImagePath;
-
-  // String? treatmentImagePath;
-  var treatmentVariationId;
-  var treatmentId;
-  String? treatmentVariationName;
-  List<TreatmentVariation>? treatmentVariations;
-  String? treatmentName;
-  String? packageImagePath;
-  String? packageName;
-  var packageId;
-  var actualPrice;
-
-  bool isLoad = false;
-  bool isItemRemove = false;
-  bool isItemDelete = false;
-  bool isDeleteSingle = false;
-
-  CartItem({
-    this.membershipName,
+  Item({
     this.cartItemId,
     this.price,
-    this.memberId,
-    this.cartId,
+    this.createdAt,
+    this.quantity,
+    this.discountPrice,
+    this.itemVariantId,
+    this.itemId,
     this.itemType,
-    this.membershipImage,
-    this.treatmentImagePath,
-    this.treatmentVariationId,
-    this.treatmentId,
-    this.treatmentVariationName,
-    this.treatmentVariations,
-    this.treatmentName,
-    this.packageImagePath,
-    this.packageName,
-    this.packageId,
-    this.actualPrice,
+    this.variationName,
+    this.name,
+    this.imageUrl,
   });
 
-  factory CartItem.fromJson(Map<String, dynamic> json) => CartItem(
-        membershipName: json["membership_name"],
+  factory Item.fromJson(Map<String, dynamic> json) => Item(
         cartItemId: json["cart_item_id"],
         price: json["price"],
-        memberId: json["memberID"],
-        cartId: json["cart_id"],
-        actualPrice: json["actual_price"],
+        createdAt: json["created_at"] == null
+            ? null
+            : DateTime.parse(json["created_at"]),
+        quantity: json["quantity"],
+        discountPrice: json["discount_price"],
+        itemVariantId: json["item_variant_id"],
+        itemId: json["item_id"],
         itemType: json["item_type"],
-        membershipImage: json["membership_image"],
-        // treatmentImagePath: json['treatment_image_path'],
-        treatmentImagePath: json["treatment_image_path"] == null
-            ? []
-            : List<String>.from(json["treatment_image_path"]!.map((x) => x)),
-        treatmentVariationId: json["treatment_variation_id"],
-        treatmentId: json["treatment_id"],
-        treatmentVariationName: json["treatment_variation_name"],
-        treatmentVariations: json["treatment_variations"] == null
-            ? []
-            : List<TreatmentVariation>.from(json["treatment_variations"]!
-                .map((x) => TreatmentVariation.fromJson(x))),
-        treatmentName: json["treatment_name"],
-        packageImagePath: json["package_image_path"],
-        packageName: json["package_name"],
-        packageId: json["package_id"],
+        variationName: json["variation_name"],
+        name: json["name"],
+        imageUrl: json["image_url"],
       );
 
   Map<String, dynamic> toJson() => {
-        "membership_name": membershipName,
         "cart_item_id": cartItemId,
         "price": price,
-        "memberID": memberId,
-        "cart_id": cartId,
+        "created_at": createdAt?.toIso8601String(),
+        "quantity": quantity,
+        "discount_price": discountPrice,
+        "item_variant_id": itemVariantId,
+        "item_id": itemId,
         "item_type": itemType,
-        "membership_image": membershipImage,
-        // "treatment_image_path": treatmentImagePath,
-        "treatment_image_path": treatmentImagePath == null
-            ? []
-            : List<dynamic>.from(treatmentImagePath!.map((x) => x)),
-        "treatment_variation_id": treatmentVariationId,
-        "treatment_id": treatmentId,
-        "actual_price": actualPrice,
-        "treatment_variation_name": treatmentVariationName,
-        "treatment_variations": treatmentVariations == null
-            ? []
-            : List<dynamic>.from(treatmentVariations!.map((x) => x.toJson())),
-        "treatment_name": treatmentName,
-        "package_image_path": packageImagePath,
-        "package_name": packageName,
-        "package_id": packageId,
-      };
-}
-
-class TreatmentVariation {
-  var treatmentVariationId;
-  var treatmentPrice;
-  String? treatmentVariationName;
-
-  TreatmentVariation({
-    this.treatmentVariationId,
-    this.treatmentPrice,
-    this.treatmentVariationName,
-  });
-
-  factory TreatmentVariation.fromJson(Map<String, dynamic> json) =>
-      TreatmentVariation(
-        treatmentVariationId: json["treatment_variation_id"],
-        treatmentPrice: json["treatment_price"],
-        treatmentVariationName: json["treatment_variation_name"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "treatment_variation_id": treatmentVariationId,
-        "treatment_price": treatmentPrice,
-        "treatment_variation_name": treatmentVariationName,
+        "variation_name": variationName,
+        "name": name,
+        "image_url": imageUrl,
       };
 }
 
@@ -238,4 +201,10 @@ class AvailableReward {
         "discount_type": discountType,
         "name": name,
       };
+}
+double? _toDouble(dynamic value) {
+  if (value == null) return null;
+  if (value is num) return value.toDouble();
+  if (value is String && value.isNotEmpty) return double.tryParse(value);
+  return null;
 }

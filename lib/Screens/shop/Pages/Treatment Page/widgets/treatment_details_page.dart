@@ -1,17 +1,17 @@
-import 'package:chino_hills/Screens/shop/Pages/Treatment%20Page/widgets/treartment_bottom_sheet.dart';
-import 'package:chino_hills/Screens/shop/Pages/Treatment%20Page/widgets/treatment_quantity_bottom_sheet.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../../../CSS/app_strings.dart';
+import 'package:chino_hills/Screens/shop/Pages/Treatment%20Page/widgets/treatment_quantity_bottom_sheet.dart';
+import 'package:chino_hills/Screens/shop/Pages/Treatment%20Page/widgets/variation_section.dart';
 import '../../../../../CSS/color.dart';
-import '../../../../../common_Widgets/common_terms_condition_widget.dart';
 import '../../../../../common_Widgets/no_record.dart';
 import '../../../../../loading/become_a_member_loading.dart';
 import '../../../../../util/common_page.dart';
 import '../../../../../util/route_manager.dart';
 import '../controller/treatment_details_controller.dart';
-import 'image_page_view.dart';
 
 class TreatmentDetailsPage extends GetView<TreatmentDetailsController> {
   const TreatmentDetailsPage({super.key});
@@ -20,468 +20,962 @@ class TreatmentDetailsPage extends GetView<TreatmentDetailsController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColor().background,
-      appBar: commonAppBar(isLeading: true, title: "Treatement", action: []),
+      appBar: commonAppBar(
+        isLeading: true,
+        title: AppStrings.treatment,
+        action: [],
+      ),
       body: GetBuilder<TreatmentDetailsController>(
-        init: Get.find<TreatmentDetailsController>()..fetchDetailsTreatment(),
-        builder: (newController) {
-          var data = newController.treatmentDetailsModel.data;
-          return Stack(
-            children: [
-              newController.isLoading
-                  ? MemberLoadDetail()
-                  : newController.treatmentDetailsModel.data == null
-                  ? Center(
-                      child: NoRecord(
-                        "No Treatment Details Found",
-                        Icon(Icons.no_accounts),
-                        "We're sorry. no treatment details available at this moment.",
-                      ),
-                    )
-                  : SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          SizedBox(height: 10.h),
-                          Text(
-                            data!.treatmentName.toString(),
-                            style: GoogleFonts.merriweather(
+          init: Get.find<TreatmentDetailsController>()..fetchDetailsTreatment(),
+          builder: (newController) {
+            var data = newController.treatmentDetailsModel.treatment;
+            return Stack(
+              children: [
+                newController.isLoading
+                    ? MemberLoadDetail()
+                    : newController.treatmentDetailsModel.treatment == null
+                    ? Center(
+                  child: NoRecord(
+                    AppStrings.noTreatmentDetailsFound,
+                    Icon(Icons.no_accounts),
+                    AppStrings.weAreSorryNoTreatmentDetailsAvailable,
+                  ),
+                )
+                    : SingleChildScrollView(
+                  child: Center(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          data!.treatmentName.toString(),
+                          style: GoogleFonts.merriweather(
                               fontWeight: FontWeight.w900,
-                              fontSize: 22.sp,
+                              fontSize: 22.sp),
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(height: 10.h),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment:
+                          CrossAxisAlignment.center,
+                          children: [
+                            RichText(
+                              textAlign: TextAlign.center,
+                              text: TextSpan(
+                                style: GoogleFonts.roboto(
+                                  fontSize: 14.sp,
+                                  color: AppColor().blackColor,
+                                  height: 1.5.h,
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text:
+                                    '\$${controller.selectedQtyPrice.toString().replaceAll(".0", ".00") ?? ""}',
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.normal,
+                                        fontSize: 16),
+                                  ),
+                                  TextSpan(
+                                    text:
+                                    '/${controller.selectedtype?['unit_type'] ?? ""}',
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.normal,
+                                        fontSize: 16),
+                                  ),
+                                ],
+                              ),
                             ),
-                            textAlign: TextAlign.center,
-                          ),
-                          SizedBox(height: 10.h),
-
-                          RichText(
-                            text: buildPriceTextSpan(
-                              originalPrice:
-                                  (data.treatmentvarient != null &&
-                                      data.treatmentvarient!.isNotEmpty)
-                                  ? data
-                                        .treatmentvarient![controller
-                                                    .selectedIndex !=
-                                                -1
-                                            ? controller.selectedIndex
-                                            : 0]
-                                        .treatmentVariationPrice
-                                  : data.price ?? 0,
-                              // fallback price
-                              memberPrice:
-                                  (data.treatmentvarient != null &&
-                                      data.treatmentvarient!.isNotEmpty)
-                                  ? data
-                                        .treatmentvarient![controller
-                                                    .selectedIndex !=
-                                                -1
-                                            ? controller.selectedIndex
-                                            : 0]
-                                        .membershipDiscountAmount
-                                  : data.discountAmount ?? 0,
-                              // memberPrice: data.membershipDiscountAmount,
-                              unit: data.unitType,
+                            controller.memberShipPrice.toString() ==
+                                "0"
+                                ? SizedBox.shrink()
+                                : SizedBox(width: 5.w),
+                            controller.memberShipPrice.toString() ==
+                                "0"
+                                ? SizedBox.shrink()
+                                : Container(
+                              height: 25.h,
+                              width: 1.w,
+                              color: AppColor().blackColor,
                             ),
-                          ),
-
-                          // Todo ?? Save Section
-
-                          /*if (data.membershipData == null ||
-                          data.membershipData?.membershipTitle == null ||
-                          data.discountAmount == null)
-                        SizedBox.shrink()
-                      else
-                        Container(
-                          margin: EdgeInsets.all(10.r),
-                          padding: EdgeInsets.all(10.r),
+                            controller.memberShipPrice.toString() ==
+                                "0"
+                                ? SizedBox.shrink()
+                                : SizedBox(width: 5.w),
+                            controller.memberShipPrice.toString() ==
+                                "0"
+                                ? SizedBox.shrink()
+                                : Text(
+                              '\$${controller.memberShipPrice.toString().replaceAll(".0", ".00")} member',
+                              style: GoogleFonts.roboto(
+                                fontWeight: FontWeight.w900,
+                                fontSize: 14.sp,
+                                color: AppColor()
+                                    .blackColor
+                                    .withOpacity(0.7),
+                                height: 1.5.h,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                        controller.discountPrice.toString() == "0"
+                            ? SizedBox.shrink()
+                            : Container(
+                          margin: EdgeInsets.all(10.0.h),
+                          padding: EdgeInsets.only(
+                              top: 10.0.h,
+                              left: 10.w,
+                              right: 10.w),
                           width: double.infinity,
                           decoration: BoxDecoration(
-                            color: AppColor.dynamicColor.withOpacity(0.1),
+                            color: AppColor.dynamicColor
+                                .withOpacity(.04),
                             borderRadius:
-                            BorderRadius.circular(5.0.r),
+                            BorderRadius.circular(8.r),
                           ),
                           child: Column(
+                            crossAxisAlignment:
+                            CrossAxisAlignment.center,
+                            mainAxisAlignment:
+                            MainAxisAlignment.center,
                             children: [
-                              Text.rich(
-                                textAlign: TextAlign.center,
-                                TextSpan(children: [
-                                  TextSpan(
-                                      text: "Save ",
-                                      style: GoogleFonts.roboto(
-                                          fontSize: 16.sp,
-                                          color: Colors.grey.shade700,
-                                          fontWeight:
-                                          FontWeight.w400)),
-                                  TextSpan(
-                                      text: formatCurrency(data
-                                          .discountAmount),
-                                      style: GoogleFonts.roboto(
-                                          fontSize: 16.sp,
-                                          color: Colors.black54,
-                                          fontWeight:
-                                          FontWeight.bold)),
-                                  TextSpan(
-                                      text:
-                                      " with a ${data.membershipData
-                                          ?.membershipTitle} membership",
-                                      style: GoogleFonts.roboto(
-                                          fontSize: 16.sp,
-                                          color: Colors.grey.shade700,
-                                          fontWeight:
-                                          FontWeight.w400)),
-                                ]),
-                              ),
+                              Text(
+                                  "${AppStrings.save} \$${controller.discountamount.toString().replaceAll(".0", ".00")} ${AppStrings.withA} ${controller.membershipName}"),
+                              //add $ sign before discount price
                               TextButton(
-                                onPressed: () =>
+                                  onPressed: () {
                                     Get.toNamed(
-                                        RouteManager
-                                            .membersShipDetailsPage,
-                                        arguments: data.membershipData
-                                            ?.membershipId ??
-                                            0,
-                                        parameters: {"onlyShow": "1"}),
+                                      RouteManager
+                                          .membersShipDetailsPage,
+                                      arguments: controller
+                                          .membershipId,
+                                      parameters: {
+                                        "onlyShow": "0"
+                                      },
+                                    );
+                                  },
+                                  child: Text(
+                                    AppStrings.viewMoreInfo
+                                        .toUpperCase(),
+                                    style: TextStyle(
+                                      fontWeight:
+                                      FontWeight.bold,
+                                      fontSize: 15.sp,
+                                      color:
+                                      AppColor.dynamicColor,
+                                    ),
+                                  ))
+                            ],
+                          ),
+                        ),
+                        controller.discountPrice.toString() == "0"
+                            ? SizedBox.shrink()
+                            : Container(
+                          padding: EdgeInsets.all(10.0.h),
+                          margin: EdgeInsets.symmetric(
+                              horizontal: 10.0.w),
+                          decoration: BoxDecoration(
+                            color: AppColor.dynamicColor,
+                            borderRadius:
+                            BorderRadius.circular(8.r),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.local_offer_outlined,
+                                color: AppColor().whiteColor,
+                              ),
+                              SizedBox(width: 10.w),
+                              Expanded(
                                 child: Text(
-                                  "View more info".toUpperCase(),
+                                  "${AppStrings.save} ${controller.discounttext.toString().replaceAll(".0", ".00")} ${AppStrings.onThisItemWhenYouApply} ${controller.membershipName} ${AppStrings.inCart}",
                                   style: GoogleFonts.roboto(
-                                      color: AppColor.dynamicColor,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14.sp),
+                                    color:
+                                    AppColor().whiteColor,
+                                    fontSize: 13.sp,
+                                    height: 1.5.h,
+                                  ),
                                 ),
                               ),
                             ],
                           ),
-                        ),*/
-                          //  Todo ? Save 2 section
-                          /*data.discountAmount == null
-                          ? SizedBox(height: 20.h)
-                          : Container(
-                        margin: EdgeInsets.all(10.r),
-                        // padding: EdgeInsets.all(10.r),
-                        decoration: BoxDecoration(
-                            color: AppColor.dynamicColor,
-                            borderRadius:
-                            BorderRadius.circular(5.0.r)),
-                        child: ListTile(
-                          title: Text(
-                              "Save \$${data.discountAmount
-                                  .toString()} off on this item when you apply '\$25 Towards Any Service ' in cart!",
-                              style: GoogleFonts.roboto(
-                                  fontSize: 12.sp,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w500),
-                              textAlign: TextAlign.start),
-                          leading: Icon(
-                            Icons.local_offer,
-                            color: Colors.white,
-                          ),
                         ),
-                      ),
-*/
-
-                          // ? Todo ?  PageView.. for multiple images...
-                          TrearmentImagePageView(data: data),
-                          SizedBox(height: 10.h),
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 15.0.w,
-                              vertical: 6.0.h,
-                            ),
-                            child: Text(
-                              data.treatmentDescription.toString(),
-                              style: GoogleFonts.roboto(
-                                fontSize: 15.sp,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.black87,
+                        SizedBox(height: 5.h),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 10.0.h),
+                          child: ClipRRect(
+                            borderRadius:
+                            BorderRadius.circular(5.0.r),
+                            child: SizedBox(
+                              height: 250.0.h,
+                              child: PageView.builder(
+                                controller: controller.pageController,
+                                itemCount: (controller
+                                    .treatmentDetailsModel
+                                    .treatment!
+                                    .images
+                                    ?.isNotEmpty ??
+                                    false)
+                                    ? controller.treatmentDetailsModel
+                                    .treatment!.images!.length
+                                    : 1,
+                                onPageChanged: (index) => controller
+                                    .currentPage.value = index,
+                                itemBuilder: (context, index) {
+                                  return Image.network(
+                                    (controller.treatmentDetailsModel.treatment!.images != null &&
+                                        controller.treatmentDetailsModel.treatment!.images!.isNotEmpty)
+                                        ? controller.treatmentDetailsModel.treatment!
+                                        .images![index]
+                                        : "",
+                                    fit: BoxFit.contain,
+                                    width: double.infinity,
+                                    loadingBuilder: (context, child,
+                                        loadingProgress) {
+                                      if (loadingProgress == null) {
+                                        return child;
+                                      }
+                                      return Center(
+                                        child:
+                                        CircularProgressIndicator(
+                                          value: loadingProgress
+                                              .expectedTotalBytes !=
+                                              null
+                                              ? loadingProgress
+                                              .cumulativeBytesLoaded /
+                                              (loadingProgress
+                                                  .expectedTotalBytes ??
+                                                  1)
+                                              : null,
+                                        ),
+                                      );
+                                    },
+                                    errorBuilder:
+                                        (context, error, stackTrace) {
+                                      return Container(
+                                        height: 250.h,
+                                        width: double.infinity,
+                                        color: AppColor
+                                            .geryBackGroundColor,
+                                        child: Center(
+                                            child: Image.asset(
+                                              "assets/images/Image_not_available.png",
+                                              color:
+                                              AppColor().blackColor,
+                                              fit: BoxFit.cover,
+                                            )),
+                                      );
+                                    },
+                                  );
+                                },
                               ),
                             ),
                           ),
-                          Container(
-                            padding: EdgeInsets.all(16.0.w),
-                            color: Colors.white,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "SELECT A TREATMENT",
-                                  style: GoogleFonts.merriweather(
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColor.dynamicColor,
-                                  ),
+                        ),
+                        SizedBox(height: 10.h),
+                        // Page indicator dots
+                        if (controller.treatmentDetailsModel
+                            .treatment!.images ==
+                            null)
+                          SizedBox.shrink()
+                        else if (controller.treatmentDetailsModel
+                            .treatment!.images!.length <=
+                            1)
+                          SizedBox.shrink()
+                        else
+                          Obx(() => Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.center,
+                            children: List.generate(
+                              controller
+                                  .treatmentDetailsModel
+                                  .treatment!
+                                  .images!
+                                  .length ??
+                                  0,
+                                  (index) => AnimatedContainer(
+                                duration:
+                                Duration(milliseconds: 300),
+                                margin: EdgeInsets.symmetric(
+                                    horizontal: 2.0.w),
+                                height: 8.0,
+                                width: controller
+                                    .currentPage.value ==
+                                    index
+                                    ? 16.0.w
+                                    : 8.0.w,
+                                decoration: BoxDecoration(
+                                  color: controller.currentPage
+                                      .value ==
+                                      index
+                                      ? AppColor.dynamicColor
+                                      : Colors.grey,
+                                  borderRadius:
+                                  BorderRadius.circular(
+                                      8.0.r),
                                 ),
-                                SizedBox(height: 10.h),
-                                InkWell(
-                                  onTap: () async {
-                                    await Get.bottomSheet(
-                                      TreatmentBottomSheet(
-                                        onApply: () {
+                              ),
+                            ),
+                          )),
+                        SizedBox(height: 10.h),
+                        Container(
+                          padding: EdgeInsets.all(10.0.h),
+                          decoration: BoxDecoration(
+                            color:
+                            AppColor().greyColor.withOpacity(.1),
+                          ),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 15.0.w),
+                            child: Text(
+                              controller.treatmentDetailsModel
+                                  .treatment!.treatmentDescription
+                                  .toString(),
+                              style: GoogleFonts.roboto(
+                                fontSize: 14.sp,
+                                color: AppColor()
+                                    .blackColor
+                                    .withOpacity(0.9),
+                                height: 1.5.h,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 15.h),
+                        Text(
+                          AppStrings.selectATreatment.toUpperCase(),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16.sp,
+                            color: AppColor.dynamicColor,
+                          ),
+                        ),
+                        SizedBox(height: 10.h),
+                        Column(
+                          children: [
+                            // First InkWell (always visible)
+                            // Show InkWell only if variations > 1
+                            if (controller.variationList.length > 1)
+                              InkWell(
+                                highlightColor: Colors.transparent,
+                                splashColor: Colors.transparent,
+                                onTap: () async {
+                                  controller.variationList.length == 1
+                                      ? await Get.bottomSheet(
+                                    TreatmentQuantityBottomSheet(
+                                      addToCart: () {
+                                        print(1);
+                                        final selectedVariation =
+                                        data.variations![
+                                        controller
+                                            .selectedIndex];
+                                        final selectedPrice =
+                                            selectedVariation
+                                                .prices!.first;
+                                        Get.back();
+                                        controller.addToCart(
+                                          0,
+                                          data.treatmentId,
+                                          selectedVariation
+                                              .variationId,
+                                          selectedPrice
+                                              .treatmentvariationpriceid,
+                                          // ✅ treatment_price_id
+                                          controller.selectedQtyPrice
+                                              ?.toDouble() ??
+                                              0.0, // ✅ treatment_price
+                                          controller.selectedtype?['qty'].toString().replaceAll(".0", "") ??
+                                              0,
+                                        );
+                                      },
+                                      onBack: () {},
+                                      treatmentVarLists:
+                                      controller
+                                          .variationList,
+                                    ),
+                                    isDismissible: false,
+                                    isScrollControlled: true,
+                                  )
+                                      : Get.bottomSheet(
+                                    VariationSelectorBottomSheet(
+                                        onSelect:
+                                            (selectedVariation) {
+                                          print(2);
                                           Get.back();
                                           Get.bottomSheet(
                                             TreatmentQuantityBottomSheet(
-                                              treatmentVarLists:
-                                                  data.treatmentvarient!,
-                                              addToCart: () async {
-                                                controller.addToCart(
+                                              treatmentVarLists: [
+                                                selectedVariation
+                                              ],
+                                              addToCart: () {
+                                                // Your cart logic here
+                                                final selectedVariation = data
+                                                    .variations![
+                                                controller
+                                                    .selectedIndex];
+                                                final selectedPrice =
+                                                    selectedVariation
+                                                        .prices!
+                                                        .first;
+                                                Get.back();
+                                                controller
+                                                    .addToCart(
                                                   0,
-                                                  controller
-                                                      .treatmentDetailsModel
-                                                      .data!
-                                                      .id,
-                                                  controller.selectedIndex != -1
-                                                      ? data
-                                                            .treatmentvarient![controller
-                                                                .selectedIndex]
-                                                            .treatmentVariationId
-                                                      : 0,
+                                                  data.treatmentId,
+                                                  selectedVariation
+                                                      .variationId,
+                                                  selectedPrice
+                                                      .treatmentvariationpriceid,
+                                                  // ✅ treatment_price_id
+                                                  controller.selectedQtyPrice
+                                                      ?.toDouble() ??
+                                                      0.0, // ✅ treatment_price
+                                                  selectedPrice
+                                                      .qty ??
+                                                      0,
                                                 );
                                               },
                                               onBack: () {
                                                 Get.back();
                                               },
-                                              // treatmentVarLists: data.treatmentvarient!,
-                                              treatmentList: [
-                                                data
-                                                    .treatmentvarient![controller
-                                                                .selectedIndex !=
-                                                            -1
-                                                        ? controller
-                                                              .selectedIndex
-                                                        : 0]
-                                                    .treatmentVariationPrice,
-                                              ],
                                             ),
+                                            isScrollControlled:
+                                            true,
                                           );
                                         },
-                                        treatmentList: data.treatmentvarient!,
-                                      ),
-                                      isDismissible: false,
-                                      isScrollControlled: true,
-                                    );
-                                  },
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
+                                        controller: controller),
+                                    isScrollControlled: true,
+                                  );
+                                },
+                                child: Container(
+                                  margin: EdgeInsets.all(10.h),
+                                  padding: EdgeInsets.symmetric(
                                       horizontal: 12.w,
-                                      vertical: 8.h,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.black12),
-                                      borderRadius: BorderRadius.circular(8.r),
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            "${controller.selectedIndex != -1 && data.treatmentvarient!.isNotEmpty ? data.treatmentvarient![controller.selectedIndex].treatmentVariationName : controller.treatmentName}",
-                                            style: GoogleFonts.merriweather(
+                                      vertical: 10.h),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                        color: Colors.black12),
+                                    borderRadius:
+                                    BorderRadius.circular(8.r),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .spaceBetween,
+                                    children: [
+                                      Row(
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            controller
+                                                .selectedQtyLabel ??
+                                                AppStrings.selectTreatment,
+                                            style: GoogleFonts.roboto(
                                               fontSize: 14.sp,
+                                              color: AppColor()
+                                                  .blackColor,
+                                              fontWeight:
+                                              FontWeight.bold,
+                                              height: 1.5.h,
                                             ),
                                           ),
-                                        ),
-                                        Icon(Icons.keyboard_arrow_down),
-                                      ],
-                                    ),
+                                        ],
+                                      ),
+                                      Icon(Icons.keyboard_arrow_down),
+                                    ],
                                   ),
                                 ),
-                                SizedBox(height: 20.h),
-                                RichText(
-                                  text: buildPriceTextSpan(
-                                    originalPrice:
-                                        (data.treatmentvarient != null &&
-                                            data.treatmentvarient!.isNotEmpty)
-                                        ? data
-                                              .treatmentvarient![controller
-                                                          .selectedIndex !=
-                                                      -1
-                                                  ? controller.selectedIndex
-                                                  : 0]
-                                              .treatmentVariationPrice
-                                        : data.price ?? 0, // fallback price
-                                    memberPrice:
-                                        (data.treatmentvarient != null &&
-                                            data.treatmentvarient!.isNotEmpty)
-                                        ? data
-                                              .treatmentvarient![controller
-                                                          .selectedIndex !=
-                                                      -1
-                                                  ? controller.selectedIndex
-                                                  : 0]
-                                              .membershipDiscountAmount
-                                        : data.discountAmount ?? 0,
-                                    unit: data.unitType,
+                              ),
+
+                            if (controller.selectedQtyLabel != null ||
+                                controller.variationList.length == 1)
+                              InkWell(
+                                highlightColor: Colors.transparent,
+                                splashColor: Colors.transparent,
+                                onTap: () async {
+                                  print(3);
+                                  controller.variationList.length == 1
+                                      ? await Get.bottomSheet(
+                                    TreatmentQuantityBottomSheet(
+                                      addToCart: () {
+                                        final selectedVariation =
+                                        data.variations![
+                                        controller
+                                            .selectedIndex];
+                                        final selectedPrice = controller
+                                            .selectedIndexKey == null
+                                            ? selectedVariation
+                                            .prices!.first
+                                            : selectedVariation
+                                            .prices![
+                                        controller
+                                            .selectedIndexKey];
+                                        Get.back();
+                                        controller.addToCart(
+                                          0,
+                                          data.treatmentId,
+                                          selectedVariation
+                                              .variationId,
+                                          selectedPrice
+                                              .treatmentvariationpriceid,
+                                          // ✅ treatment_price_id
+                                          controller.selectedQtyPrice
+                                              ?.toDouble() ??
+                                              0.0, // ✅ treatment_price
+                                          controller.selectedtype?['qty'].toString().replaceAll(".0", "") ??
+                                              0,
+                                        );
+                                      },
+                                      onBack: () {},
+                                      treatmentVarLists:
+                                      controller
+                                          .variationList,
+                                    ),
+                                    isDismissible: false,
+                                    isScrollControlled: true,
+                                  )
+                                      : Get.bottomSheet(
+                                    TreatmentQuantityBottomSheet(
+                                      treatmentVarLists:
+                                      controller
+                                          .variationList,
+                                      // pass all or default variation
+                                      addToCart: () {
+                                        final selectedVariation =
+                                        data.variations![
+                                        controller
+                                            .selectedIndex];
+                                        final selectedPrice = controller
+                                            .selectedIndexKey ==
+                                            null
+                                            ? selectedVariation
+                                            .prices!.first
+                                            : selectedVariation
+                                            .prices![
+                                        controller
+                                            .selectedIndexKey];
+                                        Get.back();
+                                        controller.addToCart(
+                                          0,
+                                          data.treatmentId,
+                                          selectedVariation
+                                              .variationId,
+                                          selectedPrice
+                                              .treatmentvariationpriceid,
+                                          //treatment_price_id
+                                          controller.selectedQtyPrice
+                                              ?.toDouble() ??
+                                              0.0, //treatment_price
+                                          controller.selectedtype?['qty'].toString().replaceAll(".0", "") ??
+                                              0,
+                                        );
+                                      },
+                                      onBack: () => Get.back(),
+                                    ),
+                                    isScrollControlled: true,
+                                  );
+                                },
+                                child: Container(
+                                  margin: EdgeInsets.all(10.h),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 12.w,
+                                      vertical: 10.h),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                        color: Colors.black12),
+                                    borderRadius:
+                                    BorderRadius.circular(8.r),
                                   ),
-                                ),
-                                SizedBox(height: 20.h),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      "Convenience fee applied at checkout",
-                                      style: GoogleFonts.merriweather(
-                                        fontSize: 10.sp,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                    SizedBox(width: 4.w),
-                                    Icon(
-                                      Icons.info_outline,
-                                      size: 16.sp,
-                                      color: Colors.grey,
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 15.0.w),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                SizedBox(height: 10.h),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      "HELPS WITH THESE CONCERNS",
-                                      style: GoogleFonts.merriweather(
-                                        fontSize: 16.sp,
-                                        fontWeight: FontWeight.bold,
-                                        color: AppColor.dynamicColor,
-                                      ),
-                                    ),
-                                    SizedBox(height: 15.h),
-                                    Wrap(
-                                      spacing: 10.w,
-                                      children: data.concern!
-                                          .map(
-                                            (concern) => Container(
-                                              margin: EdgeInsets.only(
-                                                bottom: 8.0.h,
-                                              ),
-                                              padding: EdgeInsets.symmetric(
-                                                horizontal: 10.w,
-                                                vertical: 10.h,
-                                              ),
-                                              decoration: BoxDecoration(
-                                                color: AppColor.dynamicColor
-                                                    .withOpacity(0.1),
-                                                borderRadius:
-                                                    BorderRadius.circular(8.r),
-                                              ),
-                                              child: Text(
-                                                concern.concernName.toString(),
-                                                style: GoogleFonts.poppins(
-                                                  color: AppColor.dynamicColor,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment
+                                        .spaceBetween,
+                                    children: [
+                                      GetBuilder<
+                                          TreatmentDetailsController>(
+                                        builder: (controller) {
+                                          bool hasSelection = controller
+                                              .selectedQtyLabel !=
+                                              null;
+
+                                          return Row(
+                                            crossAxisAlignment:
+                                            CrossAxisAlignment
+                                                .center,
+                                            children: [
+                                              Text(
+                                                "${controller.selectedtype?['qty'].toString().replaceAll(".0", "")} ${controller.selectedtype?['unit_type']}",
+                                                style: GoogleFonts
+                                                    .roboto(
                                                   fontSize: 14.sp,
-                                                  fontWeight: FontWeight.w600,
+                                                  color: AppColor()
+                                                      .blackColor,
+                                                  fontWeight:
+                                                  FontWeight.bold,
+                                                  height: 1.5.h,
                                                 ),
                                               ),
-                                            ),
-                                          )
-                                          .toList(),
-                                    ),
-                                  ],
+                                            ],
+                                          );
+                                        },
+                                      ),
+                                      Icon(Icons.keyboard_arrow_down),
+                                    ],
+                                  ),
                                 ),
-                                (newController
-                                            .treatmentDetailsModel
-                                            .data
-                                            ?.treatmentInstructionData
-                                            ?.data
-                                            ?.isEmpty ??
-                                        true)
-                                    ? const SizedBox.shrink()
-                                    : Container(
-                                        width: double.infinity,
-                                        color: Colors.grey.shade200,
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 16.0,
-                                          horizontal: 8.0,
-                                        ),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
+                              ),
+                          ],
+                        ),
+
+                        SizedBox(height: 10.h),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment:
+                          CrossAxisAlignment.center,
+                          children: [
+                            RichText(
+                              textAlign: TextAlign.center,
+                              text: TextSpan(
+                                style: GoogleFonts.roboto(
+                                  fontSize: 14.sp,
+                                  color: AppColor().blackColor,
+                                  height: 1.5.h,
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text:
+                                    '\$${controller.selectedQtyPrice.toString().replaceAll(".0", ".00") ?? ""}',
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.normal,
+                                        fontSize: 16),
+                                  ),
+                                  TextSpan(
+                                    text:
+                                    '/${controller.selectedtype?['unit_type'] ?? ""}',
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.normal,
+                                        fontSize: 16),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            controller.memberShipPrice.toString() ==
+                                "0"
+                                ? SizedBox.shrink()
+                                : SizedBox(width: 5.w),
+                            controller.memberShipPrice.toString() ==
+                                "0"
+                                ? SizedBox.shrink()
+                                : Container(
+                              height: 25.h,
+                              width: 1.w,
+                              color: AppColor().blackColor,
+                            ),
+                            controller.memberShipPrice.toString() ==
+                                "0"
+                                ? SizedBox.shrink()
+                                : SizedBox(width: 5.w),
+                            controller.memberShipPrice.toString() ==
+                                "0"
+                                ? SizedBox.shrink()
+                                : Text(
+                              '\$${controller.memberShipPrice.toString().replaceAll(".0", ".00")} ${AppStrings.memberInSmallLetters}',
+                              style: GoogleFonts.roboto(
+                                fontWeight: FontWeight.w900,
+                                fontSize: 14.sp,
+                                color: AppColor()
+                                    .blackColor
+                                    .withOpacity(0.7),
+                                height: 1.5.h,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+
+                        SizedBox(height: 10.h),
+                        controller.membershipName.toString() == ""
+                            ? SizedBox.shrink()
+                            : Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Container(
+                            padding: EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.blue.shade50,
+                              borderRadius:
+                              BorderRadius.circular(10),
+                            ),
+                            child: Row(
+                              children: [
+                                Checkbox(
+                                  materialTapTargetSize:
+                                  MaterialTapTargetSize
+                                      .padded,
+                                  checkColor:
+                                  AppColor().whiteColor,
+                                  side: BorderSide(
+                                    color: controller
+                                        .isTreatmentCheck
+                                        ? AppColor().whiteColor
+                                        : AppColor().greyColor,
+                                    width: controller
+                                        .isTreatmentCheck
+                                        ? 5.0
+                                        : 1.0,
+                                    style: BorderStyle.solid,
+                                    strokeAlign: BorderSide
+                                        .strokeAlignOutside,
+                                  ),
+                                  fillColor:
+                                  MaterialStateProperty.all(
+                                    controller.isTreatmentCheck
+                                        ? AppColor.dynamicColor
+                                        : AppColor().whiteColor,
+                                  ),
+                                  value: controller
+                                      .isTreatmentCheck ??
+                                      false,
+                                  // ✅ always non-null
+                                  onChanged: (value) {
+                                    controller
+                                        .isTreatmentCheck =
+                                        value ?? false;
+                                    print(
+                                        "yes : ${controller.isTreatmentCheck}");
+                                    controller.update();
+                                  },
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment
+                                        .start,
+                                    children: [
+                                      RichText(
+                                        text: TextSpan(
+                                          style: TextStyle(
+                                              color:
+                                              Colors.black),
                                           children: [
-                                            // Section Title
-                                            Text(
-                                              "What to expect".toUpperCase(),
-                                              style: GoogleFonts.merriweather(
-                                                fontSize: 16.sp,
-                                                fontWeight: FontWeight.bold,
-                                                color: AppColor.dynamicColor,
+                                            TextSpan(
+                                              text: AppStrings.becomeA,
+                                              style: TextStyle(
+                                                fontWeight:
+                                                FontWeight
+                                                    .bold,
                                               ),
                                             ),
-                                            // Card-style box
-                                            Padding(
-                                              padding: const EdgeInsets.all(
-                                                13.0,
-                                              ),
-                                              child: Container(
-                                                width: double.infinity,
-                                                padding: const EdgeInsets.all(
-                                                  16.0,
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
-                                                ),
-                                                child: Text(
-                                                  newController
-                                                      .treatmentDetailsModel
-                                                      .data!
-                                                      .treatmentInstructionData!
-                                                      .data!
-                                                      .expand(
-                                                        (innerList) =>
-                                                            innerList,
-                                                      )
-                                                      .map((item) => "• $item")
-                                                      .join('\n'),
-                                                  style: const TextStyle(
-                                                    fontSize: 14,
-                                                  ),
-                                                ),
+                                            TextSpan(
+                                              text:
+                                              "${AppStrings.member} ${controller.membershipName}",
+                                              style: TextStyle(
+                                                fontWeight:
+                                                FontWeight
+                                                    .bold,
+                                                backgroundColor: AppColor
+                                                    .dynamicColor
+                                                    .withOpacity(
+                                                    0.3),
                                               ),
                                             ),
                                           ],
                                         ),
                                       ),
+                                      Text(
+                                        "${AppStrings.addToCartNowToSave} \$${controller.memberShipPrice.toString().replaceAll(".0", ".00")} "
+                                            "${AppStrings.onThisTreatmentToday}",
+                                        style: TextStyle(
+                                            fontSize: 14),
+                                      ),
+                                      Text(
+                                        "\$${controller.memberShip.toString().replaceAll(".0", ".00")}${AppStrings.monthMemberShipFeeApplies}",
+                                        style: TextStyle(
+                                            color: Colors
+                                                .grey[600]),
+                                      ),
+                                      SizedBox(height: 6),
+                                      InkWell(
+                                        onTap: () {
+                                          // show more info
+                                          Get.toNamed(
+                                            RouteManager
+                                                .membersShipDetailsPage,
+                                            arguments: controller
+                                                .membershipId,
+                                            parameters: {
+                                              "onlyShow": "0"
+                                            },
+                                          );
+                                        },
+                                        child: Text(
+                                          "VIEW MORE INFO",
+                                          style: TextStyle(
+                                            fontWeight:
+                                            FontWeight.bold,
+                                            color: Colors.blue,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ],
                             ),
                           ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 15.0.w,
-                              vertical: 6.0.h,
-                            ),
-                            child: Text(
-                              "Important Terms and Conditions: All financing subject to credit approval. APRs depend on creditworthiness, term length, and other factors. “As low as” does not guarantee your rate or payment options as this is dependent on your creditworthiness. Check with your provider about additional amounts required for procedure that may be ineligible for financing. Scheduled payments in example based on the full 24-month term. Length of financing is up to you and/or your creditworthiness.",
-                              style: GoogleFonts.roboto(
-                                fontSize: 10.sp,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.black87,
-                              ),
-                            ),
+                        ),
+                        controller.discountPrice.toString() == "0"
+                            ? SizedBox.shrink()
+                            : Container(
+                          width: double.infinity,
+                          margin: EdgeInsets.only(
+                              bottom: 12,
+                              left: 10.w,
+                              right: 10.w),
+                          padding: EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.blue.shade50,
+                            borderRadius:
+                            BorderRadius.circular(10),
                           ),
-
-                          //TODO ?? Here we define treatment on click...
-                          CommonTermsConditionWidget(),
-                        ],
-                      ),
+                          child: Column(
+                            crossAxisAlignment:
+                            CrossAxisAlignment.center,
+                            children: [
+                              RichText(
+                                text: TextSpan(
+                                  style: TextStyle(
+                                      color: Colors.black),
+                                  children: [
+                                    TextSpan(
+                                      text:
+                                      "${AppStrings.save} \$${controller.discountamount.toString().replaceAll(".0", ".00")} ",
+                                      style: TextStyle(
+                                        fontWeight:
+                                        FontWeight.bold,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text:
+                                      "${AppStrings.withA} ${controller.membershipName}",
+                                      style: TextStyle(
+                                        fontWeight:
+                                        FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(height: 6),
+                              InkWell(
+                                onTap: () {
+                                  // show more info
+                                  Get.toNamed(
+                                    RouteManager
+                                        .membersShipDetailsPage,
+                                    arguments: controller
+                                        .membershipId,
+                                    parameters: {
+                                      "onlyShow": "0"
+                                    },
+                                  );
+                                },
+                                child: Text(
+                                  AppStrings.viewMoreInfoInCapitalLetters,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.blue,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment:
+                          CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              AppStrings.convenienceFeeAppliedAtCheckout,
+                              style: TextStyle(fontSize: 13.sp),
+                            ),
+                            SizedBox(width: 5.w),
+                            Icon(
+                              Icons.info_outline,
+                              color: Colors.grey,
+                            )
+                          ],
+                        ),
+                        Container(
+                          width: double.infinity,
+                          margin: EdgeInsets.all(15.h),
+                          padding: EdgeInsets.all(10.h),
+                          decoration: BoxDecoration(
+                              color: AppColor().lightGrey),
+                          child: Column(
+                            children: [
+                              Text(AppStrings.helpsWithTheseConcerns),
+                              SizedBox(height: 10.h),
+                              Wrap(
+                                direction: Axis.horizontal,
+                                spacing: 10.w,
+                                runSpacing: 10.h,
+                                alignment: WrapAlignment.center,
+                                children: controller
+                                    .treatmentDetailsModel
+                                    .treatment!
+                                    .treatmentConcerns!
+                                    .map((concern) => Container(
+                                  padding:
+                                  EdgeInsets.symmetric(
+                                      horizontal: 10.w,
+                                      vertical: 6.h),
+                                  decoration: BoxDecoration(
+                                    color: AppColor
+                                        .dynamicColor
+                                        .withOpacity(.1),
+                                    borderRadius:
+                                    BorderRadius.circular(
+                                        5.r),
+                                  ),
+                                  child: Text(
+                                    concern,
+                                    style: TextStyle(
+                                      fontSize: 12.sp,
+                                      color: AppColor
+                                          .dynamicColor,
+                                    ),
+                                  ),
+                                ))
+                                    .toList(),
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
                     ),
-            ],
-          );
-        },
-      ),
+                  ),
+                ),
+              ],
+            );
+          }),
       bottomNavigationBar: SafeArea(
         child: GetBuilder<TreatmentDetailsController>(
           builder: (treatmentController) {
-            final data = treatmentController.treatmentDetailsModel.data;
+            final data = treatmentController.treatmentDetailsModel.treatment;
 
             // If loading or data is null or treatment variants are empty, hide the button
             if (treatmentController.isLoading ||
                 data == null ||
-                data.treatmentvarient == null ||
-                data.treatmentvarient!.isEmpty) {
+                data.variations == null ||
+                data.variations!.isEmpty) {
               return const SizedBox.shrink();
             }
 
@@ -490,57 +984,83 @@ class TreatmentDetailsPage extends GetView<TreatmentDetailsController> {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: ElevatedButton(
-                  onPressed: treatmentController.selectedIndex != -1
+                  onPressed: data.variations!.length == 1 ||
+                      controller.selectedQtyLabel != null
                       ? () {
-                          controller.addToCart(
-                            0,
-                            data.id,
-                            data
-                                .treatmentvarient![controller.selectedIndex]
-                                .treatmentVariationId,
-                          );
-                        }
+                    print(treatmentController.selectedIndex);
+                    final selectedVariation =
+                    data.variations![controller.selectedIndex];
+                    print(controller.selectedIndexKey);
+                    final selectedPrice =
+                    controller.selectedIndexKey == '0-0' ||
+                        controller.selectedIndexKey.toString() ==
+                            "null"
+                        ? selectedVariation.prices!.first
+                        : selectedVariation
+                        .prices![controller.selectedIndexKey];
+                    print("selctqty: ${selectedPrice.qty}");
+                    controller.addToCart(
+                      0,
+                      data.treatmentId,
+                      selectedVariation.variationId,
+                      selectedPrice.treatmentvariationpriceid,
+                      // ✅ treatment_price_id
+                      controller.selectedQtyPrice.toDouble() ?? 0.0,
+                      // ✅ treatment_price
+                      controller.selectedtype?['qty'].toString().replaceAll(".0", "") ?? 0,
+                    );
+                  }
                       : () async {
-                          await Get.bottomSheet(
-                            TreatmentBottomSheet(
-                              onApply: () {
-                                Get.back();
-                                Get.bottomSheet(
-                                  TreatmentQuantityBottomSheet(
-                                    treatmentVarLists: data.treatmentvarient!,
-                                    addToCart: controller.isAddingCart
-                                        ? () {}
-                                        : () async {
-                                            controller.addToCart(
-                                              0,
-                                              data.id,
-                                              controller.selectedIndex != -1
-                                                  ? data
-                                                        .treatmentvarient![controller
-                                                            .selectedIndex]
-                                                        .treatmentVariationId
-                                                  : 0,
-                                            );
-                                          },
-                                    onBack: () => Get.back(),
-                                    treatmentList: [
-                                      data
-                                          .treatmentvarient![controller
-                                                      .selectedIndex !=
-                                                  -1
-                                              ? controller.selectedIndex
-                                              : 0]
-                                          .treatmentVariationPrice,
-                                    ],
-                                  ),
-                                );
-                              },
-                              treatmentList: data.treatmentvarient!,
-                            ),
-                            isDismissible: false,
-                            isScrollControlled: true,
-                          );
-                        },
+                    print(5);
+                    await Get.bottomSheet(
+                      VariationSelectorBottomSheet(
+                          onSelect: (selectedVariation) async {
+                            // Then show pricing bottom sheet
+                            Get.back();
+                            await Get.bottomSheet(
+                              TreatmentQuantityBottomSheet(
+                                treatmentVarLists: [selectedVariation],
+                                addToCart: () {
+                                  final selectedVariation =
+                                  data.variations![
+                                  controller.selectedIndex];
+                                  final selectedPrice = controller
+                                      .selectedIndexKey ==
+                                      '0-0' ||
+                                      controller.selectedIndexKey
+                                          .toString() ==
+                                          "null"
+                                      ? selectedVariation.prices!.first
+                                      : selectedVariation.prices![
+                                  int.parse(controller
+                                      .selectedIndexKey
+                                      .toString())];
+                                  // Your cart logic here
+                                  Get.back();
+                                  controller.addToCart(
+                                    0,
+                                    data.treatmentId,
+                                    selectedVariation.variationId,
+                                    selectedPrice
+                                        .treatmentvariationpriceid,
+                                    // ✅ treatment_price_id
+                                    controller.selectedQtyPrice.toDouble() ??
+                                        0.0,
+                                    // ✅ treatment_price
+                                    controller.selectedtype?['qty'].toString().replaceAll(".0", "") ?? 0,
+                                  );
+                                },
+                                onBack: () {
+                                  Get.back();
+                                },
+                              ),
+                              isScrollControlled: true,
+                            );
+                          },
+                          controller: controller),
+                      isScrollControlled: true,
+                    );
+                  },
                   style: ElevatedButton.styleFrom(
                     elevation: 0,
                     padding: EdgeInsets.zero,
@@ -551,12 +1071,10 @@ class TreatmentDetailsPage extends GetView<TreatmentDetailsController> {
                   ),
                   child: Ink(
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          AppColor.dynamicColor,
-                          AppColor.dynamicColor.withAlpha(430),
-                        ],
-                      ),
+                      gradient: LinearGradient(colors: [
+                        AppColor.dynamicColor,
+                        AppColor.dynamicColor.withAlpha(430)
+                      ]),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Container(
@@ -565,21 +1083,20 @@ class TreatmentDetailsPage extends GetView<TreatmentDetailsController> {
                       alignment: Alignment.center,
                       child: treatmentController.isAddingCart
                           ? const CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.white,
-                              ),
-                            )
+                        strokeWidth: 2,
+                        valueColor:
+                        AlwaysStoppedAnimation<Color>(Colors.white),
+                      )
                           : Text(
-                              "Add to cart",
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.roboto(
-                                color: Colors.white,
-                                fontSize: 18.h,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
+                        AppStrings.addToCart,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.roboto(
+                          color: Colors.white,
+                          fontSize: 18.h,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ),
                   ),
                 ),

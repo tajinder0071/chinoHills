@@ -58,7 +58,7 @@ class ConvenienceFeetBottomSheet extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '\$${CartController.cart.totalConvenienceFee.value}',
+                    '\$${CartController.cart.totalConvenienceFee.toString()}',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,

@@ -1,10 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../Model/order_detail_model.dart';
 import '../../../Model/orer_list_model.dart';
 import '../../../util/base_services.dart';
-import '../../../../../util/local_store_data.dart';
+import '../../../util/local_store_data.dart';
 
 class OrderController extends GetxController {
   static OrderController get instance => Get.find();
@@ -16,7 +15,9 @@ class OrderController extends GetxController {
   OrderListModel response = OrderListModel();
   OrderDetailModel detailModel = OrderDetailModel();
   final GlobalKey<RefreshIndicatorState> refreshIndicatorKey =
-      GlobalKey<RefreshIndicatorState>();
+  GlobalKey<RefreshIndicatorState>();
+
+  var totalCount;
 
   Future<void> handleRefresh() async {
     await orderListApi();
@@ -28,8 +29,7 @@ class OrderController extends GetxController {
     isLoading.value = true;
     update();
     try {
-      var userId =await localStorage.getUId();
-      response = await hitOrderListApi(userId);
+      //response = await hitOrderListApi();
       orderList.addAll(response.orders!);
       print(orderList);
       isLoading.value = false;

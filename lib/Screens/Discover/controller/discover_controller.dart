@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../CSS/color.dart';
 import '../../../Model/discover_model.dart';
 import '../../../util/base_services.dart';
-import '../../../../../util/local_store_data.dart';
+import '../../../util/local_store_data.dart';
 import '../../../util/route_manager.dart';
 import '../../../util/services.dart';
 import '../../cartList/Controller/cart_controller.dart';
@@ -14,7 +15,6 @@ class DiscoverController extends GetxController {
   var load = false;
   var dload = false;
   List<ContentCard> cardData = [];
-  List<OfferCard> offerCardList = [];
   List<ServiceName> allServices = <ServiceName>[];
   LocalStorage localStorage = LocalStorage();
 
@@ -23,7 +23,7 @@ class DiscoverController extends GetxController {
 
   DiscoverModel model = DiscoverModel();
   final GlobalKey<RefreshIndicatorState> refreshIndicatorKey =
-      GlobalKey<RefreshIndicatorState>();
+  GlobalKey<RefreshIndicatorState>();
 
   Future<void> handleRefresh() async {
     await fetchDiscoverList();
@@ -32,16 +32,10 @@ class DiscoverController extends GetxController {
   Future<void> fetchDiscoverList() async {
     load = true;
     cardData.clear();
-    offerCardList.clear();
     try {
       DiscoverModel response = await hitDiscoverAPI();
-      cardData.addAll(response.data!.contentCards!);
-      offerCardList.addAll(response.data!.offerCards!);
-
+      cardData.addAll(response.data!);
       load = false;
-      print(
-        "offerCardList ==>${response.data!.offerCards}",
-      ); // offerCardList ==>Instance of 'Data'
       update();
     } on Exception catch (e) {
       load = false;
@@ -71,16 +65,22 @@ class DiscoverController extends GetxController {
     }
   }
 
+  callNumber(String customUrl) async {
+    final number = customUrl.toString();
+    await FlutterPhoneDirectCaller.callNumber(number);
+  }
+
   Future<void> addPromoCode(
-    String promoCode,
-    VoidCallback goToShop,
-    BuildContext context, {
-    List<ServiceName>? treatement,
-  }) async {
+      String promoCode,
+      VoidCallback goToShop,
+      BuildContext context, {
+        List<ServiceName>? treatement,
+      }) async {
     isAddingPromo = true;
     update();
     try {
       var userId = await localStorage.getUId();
+      var clientId = await localStorage.getCId();
 
       // using find method to call CartController
       var cartController = Get.find<CartController>();
@@ -93,14 +93,13 @@ class DiscoverController extends GetxController {
         update();
         return;
       }
-      var cId = await localStorage.getCId();
 
       // Prepare request map
       Map<String, dynamic> map = {
         "promo_code": promoCode,
         "cart_id": int.parse(cartData),
         "user_id": userId,
-        "client_id": "${cId}",
+        "client_id": "${clientId}"
       };
 
       Get.log("Apply Promo Code Request: $map");
@@ -149,10 +148,10 @@ class DiscoverController extends GetxController {
     }
   }
 
-  // @override
-  // void onInit() {
-  //   // TODO: implement onInit
-  //   super.onInit();
-  //   cartList();
-  // }
+// @override
+// void onInit() {
+//   // TODO: implement onInit
+//   super.onInit();
+//   cartList();
+// }
 }

@@ -1,22 +1,21 @@
+import 'package:chino_hills/Screens/shop/Pages/Treatment%20Page/controller/treatment_details_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../../../CSS/app_strings.dart';
 import '../../../../../CSS/color.dart';
 import '../../../../../Model/treatment_details_model.dart';
-import '../../../../../util/common_page.dart';
-import '../controller/treatment_details_controller.dart';
+
 
 class TreatmentQuantityBottomSheet extends StatefulWidget {
   final VoidCallback addToCart, onBack;
-  final List treatmentList;
-  List<Treatmentvarient> treatmentVarLists;
+  final List<Variation> treatmentVarLists;
 
   TreatmentQuantityBottomSheet({
     super.key,
     required this.addToCart,
     required this.onBack,
-    required this.treatmentList,
     required this.treatmentVarLists,
   });
 
@@ -27,7 +26,40 @@ class TreatmentQuantityBottomSheet extends StatefulWidget {
 
 class _TreatmentQuantityBottomSheetState
     extends State<TreatmentQuantityBottomSheet> {
-  int isSelected = 0;
+  final TreatmentDetailsController ctn = Get.find<TreatmentDetailsController>();
+
+  @override
+  void initState() {
+    super.initState();
+    print(ctn.treatmentDetailsModel.treatment!.variations!.length == 1);
+    if (ctn.treatmentDetailsModel.treatment!.variations!.length == 1 &&
+        ctn.selectedIndex == 0) {
+      if (ctn.treatmentDetailsModel.treatment!.variations![ctn.selectedIndex]
+          .prices !=
+          null &&
+          ctn.treatmentDetailsModel.treatment!.variations![ctn.selectedIndex]
+              .prices!.isNotEmpty) {
+        ctn.selectedIndexKey = 0;
+
+        var firstPrice = ctn.treatmentDetailsModel.treatment!
+            .variations![ctn.selectedIndex].prices![0];
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ctn.updateValidQuantity(
+            qtyLabel: ctn.treatmentDetailsModel.treatment!
+                .variations![ctn.selectedIndex].variationName ??
+                "",
+            price: (firstPrice.price ?? 0).toDouble(),
+            membershipPrice:
+            (firstPrice.membershipInfo?.membershipOfferPrice ?? 0)
+                .toDouble(),
+            unitType: ctn.treatmentDetailsModel.treatment?.unitType ?? "",
+            qty: firstPrice.qty.toString().replaceAll(".0", ""),
+          );
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +73,6 @@ class _TreatmentQuantityBottomSheetState
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          //! Header with title & close button
           Padding(
             padding: EdgeInsets.only(top: 10.h, left: 10.w),
             child: Row(
@@ -54,7 +85,7 @@ class _TreatmentQuantityBottomSheetState
                 Expanded(
                   child: Center(
                     child: Text(
-                      "SELECT YOUR QUANTITY".toUpperCase(),
+                      AppStrings.selectYourQuantity.toUpperCase(),
                       style: TextStyle(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.bold,
@@ -66,121 +97,93 @@ class _TreatmentQuantityBottomSheetState
               ],
             ),
           ),
-          Divider(),
-          Expanded(
-              child: GetBuilder<TreatmentDetailsController>(builder: (ctn) {
-            return ListView.builder(
-              itemCount: 1,
-              itemBuilder: (ctx, index) {
-                var treatmentData = widget.treatmentVarLists[index];
 
-                return _buildServiceOption(
-                  "",
-                  treatmentData,
-                  2204.00,
-                  isSelected == index,
-                  () {
-                    isSelected = index;
-                    setState(() {});
-                    // controller.selectTreatment(index);
+          // Variations list
+          ctn.treatmentDetailsModel.treatment!.variations![ctn.selectedIndex]
+              .prices!.isEmpty
+              ? Center(child: Text(AppStrings.noVariationsAvailable))
+              : Expanded(
+            child: GetBuilder<TreatmentDetailsController>(
+              builder: (_) {
+                final prices = ctn.treatmentDetailsModel.treatment!
+                    .variations![ctn.selectedIndex].prices ??
+                    [];
+                return ListView.builder(
+                  itemCount: prices.length,
+                  itemBuilder: (ctx, pIndex) {
+                    var priceData = prices[pIndex];
+                    // String key = "${ctn.selectedIndex}-$pIndex";
+                    var key = pIndex;
+                    var qty =
+                    priceData.qty.toString().replaceAll(".0", "");
+                    var price = (priceData.price ?? 0).toDouble();
+                    var memPrice =
+                    (priceData.membershipInfo?.membershipOfferPrice ??
+                        0)
+                        .toDouble();
+                    print(ctn.selectedIndex);
+                    var unitType =
+                        ctn.treatmentDetailsModel.treatment?.unitType;
+
+                    return _buildServiceOption(
+                      variationName: unitType,
+                      price: price,
+                      qty: qty,
+                      isActive: ctn.selectedIndexKey == key,
+                      onTap: () {
+                        ctn.selectedIndexKey = int.parse(key.toString());
+                        ctn.update();
+
+                        ctn.updateSelectedQuantity(
+                          price: price,
+                          membershipPrice: memPrice,
+                          unitType: ctn.treatmentDetailsModel.treatment
+                              ?.unitType ??
+                              "",
+                          qty: qty,
+                        );
+                      },
+                      memPrice: memPrice,
+                    );
                   },
                 );
               },
-            );
-          })),
+            ),
+          ),
+
           SizedBox(height: 20.h),
-          //! Bottom Button
+
+          // Bottom Buttons
           SafeArea(
-            child: Padding(
-              padding: EdgeInsets.all(10.h),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: InkWell(
-                      onTap: widget.onBack,
-                      overlayColor:
-                          WidgetStatePropertyAll(AppColor().transparent),
-                      child: Container(
-                        width: double.infinity,
-                        height: 45.h,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10.r),
-                            border: Border.all(
-                                color: AppColor.dynamicColor, width: 1.0)
-                            ),
-                        child: ElevatedButton(
-                          onPressed: widget.onBack,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            shadowColor: Colors.transparent,
-                            disabledBackgroundColor: Colors.transparent,
-                            overlayColor: Colors.transparent,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.r),
-                            ),
-                          ),
-                          child: Text(
-                            "Back",
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              color: AppColor.dynamicColor,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
+              height: 45.h,
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: widget.addToCart,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColor.dynamicColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.r),
                   ),
-                  SizedBox(width: 15.w),
-                  Expanded(
-                    child: InkWell(
-                      onTap: widget.addToCart,
-                      overlayColor:
-                          WidgetStatePropertyAll(AppColor().transparent),
-                      child: Container(
-                        width: double.infinity,
-                        height: 45.h,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10.r),
-                          gradient: LinearGradient(colors: [
-                            AppColor.dynamicColor,
-                            AppColor.dynamicColor.withAlpha(400)
-                          ]),
-                        ),
-                        child: ElevatedButton(
-                          onPressed: widget.addToCart,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            shadowColor: Colors.transparent,
-                            disabledBackgroundColor: Colors.transparent,
-                            overlayColor: Colors.transparent,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.r),
-                            ),
-                          ),
-                          child: GetBuilder<TreatmentDetailsController>(
-                              builder: (logic) {
-                            return logic.isAddingCart
-                                ? CircularProgressIndicator(
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                    AppColor().whiteColor,
-                                  ))
-                                : Text(
-                                    "Add To Cart",
-                                    style: TextStyle(
-                                      fontSize: 16.sp,
-                                      color: AppColor().whiteColor,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  );
-                          }),
-                        ),
+                ),
+                child: GetBuilder<TreatmentDetailsController>(
+                  builder: (logic) {
+                    return logic.isAddingCart
+                        ? CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                          AppColor().whiteColor),
+                    )
+                        : Text(
+                      AppStrings.addToCart,
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        color: AppColor().whiteColor,
+                        fontWeight: FontWeight.bold,
                       ),
-                    ),
-                  ),
-                ],
+                    );
+                  },
+                ),
               ),
             ),
           ),
@@ -189,50 +192,66 @@ class _TreatmentQuantityBottomSheetState
     );
   }
 
-  Widget _buildServiceOption(String title, Treatmentvarient originalPrice,
-      var memberPrice, index, VoidCallback onTap) {
-    return Column(
-      children: [
-        ListTile(
-          leading: Container(
-            width: 24.w,
-            height: 24.h,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColor.dynamicColor, width: 2),
-              color: index ? AppColor.dynamicColor : Colors.white,
-            ),
-            child: index
-                ? Icon(Icons.circle, size: 8.w, color: Colors.white)
-                : null,
-          ),
-          title: Text(
-            "${originalPrice.treatmentVariationqty} treatment",
-            style: GoogleFonts.roboto(fontWeight: FontWeight.bold),
-          ),
-          subtitle: Padding(
-            padding: EdgeInsets.only(top: 4.0.h),
-            child: RichText(
-              text: TextSpan(
-                style: GoogleFonts.merriweather(
-                    fontSize: 12.sp, color: Colors.grey),
-                children: [
-                  TextSpan(
-                    text: formatCurrency(
-                        originalPrice.treatmentVariationPrice.toString()),
-                    style: TextStyle(
-                      decoration: TextDecoration.none,
-                      color: Colors.black54,
-                    ),
-                  ),
-                ],
+  Widget _buildServiceOption({
+    var variationName,
+    var price,
+    var qty,
+    var isActive,
+    VoidCallback? onTap,
+    var memPrice,
+  }) {
+    return ListTile(
+      leading: Container(
+        width: 24.w,
+        height: 24.h,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: AppColor.dynamicColor, width: 2),
+          color: isActive ? AppColor.dynamicColor : Colors.white,
+        ),
+        child: isActive
+            ? Icon(Icons.circle, size: 8.w, color: Colors.white)
+            : null,
+      ),
+      title: Text(
+        "$qty $variationName",
+        style: GoogleFonts.roboto(fontWeight: FontWeight.bold),
+      ),
+      subtitle: Padding(
+        padding: EdgeInsets.only(top: 4.0.h),
+        child: Row(
+          children: [
+            Text(
+              "\$${price.toStringAsFixed(2)}",
+              // 👈 Added $ and fixed to 2 decimals
+              style: GoogleFonts.merriweather(
+                fontSize: 13.sp,
+                color: Colors.black54,
               ),
             ),
-          ),
-          onTap: onTap,
+            memPrice == 0
+                ? SizedBox.shrink()
+                : Container(
+              margin: EdgeInsets.symmetric(horizontal: 6.w),
+              height: 12.h,
+              width: 1.w,
+              color: Colors.grey,
+            ),
+            memPrice == 0
+                ? SizedBox.shrink()
+                : Text(
+              "\$${memPrice.toStringAsFixed(2)} ${AppStrings.member}", // 👈 Added $
+              style: GoogleFonts.merriweather(
+                fontSize: 13.sp,
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
-        Divider(indent: 15.w, endIndent: 10.0.w),
-      ],
+      ),
+      onTap: onTap,
     );
   }
 }
+

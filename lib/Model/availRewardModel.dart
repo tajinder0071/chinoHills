@@ -1,105 +1,124 @@
 class AvailRewardModel {
+  List<Reward>? upcomingRewards;
   String? message;
   bool? success;
-  List<AvailDatum>? data;
+  List<Reward>? unlockedRewards;
+  NextReward? nextReward;
 
   AvailRewardModel({
+    this.upcomingRewards,
     this.message,
     this.success,
-    this.data,
+    this.unlockedRewards,
+    this.nextReward,
   });
 
   factory AvailRewardModel.fromJson(Map<String, dynamic> json) =>
       AvailRewardModel(
+        upcomingRewards: json["upcoming_rewards"] == null
+            ? []
+            : List<Reward>.from(
+                json["upcoming_rewards"]!.map((x) => Reward.fromJson(x))),
         message: json["message"],
         success: json["success"],
-        data: json["data"] == null
+        unlockedRewards: json["unlocked_rewards"] == null
             ? []
-            : List<AvailDatum>.from(
-                json["data"]!.map((x) => AvailDatum.fromJson(x))),
+            : List<Reward>.from(
+                json["unlocked_rewards"]!.map((x) => Reward.fromJson(x))),
+        nextReward: json["next_reward"] == null
+            ? null
+            : NextReward.fromJson(json["next_reward"]),
       );
 
   Map<String, dynamic> toJson() => {
+        "upcoming_rewards": upcomingRewards == null
+            ? []
+            : List<dynamic>.from(upcomingRewards!.map((x) => x.toJson())),
         "message": message,
         "success": success,
-        "data": data == null
+        "unlocked_rewards": unlockedRewards == null
             ? []
-            : List<dynamic>.from(data!.map((x) => x.toJson())),
+            : List<dynamic>.from(unlockedRewards!.map((x) => x.toJson())),
+        "next_reward": nextReward?.toJson(),
       };
 }
 
-class AvailDatum {
-  String? location;
-  String? createdAt;
-  String? deletedAt;
-  String? discountType;
-  String? rewardValidAt;
-  String? rewardType;
-  String? rewardTitle;
-  var rewardUnlocksAt;
-  var clientId;
-  String? repeatCashValue;
-  String? discountAmount;
-  String? includedServiceType;
-  String? updatedAt;
-  var id;
-  String? rewardDisclaimer;
-  String? selectedServiceType;
+class NextReward {
+  var nextRewardId;
+  var unlockSpend;
+  var unlockAtCount;
+  var progressPercentage;
 
-  AvailDatum({
-    this.location,
-    this.createdAt,
-    this.deletedAt,
-    this.discountType,
-    this.rewardValidAt,
-    this.rewardType,
-    this.rewardTitle,
-    this.rewardUnlocksAt,
-    this.clientId,
-    this.repeatCashValue,
-    this.discountAmount,
-    this.includedServiceType,
-    this.updatedAt,
-    this.id,
-    this.rewardDisclaimer,
-    this.selectedServiceType,
+  NextReward({
+    this.nextRewardId,
+    this.unlockSpend,
+    this.unlockAtCount,
+    this.progressPercentage,
   });
 
-  factory AvailDatum.fromJson(Map<String, dynamic> json) => AvailDatum(
-        location: json["location"],
-        createdAt: json["created_at"],
-        deletedAt: json["deleted_at"],
-        discountType: json["discount_type"],
-        rewardValidAt: json["reward_valid_at"],
-        rewardType: json["reward_type"],
-        rewardTitle: json["reward_title"],
-        rewardUnlocksAt: json["reward_unlocks_at"],
-        clientId: json["client_id"],
-        repeatCashValue: json["repeat_cash_value"],
-        discountAmount: json["discount_amount"],
-        includedServiceType: json["included_service_type"],
-        updatedAt: json["updated_at"],
-        id: json["id"],
-        rewardDisclaimer: json["reward_disclaimer"],
-        selectedServiceType: json["selected_service_type"],
+  factory NextReward.fromJson(Map<String, dynamic> json) => NextReward(
+        nextRewardId: json["next_reward_id"],
+        unlockSpend: json["unlock_spend"],
+        unlockAtCount: json["unlock_at_count"],
+        progressPercentage: json["progress_percentage"],
       );
 
   Map<String, dynamic> toJson() => {
-        "location": location,
-        "created_at": createdAt,
-        "deleted_at": deletedAt,
-        "discount_type": discountType,
-        "reward_valid_at": rewardValidAt,
-        "reward_type": rewardType,
-        "reward_title": rewardTitle,
+        "next_reward_id": nextRewardId,
+        "unlock_spend": unlockSpend,
+        "unlock_at_count": unlockAtCount,
+        "progress_percentage": progressPercentage,
+      };
+}
+
+class Reward {
+  String? status;
+  var rewardUnlocksAt;
+  String? repeatCashValue;
+  String? discountAmount;
+  var id;
+  String? rewardDisclaimer;
+  var visitsNeeded;
+  String? discountType;
+  String? rewardTitle;
+  String? rewardValidAt;
+
+  Reward({
+    this.status,
+    this.rewardUnlocksAt,
+    this.repeatCashValue,
+    this.discountAmount,
+    this.id,
+    this.rewardDisclaimer,
+    this.visitsNeeded,
+    this.discountType,
+    this.rewardTitle,
+    this.rewardValidAt,
+  });
+
+  factory Reward.fromJson(Map<String, dynamic> json) => Reward(
+        status: json["status"],
+        rewardUnlocksAt: json["reward_unlocks_at"],
+        repeatCashValue: json["repeat_cash_value"],
+        discountAmount: json["discount_amount"],
+        id: json["id"],
+        rewardDisclaimer: json["reward_disclaimer"],
+        visitsNeeded: json["visits_needed"],
+        discountType: json["discount_type"],
+        rewardTitle: json["reward_title"],
+        rewardValidAt: json["reward_valid_at"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "status": status,
         "reward_unlocks_at": rewardUnlocksAt,
-        "client_id": clientId,
         "repeat_cash_value": repeatCashValue,
         "discount_amount": discountAmount,
-        "included_service_type": includedServiceType,
-        "updated_at": updatedAt,
         "id": id,
         "reward_disclaimer": rewardDisclaimer,
-        "selected_service_type": selectedServiceType,
+        "visits_needed": visitsNeeded,
+        "discount_type": discountType,
+        "reward_title": rewardTitle,
+        "reward_valid_at": rewardValidAt,
       };
 }

@@ -1,84 +1,281 @@
+import 'dart:convert';
+
+import 'detail_browse_model.dart';
+
+HomeModel homeModelFromJson(String str) => HomeModel.fromJson(json.decode(str));
+
+String homeModelToJson(HomeModel data) => json.encode(data.toJson());
+
 class HomeModel {
   String? message;
   bool? success;
   List<HomeDatum>? data;
 
-  HomeModel({
-    this.message,
-    this.success,
-    this.data,
-  });
+  HomeModel({this.message, this.success, this.data});
 
-  factory HomeModel.fromJson(Map<String, dynamic> json) => HomeModel(
-        message: json["message"],
-        success: json["success"],
-        data: json["data"] == null
-            ? []
-            : List<HomeDatum>.from(
-                json["data"]!.map((x) => HomeDatum.fromJson(x))),
-      );
+  HomeModel.fromJson(Map<String, dynamic> json) {
+    message = json['message'];
+    success = json['success'];
+    if (json['data'] != null) {
+      data = <HomeDatum>[];
+      json['data'].forEach((v) {
+        data!.add(HomeDatum.fromJson(v));
+      });
+    }
+  }
 
-  Map<String, dynamic> toJson() => {
-        "message": message,
-        "success": success,
-        "data": data == null
-            ? []
-            : List<dynamic>.from(data!.map((x) => x.toJson())),
-      };
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['message'] = message;
+    data['success'] = success;
+    if (this.data != null) {
+      data['data'] = this.data!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
 }
 
 class HomeDatum {
-  String? createdAt;
+  String? membershipsPerksHeader;
+  var unlockSpend;
+  String? headerImage;
+  String? linkedImage;
+  var unlockAtCount;
+  List<BestSelling>? bestSelling;
+  List<AnnouncementOffers>? announcementOffers;
+  List<MembershipPerk>? membershipPerks;
+  var clientId;
+  var nextRewardId;
   String? color;
   String? subheader;
-  String? headerImage;
-  String? updatedAt;
+  List<Membership>? memberships;
   var id;
-  var unlock_at_count;
-  var unlock_spend;
-  String? linkedImage;
+  List<OfferCards>? offerCards;
   String? mainheader;
   String? concernsImage;
 
-  HomeDatum({
-    this.createdAt,
-    this.color,
-    this.subheader,
-    this.headerImage,
-    this.updatedAt,
-    this.unlock_at_count,
-    this.unlock_spend,
-    this.id,
-    this.linkedImage,
-    this.mainheader,
-    this.concernsImage,
-  });
+  HomeDatum(
+      {this.membershipsPerksHeader,
+        this.unlockSpend,
+        this.headerImage,
+        this.linkedImage,
+        this.unlockAtCount,
+        this.bestSelling,
+        this.announcementOffers,
+        this.membershipPerks,
+        this.clientId,
+        this.nextRewardId,
+        this.color,
+        this.subheader,
+        this.memberships,
+        this.id,
+        this.offerCards,
+        this.mainheader,
+        this.concernsImage});
 
-  factory HomeDatum.fromJson(Map<String, dynamic> json) => HomeDatum(
-        createdAt: json["created_at"],
-        color: json["color"],
-        unlock_at_count: json["unlock_at_count"],
-        unlock_spend: json["unlock_spend"],
-        subheader: json["subheader"],
-        headerImage: json["header_image"],
-        updatedAt: json["updated_at"],
-        id: json["id"],
-        linkedImage: json["linked_image"],
-        mainheader: json["mainheader"],
-        concernsImage: json["concerns_image"],
-      );
+  HomeDatum.fromJson(Map<String, dynamic> json) {
+    membershipsPerksHeader = json['memberships_perks_header'];
+    unlockSpend = json['unlock_spend'];
+    headerImage = json['header_image'];
+    linkedImage = json['linked_image'];
+    unlockAtCount = json['unlock_at_count'];
+    if (json['best_selling'] != null) {
+      bestSelling = <BestSelling>[];
+      json['best_selling'].forEach((v) {
+        bestSelling!.add(new BestSelling.fromJson(v));
+      });
+    }
+    if (json['announcement_offers'] != null) {
+      announcementOffers = <AnnouncementOffers>[];
+      json['announcement_offers'].forEach((v) {
+        announcementOffers!.add(new AnnouncementOffers.fromJson(v));
+      });
+    }
+    if (json['membershipPerks'] != null) {
+      membershipPerks = <MembershipPerk>[];
+      json['membershipPerks'].forEach((v) {
+        membershipPerks!.add(new MembershipPerk.fromJson(v));
+      });
+    }
+    clientId = json['client_id'];
+    nextRewardId = json['next_reward_id'];
+    color = json['color'];
+    subheader = json['subheader'];
+    if (json['memberships'] != null) {
+      memberships = <Membership>[];
+      json['memberships'].forEach((v) {
+        memberships!.add(new Membership.fromJson(v));
+      });
+    }
+    id = json['id'];
+    if (json['offerCards'] != null) {
+      offerCards = <OfferCards>[];
+      json['offerCards'].forEach((v) {
+        offerCards!.add(new OfferCards.fromJson(v));
+      });
+    }
+    mainheader = json['mainheader'];
+    concernsImage = json['concerns_image'];
+  }
 
-  Map<String, dynamic> toJson() => {
-        "created_at": createdAt,
-        "color": color,
-        "subheader": subheader,
-        "header_image": headerImage,
-        "updated_at": updatedAt,
-        "unlock_at_count": unlock_at_count,
-        "unlock_spend": unlock_spend,
-        "id": id,
-        "linked_image": linkedImage,
-        "mainheader": mainheader,
-        "concerns_image": concernsImage,
-      };
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['memberships_perks_header'] = this.membershipsPerksHeader;
+    data['unlock_spend'] = this.unlockSpend;
+    data['header_image'] = this.headerImage;
+    data['linked_image'] = this.linkedImage;
+    data['unlock_at_count'] = this.unlockAtCount;
+    if (bestSelling != null) {
+      data['best_selling'] = bestSelling!.map((v) => v.toJson()).toList();
+    }
+    if (announcementOffers != null) {
+      data['announcement_offers'] =
+          announcementOffers!.map((v) => v.toJson()).toList();
+    }
+    if (membershipPerks != null) {
+      data['membershipPerks'] =
+          membershipPerks!.map((v) => v.toJson()).toList();
+    }
+    data['client_id'] = this.clientId;
+    data['next_reward_id'] = this.nextRewardId;
+    data['color'] = this.color;
+    data['subheader'] = this.subheader;
+    if (memberships != null) {
+      data['memberships'] = memberships!.map((v) => v.toJson()).toList();
+    }
+    data['id'] = this.id;
+    if (offerCards != null) {
+      data['offerCards'] = offerCards!.map((v) => v.toJson()).toList();
+    }
+    data['mainheader'] = mainheader;
+    data['concerns_image'] = concernsImage;
+    return data;
+  }
 }
+
+class BestSelling {
+  String? membershipOfferPrice;
+  String? itemImage;
+  int? itemId;
+  String? itemType;
+  String? itemPrice;
+  String? itemName;
+  String? offerText;
+
+  BestSelling(
+      {this.membershipOfferPrice,
+        this.itemImage,
+        this.itemId,
+        this.itemType,
+        this.itemPrice,
+        this.itemName,
+        this.offerText});
+
+  BestSelling.fromJson(Map<String, dynamic> json) {
+    membershipOfferPrice = json['membership_offer_price'];
+    itemImage = json['item_image'];
+    itemId = json['item_id'];
+    itemType = json['item_type'];
+    itemPrice = json['item_price'];
+    itemName = json['item_name'];
+    offerText = json['offer_text'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['membership_offer_price'] = this.membershipOfferPrice;
+    data['item_image'] = this.itemImage;
+    data['item_id'] = this.itemId;
+    data['item_type'] = this.itemType;
+    data['item_price'] = this.itemPrice;
+    data['item_name'] = this.itemName;
+    data['offer_text'] = this.offerText;
+    return data;
+  }
+}
+
+class AnnouncementOffers {
+  String? image;
+  int? discountValue;
+  String? title;
+  int? id;
+  String? discountType;
+
+  AnnouncementOffers(
+      {this.image, this.discountValue, this.title, this.id, this.discountType});
+
+  AnnouncementOffers.fromJson(Map<String, dynamic> json) {
+    image = json['image'];
+    discountValue = json['discount_value'];
+    title = json['title'];
+    id = json['id'];
+    discountType = json['discount_type'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['image'] = this.image;
+    data['discount_value'] = this.discountValue;
+    data['title'] = this.title;
+    data['id'] = this.id;
+    data['discount_type'] = this.discountType;
+    return data;
+  }
+}
+
+class MembershipPerk {
+  String? membershipIcon;
+  String? membershipPerk;
+
+  MembershipPerk({this.membershipIcon, this.membershipPerk});
+
+  MembershipPerk.fromJson(Map<String, dynamic> json) {
+    membershipIcon = json['membership_icon'];
+    membershipPerk = json['membership_perk'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['membership_icon'] = this.membershipIcon;
+    data['membership_perk'] = this.membershipPerk;
+    return data;
+  }
+}
+
+class Membership {
+  int? membershipPricing;
+  String? offeroffText;
+  int? membershipId;
+  String? membershipTitle;
+  String? membershipDescription;
+  String? membershipImage;
+
+  Membership(
+      {this.membershipPricing,
+        this.offeroffText,
+        this.membershipId,
+        this.membershipTitle,
+        this.membershipDescription,
+        this.membershipImage});
+
+  Membership.fromJson(Map<String, dynamic> json) {
+    membershipPricing = json['membership_pricing'];
+    offeroffText = json['offeroffText'];
+    membershipId = json['membership_id'];
+    membershipTitle = json['membership_title'];
+    membershipDescription = json['membership_description'];
+    membershipImage = json['membership_image'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['membership_pricing'] = this.membershipPricing;
+    data['offeroffText'] = this.offeroffText;
+    data['membership_id'] = this.membershipId;
+    data['membership_title'] = this.membershipTitle;
+    data['membership_description'] = this.membershipDescription;
+    data['membership_image'] = this.membershipImage;
+    return data;
+  }
+}
+
