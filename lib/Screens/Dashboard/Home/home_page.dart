@@ -168,7 +168,7 @@ class HomePage extends StatelessWidget {
           controller.homeData.isEmpty
               ? SizedBox.shrink()
               : Text(
-                  'Just ${formatCurrency(controller.homeData[0].unlockAtCount.toString())} more visit or spend ${formatCurrency(controller.homeData[0].unlockSpend.toString())} for your next reward!',
+                  'Just ${double.parse(controller.homeData[0].unlockAtCount.toString()).toInt()} more visit or spend ${formatCurrency(controller.homeData[0].unlockSpend.toString())} for your next reward!',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.sarabun(
                     fontSize: 19.sp,

@@ -1,18 +1,19 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import '../CSS/color.dart';
 import '../util/common_page.dart';
 
 class ConstantNetworkImage extends StatelessWidget {
   ConstantNetworkImage(
       {super.key,
-      this.imageUrl,
-      this.height,
-      this.width,
-      this.errorWidget,
-      this.boxFit = BoxFit.fill,
-      required this.isLoad});
+        this.imageUrl,
+        this.height,
+        this.width,
+        this.errorWidget,
+        this.boxFit = BoxFit.fill,
+        required this.isLoad});
 
   final Widget? errorWidget;
   var imageUrl;
@@ -47,9 +48,6 @@ class ConstantNetworkImage extends StatelessWidget {
         ),
       ),
       errorListener: (value) => Icon(Icons.error),
-      // placeholder: (context, url) => isLoad == true
-      //     ? Center(child: commonLoader(color: AppColor.dynamicColor))
-      //     : SizedBox.shrink(),
       errorWidget: (context, url, error) {
         return Container(
           clipBehavior: Clip.antiAlias,
@@ -59,12 +57,12 @@ class ConstantNetworkImage extends StatelessWidget {
           child: errorWidget ??
               Center(
                   child: Image.asset(
-                "assets/images/Image_not_available.png",
-                color: AppColor().blackColor,
-                // width: 150.w,
-                // height: 150.h,
-                fit: BoxFit.cover,
-              )),
+                    "assets/images/Image_not_available.png",
+                    color: AppColor().blackColor,
+                    // width: 150.w,
+                    // height: 150.h,
+                    fit: BoxFit.cover,
+                  )),
         );
       },
     );

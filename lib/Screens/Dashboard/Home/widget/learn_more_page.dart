@@ -1,3 +1,5 @@
+import 'package:chino_hills/Screens/shop/Pages/Package%20Page/Widgets/package_detail_page.dart';
+import 'package:chino_hills/Screens/shop/Pages/Treatment%20Page/widgets/treatment_details_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -10,8 +12,6 @@ import '../../../../common_Widgets/cacheNetworkImage.dart';
 import '../../../../util/common_page.dart';
 import '../../../Discover/controller/discover_controller.dart';
 import '../../../cartList/Controller/cart_controller.dart';
-import '../../../shop/Pages/Package Page/Widgets/package_detail_page.dart';
-import '../../../shop/Pages/Treatment Page/widgets/treatment_details_page.dart';
 import 'members_ship_details_page.dart';
 
 class LearnMorePage extends StatelessWidget {
@@ -49,7 +49,7 @@ class _DiscoverSection extends StatelessWidget {
         children: [
           ConstantNetworkImage(
             isLoad: true,
-            imageUrl: CommonPage().image_url + cardData.imagePath.toString(),
+            imageUrl:  cardData.cloudUrl.toString(),
             width: double.infinity,
             height: 200.h,
             boxFit: BoxFit.cover,
@@ -183,10 +183,8 @@ class _OfferDetailSection extends StatelessWidget {
                   ),
                 ),
             ],
-          ),
-          bottomNavigationBar: controller.cartModel1.value.data == null || controller.cartModel1.value.data!.items!.isEmpty || controller.cartModel1.value.data!.cartId.toString() == "0"
-              ? SizedBox.shrink()
-              : controller.isApplyLoading
+          ), // bottomNavigationBar: controller.cartModel1.value.data == null || controller.cartModel1.value.data!.items!.isEmpty || controller.cartModel1.value.data!.cartId.toString() == "0" // ? SizedBox.shrink() :
+          bottomNavigationBar: controller.isApplyLoading
               ? Center(
             child: CircularProgressIndicator(),
           )

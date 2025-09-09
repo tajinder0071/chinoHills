@@ -3,12 +3,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
-
 import '../../../../CSS/color.dart';
 import '../../../../CSS/image_page.dart';
 import '../../../../common_Widgets/load_nfc.dart';
 import '../../../../util/base_services.dart';
 import '../../../../util/common_page.dart';
+import '../../../../util/services.dart';
 
 class QRCodeScannerPage extends StatefulWidget {
   const QRCodeScannerPage({super.key});
@@ -29,7 +29,7 @@ class _QRCodeScannerPageState extends State<QRCodeScannerPage> {
     return Scaffold(
       backgroundColor: AppColor().background,
       appBar:
-          commonAppBar(isLeading: true, title: "QR Code Scanner", action: []),
+      commonAppBar(isLeading: true, title: "QR Code Scanner", action: []),
       body: SafeArea(
         child: Stack(
           children: [
@@ -53,7 +53,7 @@ class _QRCodeScannerPageState extends State<QRCodeScannerPage> {
                   flex: 1,
                   child: Center(
                     child: Obx(
-                      () => Text(
+                          () => Text(
                         result.isNotEmpty
                             ? 'Scanned: ${result.value}'
                             : 'Scan a QR code',
@@ -71,7 +71,7 @@ class _QRCodeScannerPageState extends State<QRCodeScannerPage> {
               top: 40,
               right: 20,
               child: Obx(
-                () => GestureDetector(
+                    () => GestureDetector(
                   onTap: _toggleFlash,
                   child: CircleAvatar(
                     backgroundColor: Colors.black54,
@@ -115,13 +115,14 @@ class _QRCodeScannerPageState extends State<QRCodeScannerPage> {
     try {
       var response = await hitscanRewardAPI(clinic_id);
       load = false;
-      print("available==>${response.data}");
-      if (response.data != null) {
-        print("Welcome!!");
+      if (response['success'] == true) {
         showAuthenticProductBottomSheet(Get.context!);
       } else {
-        _showResultPopup();
+        Navigator.pop(context);
+        showMessage(response['message'], context);
       }
+      print("Welcome!!");
+
       setState(() {});
     } on Exception catch (e) {
       load = false;
