@@ -54,18 +54,23 @@ class BooksOrderSummaryCard extends StatelessWidget {
               children: [
                 Icon(Icons.receipt_long, color: Colors.blueGrey, size: 22.sp),
                 SizedBox(width: 8.w),
-                Text("Order Summary",
-                    style: GoogleFonts.merriweather(
-                      fontSize: 15.sp,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    )),
+                Text(
+                  "Order Summary",
+                  style: GoogleFonts.merriweather(
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
                 Spacer(),
                 CircleAvatar(
                   radius: 16.r,
                   backgroundColor: AppColor().background,
-                  child: Icon(Icons.arrow_forward_ios_rounded,
-                      size: 14.h, color: AppColor.dynamicColor),
+                  child: Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 14.h,
+                    color: AppColor.dynamicColor,
+                  ),
                 ),
               ],
             ),
@@ -75,8 +80,8 @@ class BooksOrderSummaryCard extends StatelessWidget {
             _buildInfoRow("Order ID", orderId),
             _buildInfoRow("Amount", currency),
             _buildInfoRow("Date", orderDate),
-            _buildInfoRow("Items", totalItems.toString()),
 
+            // _buildInfoRow("Items", totalItems.toString()),
             SizedBox(height: 12.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -138,9 +143,8 @@ class BooksOrderSummaryCard extends StatelessWidget {
     fontWeight: FontWeight.w500,
   );
 
-  TextStyle get valueStyle => GoogleFonts.roboto(
-    fontSize: 14.sp,
-    fontWeight: FontWeight.w600,
-  );
+  TextStyle get valueStyle =>
+      GoogleFonts.roboto(fontSize: 14.sp, fontWeight: FontWeight.w600);
 }
+
 //add shadow on all sides
