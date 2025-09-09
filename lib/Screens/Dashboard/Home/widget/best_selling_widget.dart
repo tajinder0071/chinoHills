@@ -243,11 +243,13 @@ class BestSellingWidget extends StatelessWidget {
                           ),
                         ),
                         SizedBox(width: 10.w),
-                        Container(
-                          height: 20.h,
-                          width: 2.w,
-                          color: AppColor().blackColor,
-                        ),
+                        memberPrice.toString() == '\$0.00'
+                            ? SizedBox.shrink()
+                            : Container(
+                                height: 20.h,
+                                width: 2.w,
+                                color: AppColor().blackColor,
+                              ),
                         memberPrice.toString() == '\$0.00'
                             ? SizedBox.shrink()
                             : Expanded(

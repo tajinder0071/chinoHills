@@ -1,11 +1,11 @@
-
+import 'package:chino_hills/Screens/shop/Pages/Treatment%20Page/widgets/treatment_quantity_bottom_sheet.dart';
+import 'package:chino_hills/Screens/shop/Pages/Treatment%20Page/widgets/variation_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import '../../../../../CSS/app_strings.dart';
-import 'package:chino_hills/Screens/shop/Pages/Treatment%20Page/widgets/treatment_quantity_bottom_sheet.dart';
-import 'package:chino_hills/Screens/shop/Pages/Treatment%20Page/widgets/variation_section.dart';
 import '../../../../../CSS/color.dart';
 import '../../../../../common_Widgets/no_record.dart';
 import '../../../../../loading/become_a_member_loading.dart';
@@ -47,12 +47,15 @@ class TreatmentDetailsPage extends GetView<TreatmentDetailsController> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          data!.treatmentName.toString(),
-                          style: GoogleFonts.merriweather(
-                              fontWeight: FontWeight.w900,
-                              fontSize: 22.sp),
-                          textAlign: TextAlign.center,
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 5.h),
+                          child: Text(
+                            data!.treatmentName.toString(),
+                            style: GoogleFonts.merriweather(
+                                fontWeight: FontWeight.w900,
+                                fontSize: 22.sp),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                         SizedBox(height: 10.h),
                         Row(
