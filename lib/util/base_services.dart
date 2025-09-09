@@ -9,7 +9,6 @@ import '../Model/body_Area.dart';
 import '../Model/brows_detail_model.dart';
 import '../Model/browse_Model.dart';
 import '../Model/card_detail_model.dart';
-import '../Model/card_list_model.dart';
 import '../Model/choose_client_model.dart';
 import '../Model/client_list_model.dart';
 import '../Model/detail_browse_model.dart';
@@ -34,9 +33,7 @@ import '../Model/tab_list_model.dart';
 import '../Model/term_condition_model.dart';
 import '../Model/treatment_details_model.dart';
 import '../Model/treatment_list_model.dart';
-import '../Model/treatment_model.dart';
 import '../Model/view_client_model.dart';
-import '../Model/visit_model.dart';
 import 'common_page.dart';
 import 'local_stoage.dart';
 import 'local_store_data.dart';
@@ -44,57 +41,11 @@ import 'local_store_data.dart';
 //Todo this page contains all base the base API'S for NIMA app.
 LocalStorage localStorage = LocalStorage();
 
-Future hitTabList() async {
-  var cId = await localStorage.getCId();
-  var api = "${CommonPage().api1}/getCustomCategories&client_id=$cId";
-  print(api);
-  try {
-    var response = await baseServiceGet(api, {}, "");
-    print("All cart Response :: ${response.body}");
-    if (response.statusCode == 200) {
-      var decodedData = json.decode(response.body);
-      if (decodedData['success'] == true) {
-        return TabListModel.fromJson(decodedData);
-      } else {
-        throw Exception(decodedData['message'] ?? 'Unknown error');
-      }
-    }
-  } on SocketException {
-    throw Exception('No Internet Connection');
-  }
-}
-
-Future<DynaminTabModel> getCustomCategoryLists(String dynamicId) async {
-  var clientId = await localStorage.getCId();
-  var userId = await localStorage.getUId();
-
-  var api =
-      "${CommonPage().api1}/customcategorylists&client_id=$clientId&custom_category_id=$dynamicId&user_id=$userId";
-
-  print("API: $api");
-
-  try {
-    final response = await baseServiceGet(api, {}, "");
-    print("RESPONSE: ${response.body}");
-
-    if (response.statusCode == 200) {
-      final decodedData = json.decode(response.body);
-      if (decodedData['success'] == true) {
-        return DynaminTabModel.fromJson(decodedData);
-      } else {
-        throw Exception(decodedData['message'] ?? 'Unknown error');
-      }
-    } else {
-      throw Exception('Server error: ${response.statusCode}');
-    }
-  } on SocketException {
-    throw Exception('No Internet Connection');
-  }
-}
-
-
-Future hitAllPackageAPI(List<String> selectedOptions, List<String> selectedArea,
-    String selectFilter) async {
+Future hitAllPackageAPI(
+  List<String> selectedOptions,
+  List<String> selectedArea,
+  String selectFilter,
+) async {
   String concernId = selectedOptions
       .toString()
       .replaceAll("[", "")
@@ -123,11 +74,17 @@ Future hitAllPackageAPI(List<String> selectedOptions, List<String> selectedArea,
     throw Exception('No Internet Connection');
   }
 }
+
 //Todo Hit the Treatment API
 Future hitAllTreatmentAPI(
-    var selectedOptions, selectedArea, selectFilter) async {
-  String concernId =
-  selectedOptions.toString().replaceAll("[", "").replaceAll("]", "");
+  var selectedOptions,
+  selectedArea,
+  selectFilter,
+) async {
+  String concernId = selectedOptions
+      .toString()
+      .replaceAll("[", "")
+      .replaceAll("]", "");
   String bId = selectedArea.toString().replaceAll("[", "").replaceAll("]", "");
   //get client id from local storage
   var clientId = await localStorage.getCId();
@@ -153,10 +110,10 @@ Future hitAllTreatmentAPI(
 
 //Todo Treatment Deatails
 Future hitAllTreatmentDetailsAPI(var id) async {
-  LocalStorage localStorage = LocalStorage();
   var clientId = await localStorage.getCId();
+  var userId = await localStorage.getUId();
   var api =
-      "${CommonPage().api1}/treatmentsDetails&treatment_id=$id&client_id=$clientId";
+      "${CommonPage().api1}/treatmentdetails&treatment_id=$id&client_id=$clientId&user_id=$userId";
   Get.log("TreatmentDetailsAPI  : $api");
   try {
     var response = await baseServiceGet(api, {}, "");
@@ -176,9 +133,10 @@ Future hitAllTreatmentDetailsAPI(var id) async {
 
 // Hit the PackagesDetails API
 Future hitPackagesDetailsAPI(var id) async {
-  var cId = await LocalStorage().getCId();
+  var clientId = await localStorage.getCId();
+  var userId = await localStorage.getUId();
   var api =
-      "${CommonPage().api1}/packageDetails&package_id=$id&client_id=${cId}";
+      "${CommonPage().api1}/packagesdetails&package_id=$id&client_id=${clientId}&user_id=${userId}";
   Get.log("Packages DetailsAPI  : $api");
   try {
     var response = await baseServiceGet(api, {}, "");
@@ -198,10 +156,11 @@ Future hitPackagesDetailsAPI(var id) async {
 
 //? TODO :-- Hit the MemberShip Details API
 Future hitMemberShipDetailsAPI(var id) async {
-  LocalStorage localStorage = LocalStorage();
   var clientId = await localStorage.getCId();
+  var userId = await localStorage.getUId();
+  Get.log("membership : $id");
   var api =
-      "${CommonPage().api1}/membershipDetails&membership_id=$id&client_id=$clientId";
+      "${CommonPage().api1}/membership&membership_id=$id&client_id=$clientId&user_id=$userId";
   Get.log("MemberShip DetailsAPI  : $api");
   try {
     var response = await baseServiceGet(api, {}, "");
@@ -221,15 +180,14 @@ Future hitMemberShipDetailsAPI(var id) async {
 
 Future hitHomeApi() async {
   //get client id from local storage
-  LocalStorage localStorage = LocalStorage();
   var clientId = await localStorage.getCId();
-  var user_id = await localStorage.getUId();
+  var userId = await localStorage.getUId();
   var api =
-      "${CommonPage().api1}/homePage&client_id=$clientId&user_id=${user_id}";
+      "${CommonPage().api1}/homePage&client_id=$clientId&user_id=${userId}";
   Get.log("homePage API : $api");
   try {
     var response = await baseServiceGet(api, {}, "");
-    Get.log("Package API Response : ${response.body}");
+    Get.log("Home API Response : ${response.body}");
     if (response.statusCode == 200) {
       var decodedData = json.decode(response.body);
       if (decodedData['success'] == true) {
@@ -247,10 +205,10 @@ Future hitHomeApi() async {
 
 //? Hit the Best Selling API..
 Future hitBestSellingAPI() async {
-  var clientId = await LocalStorage().getCId();
-  var user_id = await LocalStorage().getUId();
+  var clientId = await localStorage.getCId();
+  var userId = await localStorage.getUId();
   var api =
-      "${CommonPage().api}/bestsellers&client_id=${clientId}&user_id=${user_id}";
+      "${CommonPage().api}/bestsellers&client_id=${clientId}&user_id=${userId}";
   Get.log("BesSelling API : $api");
   try {
     var response = await baseServiceGet(api, {}, "");
@@ -271,11 +229,10 @@ Future hitBestSellingAPI() async {
 //TODO >>  Hit the Best Selling API..
 Future hitSpecialOffersAPI() async {
   try {
-    LocalStorage localStorage = LocalStorage();
+    var clientId = await localStorage.getCId();
     var userId = await localStorage.getUId();
-    var client_id = await LocalStorage().getCId();
     var api =
-        "${CommonPage().api}/promocode&user_id=$userId&client_id=${client_id}";
+        "${CommonPage().api}/promocode&user_id=$userId&client_id=${clientId}";
     Get.log("SpecialOffers API : $api");
     var response = await baseServiceGet(api, {}, "");
     Get.log("SpecialOffers API Response : ${response.body}");
@@ -293,7 +250,6 @@ Future hitSpecialOffersAPI() async {
 }
 
 Future hitAllBrowseAPI() async {
-  LocalStorage localStorage = LocalStorage();
   var clientId = await localStorage.getCId();
   var api = "${CommonPage().api1}/browseByConcern&client_id=$clientId";
   Get.log("browseByConcern : $api");
@@ -321,7 +277,6 @@ Future hitAllenabledBrowseAPI(var concern_id, var filterusedat) async {
       .replaceAll("[", "")
       .replaceAll("]", "")
       .removeAllWhitespace;
-  LocalStorage localStorage = LocalStorage();
   var clientId = await localStorage.getCId();
   var api =
       "${CommonPage().api}/fetchEnableDisableConcerns&client_id=$clientId&concern_id=$concernId&filter_used_at=$filterusedat";
@@ -363,8 +318,35 @@ Future hitAllMemberShipAPI() async {
   }
 }
 
+Future<DynaminTabModel> getCustomCategoryLists(String dynamicId) async {
+  var clientId = await localStorage.getCId();
+  var userId = await localStorage.getUId();
+
+  var api =
+      "${CommonPage().api1}/customcategorylists&client_id=$clientId&custom_category_id=$dynamicId&user_id=$userId";
+
+  print("API: $api");
+
+  try {
+    final response = await baseServiceGet(api, {}, "");
+    print("RESPONSE: ${response.body}");
+
+    if (response.statusCode == 200) {
+      final decodedData = json.decode(response.body);
+      if (decodedData['success'] == true) {
+        return DynaminTabModel.fromJson(decodedData);
+      } else {
+        throw Exception(decodedData['message'] ?? 'Unknown error');
+      }
+    } else {
+      throw Exception('Server error: ${response.statusCode}');
+    }
+  } on SocketException {
+    throw Exception('No Internet Connection');
+  }
+}
+
 Future hitbodyAreaAPI() async {
-  LocalStorage localStorage = LocalStorage();
   var clientId = await localStorage.getCId();
   var api =
       "${CommonPage().api}/fetchBodyAreasForTreatment&client_id=$clientId";
@@ -387,7 +369,6 @@ Future hitbodyAreaAPI() async {
 }
 
 Future hitAllMemberShipFetchAPI() async {
-  LocalStorage localStorage = LocalStorage();
   var clientId = await localStorage.getCId();
   var api = "${CommonPage().api}/fetchMemberShipPerks&client_id=$clientId";
   Get.log("Package API : $api");
@@ -409,10 +390,11 @@ Future hitAllMemberShipFetchAPI() async {
 
 Future hitAlBrowsBConcernAPI(String id, sortBy, selectFilter) async {
   //get client id from local storage
-  LocalStorage localStorage = LocalStorage();
   var clientId = await localStorage.getCId();
+  var userId = await localStorage.getUId();
+  /*&sort_by=${sortBy}&filter_by=$selectFilter&*/
   var api =
-      "${CommonPage().api}/browseByConcernListing&concern_id=$id&sort_by=${sortBy}&filter_by=$selectFilter&client_id=$clientId";
+      "${CommonPage().api1}/browseByConcernList&client_id=$clientId&user_id=$userId&concern_id=$id";
   Get.log("brows API : $api");
   try {
     var response = await baseServiceGet(api, {}, "");
@@ -421,30 +403,6 @@ Future hitAlBrowsBConcernAPI(String id, sortBy, selectFilter) async {
       var decodedData = json.decode(response.body);
       if (decodedData['success'] == true) {
         return BrowseDetailModel.fromJson(decodedData);
-      } else {
-        throw Exception(decodedData['message'] ?? 'Unknown error');
-      }
-    }
-  } on SocketException {
-    throw Exception('No Internet Connection');
-  }
-}
-
-Future hitAllVisitAPI() async {
-  //get user id from local storage
-  LocalStorage localStorage = LocalStorage();
-  var userId = await localStorage.getUId();
-  var cId = await localStorage.getCId();
-  var api = "${CommonPage().api}/visitRewards&user_id=$userId&client_id=${cId}";
-  //https://devnima.scanacart.com/api/index.cfm?endpoint=/signUpRewards&user_id=332&client_id=1
-  print(api);
-  try {
-    var response = await baseServiceGet(api, {}, "");
-    print("VISTI RESPONE : ${response.body}");
-    if (response.statusCode == 200) {
-      var decodedData = json.decode(response.body);
-      if (decodedData['success'] == true) {
-        return VisitModel.fromJson(decodedData);
       } else {
         throw Exception(decodedData['message'] ?? 'Unknown error');
       }
@@ -497,8 +455,8 @@ Future hitSearchClient(zipCode, userId) async {
 }
 
 Future hitSelectClient(id) async {
-  var user_id = await LocalStorage().getUId();
-  var api = "${CommonPage().api}/addClients&client_id=$id&user_id=${user_id}";
+  var uId = await localStorage.getUId();
+  var api = "${CommonPage().api}/addClients&client_id=$id&user_id=${uId}";
   print(api);
   try {
     var response = await baseServicePost(api, {}, "");
@@ -518,14 +476,9 @@ Future hitSelectClient(id) async {
 
 Future hitscanRewardAPI(clinic_id) async {
   //user id call
-  LocalStorage localStorage = LocalStorage();
   var userId = await localStorage.getUId();
-  var api = "${CommonPage().api1}/visit_reward_history";
-  Map<String, dynamic> map = {
-    "client_id": clinic_id,
-    "user_id": userId,
-    "visit_type": "btn-in-office",
-  };
+  var api = "${CommonPage().api1}/scanRewards";
+  Map<String, dynamic> map = {"client_id": clinic_id, "user_id": userId};
   print(api);
   print(map);
   //todo user id call
@@ -534,8 +487,8 @@ Future hitscanRewardAPI(clinic_id) async {
     print("available : ${response.body}");
     if (response.statusCode == 200) {
       var decodedData = json.decode(response.body);
-      if (decodedData['success'] == true) {
-        return AvailRewardModel.fromJson(decodedData);
+      if (decodedData != null) {
+        return decodedData;
       } else {
         throw Exception(decodedData['message'] ?? 'Unknown error');
       }
@@ -586,8 +539,8 @@ Future hitSearchLocationAPI() async {
 
 Future hitViewClient() async {
   try {
-    var user_id = await LocalStorage().getUId();
-    var api = "${CommonPage().api}/clientsForUsers&user_id=${user_id}";
+    var userId = await localStorage.getUId();
+    var api = "${CommonPage().api}/clientsForUsers&user_id=${userId}";
     print(api);
     var response = await baseServiceGet(api, {}, "");
     Get.log("Discover Response :: ${response.body}");
@@ -604,32 +557,14 @@ Future hitViewClient() async {
   }
 }
 
-Future hitSelectLocationAPI(map) async {
-  try {
-    var api = "${CommonPage().api}/clientListing";
-    var response = await baseServiceGet(api, map, "");
-    Get.log("Discover Response :: ${response.body}");
-    if (response.statusCode == 200) {
-      var decodedData = json.decode(response.body);
-      if (decodedData['success'] == true) {
-        return SearchClientModel.fromJson(decodedData);
-      } else {
-        throw Exception(decodedData['message'] ?? 'Unknown error');
-      }
-    }
-  } on SocketException {
-    throw Exception('No Internet Connection');
-  }
-}
-
 Future hitAddCartAPI(Map<String, dynamic> map) async {
-  var api = "${CommonPage().api1}/showCartList";
+  var api = "${CommonPage().api1}/cart";
   print(api);
   try {
     var response = await baseServicePost(api, map, "");
     print("All cart Response :: ${response.body}");
     if (response.statusCode == 200) {
-      var decodedData = json.decode(response.body.toString().toLowerCase());
+      var decodedData = json.decode(response.body);
       if (decodedData['success'] == true) {
         return decodedData;
       } else {
@@ -641,10 +576,29 @@ Future hitAddCartAPI(Map<String, dynamic> map) async {
   }
 }
 
+Future hitTabList() async {
+  var cId = await localStorage.getCId();
+  var api = "${CommonPage().api1}/getCustomCategories&client_id=$cId";
+  print(api);
+  try {
+    var response = await baseServiceGet(api, {}, "");
+    print("All cart Response :: ${response.body}");
+    if (response.statusCode == 200) {
+      var decodedData = json.decode(response.body);
+      if (decodedData['success'] == true) {
+        return TabListModel.fromJson(decodedData);
+      } else {
+        throw Exception(decodedData['message'] ?? 'Unknown error');
+      }
+    }
+  } on SocketException {
+    throw Exception('No Internet Connection');
+  }
+}
+
 Future hitGetProfileDetail() async {
-  LocalStorage localStorage = LocalStorage();
-  var userId = await localStorage.getUId();
-  var api = "${CommonPage().api}/profileDetails&user_id=$userId";
+  var uId = await localStorage.getUId();
+  var api = "${CommonPage().api}/profileDetails&user_id=$uId";
   print(api);
   try {
     var response = await baseServiceGet(api, {}, "");
@@ -709,8 +663,36 @@ Future<dynamic> hitCartListApi() async {
   return null;
 }
 
-hitOrderListApi(userId) async {
-  var clientId = await LocalStorage().getCId();
+Future<dynamic> hitLearnDetail(id) async {
+  var clientId = await localStorage.getCId();
+  var userId = await localStorage.getUId();
+
+  var api =
+      "${CommonPage().api1}/offerDetails&offer_id=$id&client_id=$clientId";
+  Get.log("offer API: $api");
+
+  try {
+    var response = await baseServiceGet(api, {}, "");
+    Get.log("CART LIST Response :: ${response.body}");
+
+    if (response.statusCode == 200) {
+      var decodedData = json.decode(response.body);
+      Get.log("Decoded data: $decodedData");
+
+      return OfferDetailModel.fromJson(decodedData);
+    }
+  } on SocketException {
+    throw Exception('No Internet Connection');
+  } catch (e) {
+    Get.log("Error in hitCartListApi: $e");
+  }
+
+  return null;
+}
+
+hitOrderListApi() async {
+  var clientId = await localStorage.getCId();
+  var userId = await localStorage.getUId();
   var api = "${CommonPage().api1}/orders&user_id=$userId&client_id=${clientId}";
   Get.log("OrderList :$api");
   try {
@@ -727,11 +709,10 @@ hitOrderListApi(userId) async {
 
 //
 hitOrderDetailApi(orderId) async {
-  LocalStorage localStorage = LocalStorage();
+  var clientId = await localStorage.getCId();
   var userId = await localStorage.getUId();
-  var cId = await localStorage.getCId();
   var api =
-      "${CommonPage().api1}/orders&order_id=$orderId&user_id=$userId&client_id=${cId}";
+      "${CommonPage().api1}/orders&order_id=$orderId&user_id=$userId&client_id=${clientId}";
   Get.log("OrderList :$api");
   try {
     var response = await baseServiceGet(api, {}, "");
@@ -746,8 +727,8 @@ hitOrderDetailApi(orderId) async {
 }
 
 hitTermConditionApi() async {
-  LocalStorage localStorage = LocalStorage();
   var clientId = await localStorage.getCId();
+
   var api = "${CommonPage().api}/fetchAggrement&client_id=$clientId";
   Get.log("TermsCondition API : $api");
   try {
@@ -784,24 +765,10 @@ hitDeleteCartApi(cardID) async {
   }
 }
 
-Future hiApplyMembershipAPI(Map<String, dynamic> map) async {
-  var api = "${CommonPage().api1}/applyMembership";
-  Get.log("Apply Available Code API : $api");
-  try {
-    var response = await baseServicePost(api, map, "");
-    Get.log("Apply Available Code API Response :: ${response.body}");
-    if (response.statusCode == 200) {
-      var decodedData = json.decode(response.body);
-      return decodedData;
-    }
-  } on SocketException {
-    throw Exception('No Internet Connection');
-  }
-}
-
 Future hitCartDetailAPI(id) async {
-  var cId = await LocalStorage().getCId();
-  var api = "${CommonPage().api}/contentCardDetails&id=$id&client_id=${cId}";
+  var clientId = await localStorage.getCId();
+  var api =
+      "${CommonPage().api}/contentCardDetails&id=$id&client_id=${clientId}";
   print(api);
   try {
     var response = await baseServiceGet(api, {}, "");
@@ -809,10 +776,8 @@ Future hitCartDetailAPI(id) async {
     if (response.statusCode == 200) {
       var decodedData = json.decode(response.body);
       if (decodedData['success'] == true) {
-        // print("Decoded data :=> ${decodedData['data']}");
         return CardDetailModel.fromJson(decodedData);
       } else {
-        // return decodedData['message'];
         throw Exception(decodedData['message'] ?? 'Unknown error');
       }
     }
@@ -822,8 +787,8 @@ Future hitCartDetailAPI(id) async {
 }
 
 Future hitAllOfferAPI() async {
-  var cId = await LocalStorage().getCId();
-  var api = "${CommonPage().api}/offerList&client_id=${cId}";
+  var clientId = await localStorage.getCId();
+  var api = "${CommonPage().api}/offerList&client_id=${clientId}";
   print(api);
   try {
     var response = await baseServiceGet(api, {}, "");
@@ -841,7 +806,6 @@ Future hitAllOfferAPI() async {
   }
 }
 
-/*this is just to practice my typing speed nothing much just some random texts are write my a flutter developer*/
 Future hiRegisterAPI(Map<String, dynamic> map) async {
   var api = "${CommonPage().api}/login";
   Get.log("Register API : $api");
@@ -875,7 +839,7 @@ Future hitUpdateProviderAPI(Map<String, dynamic> map) async {
 
 Future hitOTPApi(phoneNumber, otp) async {
   var api =
-      "${CommonPage().api1}/loginWithNumber&phone_number=$phoneNumber&otp=$otp";
+      "${CommonPage().api}/loginWithNumber&phone_number=$phoneNumber&otp=$otp";
   Get.log("Verity OTP API : $api");
   try {
     var response = await baseServiceGet(api, {}, "");
@@ -922,32 +886,9 @@ Future hitUserAPI() async {
   }
 }
 
-//! Hit the TreatmentAPI
-Future hitTreatmentAPI() async {
-  LocalStorage localStorage = LocalStorage();
-  var clientId = await localStorage.getCId();
-  var api = "${CommonPage().api}/fetchTreatment&client_id=$clientId";
-  Get.log("TreatmentAPI : $api");
-  try {
-    var response = await baseServiceGet(api, {}, "");
-    Get.log("Treatment API Response :: ${response.body}");
-    if (response.statusCode == 200) {
-      var decodedData = json.decode(response.body);
-      if (decodedData['success'] == true) {
-        return TreatmentModel.fromJson(decodedData);
-      } else {
-        throw Exception(decodedData['message'] ?? 'Unknown error');
-      }
-    }
-  } on SocketException {
-    throw Exception('No Internet Connection');
-  }
-}
-
 //! Hit the AppLogo APi
 
 Future hitAppLogoAPI() async {
-  LocalStorage localStorage = LocalStorage();
   var clientId = await localStorage.getCId();
   var api = "${CommonPage().api}/fetchLogo&client_id=$clientId";
   Get.log("AppLogoAPI : $api");
@@ -1005,9 +946,10 @@ Future hitSignUpRewardAPI() async {
 
 // TODO ?? Hit the Reward Details API..
 Future hitAllRewardDetailsAPI(var id) async {
-  var cId = await LocalStorage().getCId();
+  var clientId = await localStorage.getCId();
+  var userId = await localStorage.getUId();
   var api =
-      "${CommonPage().api}/signup_treatments&reward_id=$id&client_id=${cId}";
+      "${CommonPage().api}/signup_treatments&reward_id=$id&client_id=${clientId}";
   Get.log("Reward Details API  : $api");
   try {
     var response = await baseServiceGet(api, {}, "");
@@ -1051,8 +993,8 @@ Future hitBrowserAPI() async {
 
 //? TODO ??  Hitting the browser Our Services API Here ...
 Future hitOurServicesAPI() async {
-  var cId = await LocalStorage().getCId();
-  var api = "${CommonPage().api}/browseServices&client_id=${cId}";
+  var clientId = await localStorage.getCId();
+  var api = "${CommonPage().api}/browseServices&client_id=${clientId}";
   Get.log("Our Services API : $api");
   try {
     var response = await baseServiceGet(api, {}, "");
@@ -1121,10 +1063,10 @@ Future hitClearTheCart(Map<String, dynamic> map) async {
 
 // ? TODO ?? Search API
 Future hitManageTrackingSearch(searchText) async {
-  var cId = await LocalStorage().getCId();
   try {
+    var clientId = await localStorage.getCId();
     var api =
-        "${CommonPage().api}/search&searching_for=$searchText&client_id=${cId}";
+        "${CommonPage().api}/search&searching_for=$searchText&client_id=${clientId}";
     Get.log("Search API : $api");
     var response = await baseServiceGet(api, {}, "");
     Get.log("Search response :: ${response.body}");
@@ -1143,7 +1085,7 @@ Future hitManageTrackingSearch(searchText) async {
 
 //todo Apply the coupon code ..
 Future hiApplyCouponCodeAPI(Map<String, dynamic> map) async {
-  var api = "${CommonPage().api1}/promoCode";
+  var api = "${CommonPage().api1}/applyPromoCode";
   Get.log("Apply Promo Code API : $api");
   try {
     var response = await baseServicePost(api, map, "");
@@ -1159,7 +1101,22 @@ Future hiApplyCouponCodeAPI(Map<String, dynamic> map) async {
 
 //todo Apply the Available reward code ...
 Future hiApplyAvailableAPI(Map<String, dynamic> map) async {
-  var api = "${CommonPage().api1}/rewardOffer";
+  var api = "${CommonPage().api1}/applyReward";
+  Get.log("Apply Available Code API : $api");
+  try {
+    var response = await baseServicePost(api, map, "");
+    Get.log("Apply Available Code API Response :: ${response.body}");
+    if (response.statusCode == 200) {
+      var decodedData = json.decode(response.body);
+      return decodedData;
+    }
+  } on SocketException {
+    throw Exception('No Internet Connection');
+  }
+}
+
+Future hiApplyMembershipAPI(Map<String, dynamic> map) async {
+  var api = "${CommonPage().api1}/applyMembership";
   Get.log("Apply Available Code API : $api");
   try {
     var response = await baseServicePost(api, map, "");
@@ -1235,31 +1192,4 @@ Future hitPromoRewardAPI(t_id, p_id, m_id) async {
   } on SocketException {
     throw Exception('No Internet Connection');
   }
-}
-
-Future<dynamic> hitLearnDetail(id) async {
-  var clientId = await localStorage.getCId();
-  var userId = await localStorage.getUId();
-
-  var api =
-      "${CommonPage().api1}/offerDetails&offer_id=$id&client_id=$clientId";
-  Get.log("offer API: $api");
-
-  try {
-    var response = await baseServiceGet(api, {}, "");
-    Get.log("CART LIST Response :: ${response.body}");
-
-    if (response.statusCode == 200) {
-      var decodedData = json.decode(response.body);
-      Get.log("Decoded data: $decodedData");
-
-      return OfferDetailModel.fromJson(decodedData);
-    }
-  } on SocketException {
-    throw Exception('No Internet Connection');
-  } catch (e) {
-    Get.log("Error in hitCartListApi: $e");
-  }
-
-  return null;
 }

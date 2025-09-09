@@ -8,7 +8,6 @@ import '../../../../binding/cart_billing.dart';
 import '../../../../common_Widgets/no_record.dart';
 import '../../../../util/route_manager.dart';
 import '../../../CSS/color.dart';
-import '../../../binding/account_Binding.dart';
 import '../../Discover/controller/dynamic_tab_controller.dart';
 import '../Pages/Package Page/Widgets/package_detail_page.dart';
 import '../Pages/Treatment Page/widgets/treatment_details_page.dart';

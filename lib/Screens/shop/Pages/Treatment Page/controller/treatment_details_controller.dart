@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../../../../../Model/treatment_details_model.dart';
 import '../../../../../common_Widgets/added_to_cart_bottom_sheet.dart';
 import '../../../../../util/base_services.dart';
+import '../../../../../util/local_stoage.dart';
 import '../../../../../util/local_store_data.dart';
 import '../../../../cartList/Controller/cart_controller.dart';
 
@@ -237,19 +239,3 @@ class TreatmentDetailsController extends GetxController {
     }
   }
 }
-//{
-//   "client_id": 5,
-//   "user_id": 274,
-//   "CartDetails": {
-//     "type": "Treatments",
-//     "treatment_id": 42,
-//     "treatment_variation_id": 101,
-//     "treatment_price_id": 1234,
-//     "treatment_price": 1500.00
-//   }
-// "become_membership_detail":{
-// "membership_id":1,
-// "membership_price":200,
-// "membership_name":""
-// }
-// }
