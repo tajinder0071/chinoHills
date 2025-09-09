@@ -20,58 +20,67 @@ class OurServicesPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Center(
-            child: Icon(
-              Icons.shopping_bag_outlined,
-              size: 25.h,
-              color: AppColor.dynamicColor,
-            ),
-          ),
+              child: Icon(Icons.shopping_bag_outlined,
+                  size: 25.h, color: AppColor.dynamicColor)),
           SizedBox(height: 15.h),
           Center(
-            child: Text(
-              "Our Services",
-              style: GoogleFonts.roboto(
-                fontSize: 24.sp,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            child: Text("Our Services",
+                style: GoogleFonts.roboto(
+                    fontSize: 24.sp, fontWeight: FontWeight.bold)),
           ),
           SizedBox(height: 25.h),
-          GetBuilder<PackageController>(
-            builder: (pCon) {
-              return pCon.isServicesLoading
-                  ? Center(child: commonLoader(color: AppColor.dynamicColor))
-                  : ListView.builder(
-                      itemCount: pCon.ourServicesData.length,
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (ctx, index) {
-                        var data = pCon.ourServicesData[index];
-                        return Padding(
-                          padding: EdgeInsets.only(bottom: 10.0.h),
-                          child: ServiceCard(
-                            imagePath: "${data['categoryHeaderCloudUrl']}",
-                            title: '${data['category_header']}',
-                            subtitle: '${data['category_description']}',
-                            onTap: () {
-                              if (data['category_tab_name'] == "membership") {
-                                ShopController.shop.goToTab(1);
-                              } else if (data['category_tab_name'] ==
-                                  "treatment") {
-                                ShopController.shop.goToTab(2);
-                              } else if (data['category_tab_name'] ==
-                                  "packages") {
-                                ShopController.shop.goToTab(3);
+          GetBuilder<PackageController>(builder: (pCon) {
+            return pCon.isServicesLoading
+                ? Center(child: commonLoader(color: AppColor.dynamicColor))
+                : ListView.builder(
+                itemCount: pCon.browseCategory.length,
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemBuilder: (ctx, index) {
+                  var data = pCon.browseCategory[index];
+                  return Padding(
+                    padding: EdgeInsets.only(bottom: 10.0.h),
+                    child: ServiceCard(
+                        imagePath: "${data.headerimage}",
+                        title: '${data.categoryHeader}',
+                        subtitle: '${data.categoryDescription}',
+                        onTap: () {
+                          final shop = ShopController.shop;
+
+                          switch (data.categoryTabName?.toLowerCase()) {
+                            case "browse":
+                              shop.goToTab(0);
+                              break;
+                            case "membership":
+                              shop.goToTab(1);
+                              break;
+                            case "treatment":
+                              shop.goToTab(2);
+                              break;
+                            case "packages":
+                              shop.goToTab(3);
+                              break;
+                            case "concern":
+                            case "browse by concern":
+                              shop.goToTab(4);
+                              break;
+                            default:
+                              final index = shop.tabList.indexWhere(
+                                    (tab) => tab.toString().toLowerCase() ==
+                                    data.categoryTabName?.toLowerCase(),
+                              );
+                              if (index != -1) {
+                                shop.goToTab(index);
                               } else {
-                                ShopController.shop.goToTab(0);
+                                shop.goToTab(0);
                               }
-                            },
-                          ),
-                        );
-                      },
-                    );
-            },
-          ),
+                          }
+                        }
+
+                    ),
+                  );
+                });
+          }),
           SizedBox(height: 15.h),
         ],
       ),
@@ -79,4 +88,3 @@ class OurServicesPage extends StatelessWidget {
   }
 }
 
-// 🔁 Reusable Service Card

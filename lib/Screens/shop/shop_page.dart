@@ -1,3 +1,4 @@
+import 'package:chino_hills/Screens/shop/widgets/discover_dart.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -16,64 +17,60 @@ class ShopPage extends StatelessWidget {
   ShopPage({super.key});
 
   final controller = Get.put(ShopController());
-  final controllerl = Get.put(PackageController());
+  final packageController = Get.put(PackageController());
   final member = Get.put(MembershipDetailController());
 
   @override
   Widget build(BuildContext context) {
     controller.getShopByItem();
+
     return GetBuilder<ShopController>(builder: (controller) {
       return Scaffold(
+        backgroundColor: AppColor().background,
+        appBar: AppBar(
+          toolbarHeight: 10.h,
           backgroundColor: AppColor().background,
-          appBar: AppBar(
-            toolbarHeight: 10.h,
-            backgroundColor: AppColor().background,
-            elevation: 0.5,
-            bottom: PreferredSize(
-              preferredSize: Size.fromHeight(50.h),
-              child: TabBar(
-                isScrollable: true,
-                controller: controller.tabController,
-                indicatorColor: AppColor.dynamicColor,
-                labelColor: AppColor.dynamicColor,
-                unselectedLabelColor: Colors.black54,
-                labelStyle:
-                    TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
-                unselectedLabelStyle: TextStyle(fontSize: 13.sp),
-                overlayColor:
-                    WidgetStatePropertyAll(AppColor.dynamicColor.withOpacity(0.1),),
-                dividerColor: Colors.transparent,
-                tabs: [
-                  Tab(child: FittedBox(child: Text('Browse'))),
-                  Tab(child: FittedBox(child: Text('Memberships'))),
-                  Tab(child: FittedBox(child: Text('Treatments'))),
-                  Tab(child: FittedBox(child: Text('Packages'))),
-                  Tab(child: FittedBox(child: Text('Browse by Concern'))),
-                ],
+          elevation: 0.5,
+          bottom: PreferredSize(
+            preferredSize: Size.fromHeight(50.h),
+            child: TabBar(
+              isScrollable: true,
+              controller: controller.tabController,
+              indicatorColor: AppColor.dynamicColor,
+              labelColor: AppColor.dynamicColor,
+              unselectedLabelColor: Colors.black54,
+              labelStyle:
+              TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
+              unselectedLabelStyle: TextStyle(fontSize: 13.sp),
+              overlayColor: WidgetStatePropertyAll(
+                AppColor.dynamicColor.withOpacity(0.1),
               ),
+              dividerColor: Colors.transparent,
+              tabs: [
+                ...controller.tabList.map(
+                      (tabTitle) =>
+                      Tab(child: FittedBox(child: Text(tabTitle.toString()))),
+                ),
+              ],
             ),
           ),
-          body: TabBarView(
-            dragStartBehavior: DragStartBehavior.down,
-            controller: controller.tabController,
-            physics: NeverScrollableScrollPhysics(), // 👈 disables swipe
-            children: [
-              BrowsePage(),
-              GetBuilder<PackageController>(
-                  init: Get.put(PackageController()),
-                  builder: (c) {
-                    return MembershipPage();
-                  }),
-              GetBuilder(
-                  init: Get.put(PackageController()),
-                  builder: (qw) {
-                    return TreatmentPage();
-                  }),
-              PackagesPage(),
-              BrowseByConcernPage(),
-            ],
-          ));
+        ),
+        body: TabBarView(
+          dragStartBehavior: DragStartBehavior.down,
+          controller: controller.tabController,
+          physics: NeverScrollableScrollPhysics(), // disable swipe
+          children: [
+            BrowsePage(),
+            MembershipPage(),
+            TreatmentPage(),
+            PackagesPage(),
+            BrowseByConcernPage(),
+            ...controller.dynamictab.map(
+                  (id) => DynamicData(dynamicId: id),
+            ),
+          ],
+        ),
+      );
     });
   }
 }
-//
