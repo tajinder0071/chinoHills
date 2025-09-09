@@ -384,6 +384,8 @@ class _TreatmentPageState extends State<TreatmentPage> {
                       List<String> concerns = product.concerns!
                           .map((con) => con.toString())
                           .toList();
+                      print("MEMBER SHIP PRICE:: ${product.membershipOfferPrice.toString()}");
+
                       return Padding(
                         padding:
                         EdgeInsets.symmetric(horizontal: 10.w),
@@ -397,11 +399,9 @@ class _TreatmentPageState extends State<TreatmentPage> {
                                   ? product.image.toString()
                                   : "",
                               originalPrice: product.price.toString(),
-                              memberPrice:
-                              product.membershipOfferPrice == ""
+                              memberPrice: product.membershipOfferPrice == ""
                                   ? "0.0"
-                                  : product.membershipOfferPrice!
-                                  .toString(),
+                                  : product.membershipOfferPrice.toString(),
                               tags: concerns,
                               discount: product.offeroffText ==
                                   null ||

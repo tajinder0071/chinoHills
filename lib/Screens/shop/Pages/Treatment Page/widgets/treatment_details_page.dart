@@ -569,7 +569,8 @@ class TreatmentDetailsPage extends GetView<TreatmentDetailsController> {
                                               .variationId,
                                           selectedPrice
                                               .treatmentvariationpriceid,
-                                          //treatment_price_id
+                                          //treatment_price
+                                          // _id
                                           controller.selectedQtyPrice
                                               ?.toDouble() ??
                                               0.0, //treatment_price

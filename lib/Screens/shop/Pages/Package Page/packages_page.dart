@@ -372,7 +372,7 @@ class PackagesPage extends StatelessWidget {
                           imageUrl: (product.image != null && product.image!.isNotEmpty) ? product.image!
                               : "",
                           originalPrice: product.price.toString(),
-                          memberPrice: product.membershipOfferPrice,
+                          memberPrice: product.membershipOfferPrice== "" ? "0.0" : product.membershipOfferPrice.toString(),
                           tags: concerns,
                           discount: product.offeroffText,
                           sectionName: 'Package',

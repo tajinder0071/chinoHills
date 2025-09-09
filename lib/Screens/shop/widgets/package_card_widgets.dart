@@ -35,7 +35,7 @@ class PackageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("memberPrice$memberPrice");
+    print("memberPrice $memberPrice");
     return InkWell(
       overlayColor: WidgetStatePropertyAll(AppColor().transparent),
       onTap: onPressed,

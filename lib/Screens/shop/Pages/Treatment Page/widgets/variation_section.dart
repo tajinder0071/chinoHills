@@ -81,9 +81,19 @@ class VariationSelectorBottomSheet extends StatelessWidget {
                       color: AppColor().blackColor,
                     ),
                   ),
-                  subtitle: Text(
-                    "${AppStrings.from}\$${formatCurrency(variation.prices![0].price)} | "
-                        "\$${formatCurrency(variation.prices![0].membershipInfo!.membershipOfferPrice)} ${AppStrings.member}"
+                  subtitle: variation.prices![0].membershipInfo!.membershipOfferPrice==0
+                      ? Text(
+                    "${AppStrings.from}${formatCurrency(variation.prices![0].price)} "
+                        '',
+                    style: GoogleFonts.roboto(
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w400,
+                      color: AppColor().blackColor.withOpacity(0.6),
+                    ),
+                  )
+                      :Text(
+                    "${AppStrings.from}${formatCurrency(variation.prices![0].price)} | "
+                        "${formatCurrency(variation.prices![0].membershipInfo!.membershipOfferPrice)} ${AppStrings.member}"
                         '',
                     style: GoogleFonts.roboto(
                       fontSize: 13.sp,
@@ -103,10 +113,7 @@ class VariationSelectorBottomSheet extends StatelessWidget {
                         controller.updateValidQuantity(
                           qtyLabel: variation.variationName ?? "",
                           price: (firstPrice.price ?? 0).toDouble(),
-                          membershipPrice: (firstPrice
-                              .membershipInfo?.membershipOfferPrice ??
-                              0)
-                              .toDouble(),
+                          membershipPrice: (firstPrice.membershipInfo?.membershipOfferPrice ?? 0).toDouble(),
                           unitType: controller
                               .treatmentDetailsModel.treatment?.unitType ??
                               "",

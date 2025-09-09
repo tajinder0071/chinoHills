@@ -114,13 +114,9 @@ class _TreatmentQuantityBottomSheetState
                     var priceData = prices[pIndex];
                     // String key = "${ctn.selectedIndex}-$pIndex";
                     var key = pIndex;
-                    var qty =
-                    priceData.qty.toString().replaceAll(".0", "");
+                    var qty = priceData.qty.toString().replaceAll(".0", "");
                     var price = (priceData.price ?? 0).toDouble();
-                    var memPrice =
-                    (priceData.membershipInfo?.membershipOfferPrice ??
-                        0)
-                        .toDouble();
+                    var memPrice = (priceData.membershipInfo?.membershipOfferPrice ?? 0).toDouble();
                     print(ctn.selectedIndex);
                     var unitType =
                         ctn.treatmentDetailsModel.treatment?.unitType;
