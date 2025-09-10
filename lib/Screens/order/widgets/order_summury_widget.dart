@@ -80,7 +80,6 @@ class BooksOrderSummaryCard extends StatelessWidget {
             _buildInfoRow("Order ID", orderId),
             _buildInfoRow("Amount", currency),
             _buildInfoRow("Date", orderDate),
-
             // _buildInfoRow("Items", totalItems.toString()),
             SizedBox(height: 12.h),
             Row(
