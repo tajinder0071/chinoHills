@@ -15,6 +15,7 @@ import '../../../util/local_store_data.dart';
 import '../widgets/cart_item_widget.dart';
 import '../widgets/success_paymnet_widget.dart';
 
+// Converted to StatelessController (no UI state, only logic)
 class CartController extends GetxController {
   static CartController get cart => Get.find();
 
@@ -75,45 +76,8 @@ class CartController extends GetxController {
     }
   }
 
-
-  // Central helper to fully clear local cart state
-  void clearCartState({bool keepPromo = false}) {
-    // Clear cart data and server-cart id
-    cartData.clear();
-    cartitemList.clear();
-    cartIdList.clear();
-    sendCartID = null;
-    cartModel1.value = CartModel1(); // reset to default instance
-    cartItemCount = 0;
-    totalCost = 0;
-    finalTotalCost = 0.0;
-    totalConvenienceFee = 0;
-    subTotal = null;
-    appliedName = keepPromo ? appliedName : ''; // optionally keep the promo label
-    selectedId.value = null;
-    offerselectedId.value = null;
-    selectedPromoIndex.value = -1;
-    // reset any flags (use .value)
-    isDelete.value = false;
-    isApplyLoading = false;
-    isUpdate = false;
-    isRewardLoading = false;
-    // clear promo controller
-    promoTextController.clear();
-    // call update to refresh UI
-    update();
-  }
-
-  // Use this to fully remove controller from memory where appropriate
-  void releaseController() {
-    clearCartState();
-    // If you want to remove the controller from GetX dependency manager
-    if (Get.isRegistered<CartController>()) {
-      Get.delete<CartController>(force: true);
-    }
-  }
-
   //TODO >>  Fetch the Cart List...
+
   Future<void> cartList() async {
     cartData.clear();
     cartitemList.clear();
@@ -137,7 +101,7 @@ class CartController extends GetxController {
         }
         cartModel1.value = CartModel1.fromJson(response);
         print("cartModel1.value.data?.cartId${cartModel1.value.data!.cartId}");
-        //sendCartID = cartModel1.value.data?.cartId;
+        sendCartID = cartModel1.value.data?.cartId;
         cartItemCount = cartData.length;
         totalCost = response['data']['sub_total'] ?? 0;
         finalTotalCost =
@@ -232,60 +196,60 @@ class CartController extends GetxController {
   }
 
   // TODO >> Delete the Single Added Item...
-  // Future deleteCart(id, index) async {
-  //   isDelete = true.obs;
-  //   update();
-  //   try {
-  //     var response = await hitDeleteCartApi(id);
-  //     isDelete = false.obs;
-  //     cartList();
-  //     couponAvailableRewards();
-  //     print("Promo ID : $id");
-  //     update();
-  //   } on Exception catch (e) {
-  //     update();
-  //   }
-  // } //fix this
-
-  // TODO >>. Request the Location permission...
-  // Example updated deleteCart
   Future deleteCart(id, index) async {
-    // set flag via .value
-    isDelete.value = true;
+    isDelete = true.obs;
     update();
     try {
       var response = await hitDeleteCartApi(id);
-      // on success, re-fetch or manually remove item
-      // If the API returns the updated cart, prefer using cartList()
-      if (response != null && response['success'] == true) {
-        // Option A (recommended): re-fetch server cart
-        await cartList(); // this will set sendCartID according to server response
-
-        // Option B: if you prefer local remove without network:
-        // cartData.removeAt(index);
-        // cartitemList.removeWhere((elem) => elem == id);
-        // if (cartData.isEmpty) clearCartState();
-
-        // If server indicates cart is empty, ensure sendCartID is cleared
-        final serverCartId = response['data']?['cart_id'];
-        if (serverCartId == null || serverCartId.toString() == "null" || (response['data']?['items'] is List && (response['data']?['items'] as List).isEmpty)) {
-          sendCartID = null;
-          cartModel1.value = CartModel1();
-          cartData.clear();
-        }
-      } else {
-        // handle failure if needed
-      }
-      isDelete.value = false;
-      couponAvailableRewards(); // refresh offers
+      isDelete = false.obs;
+      cartList();
+      couponAvailableRewards();
+      print("Promo ID : $id");
       update();
-    } catch (e) {
-      // error branch
-      isDelete.value = false;
+    } on Exception catch (e) {
       update();
     }
-  }
+  } //fix this
 
+  // Future deleteCart(id, index) async {
+  //   // set flag via .value
+  //   isDelete.value = true;
+  //   update();
+  //   try {
+  //     var response = await hitDeleteCartApi(id);
+  //     // on success, re-fetch or manually remove item
+  //     // If the API returns the updated cart, prefer using cartList()
+  //     if (response != null && response['success'] == true) {
+  //       // Option A (recommended): re-fetch server cart
+  //       await cartList(); // this will set sendCartID according to server response
+  //
+  //       // Option B: if you prefer local remove without network:
+  //       // cartData.removeAt(index);
+  //       // cartitemList.removeWhere((elem) => elem == id);
+  //       // if (cartData.isEmpty) clearCartState();
+  //
+  //       // If server indicates cart is empty, ensure sendCartID is cleared
+  //       final serverCartId = response['data']?['cart_id'];
+  //       if (serverCartId == null || serverCartId.toString() == "null" || (response['data']?['items'] is List && (response['data']?['items'] as List).isEmpty)) {
+  //         sendCartID = null;
+  //         cartModel1.value = CartModel1();
+  //         cartData.clear();
+  //       }
+  //     } else {
+  //       // handle failure if needed
+  //     }
+  //     isDelete.value = false;
+  //     couponAvailableRewards(); // refresh offers
+  //     update();
+  //   } catch (e) {
+  //     // error branch
+  //     isDelete.value = false;
+  //     update();
+  //   }
+  // }
+
+
+  // TODO >>. Request the Location permission...
   Future<void> requestPermission() async {
     LocationPermission permission = await Geolocator.requestPermission();
     if (permission == LocationPermission.always ||
@@ -547,89 +511,49 @@ class CartController extends GetxController {
   // TODO ??  Make here the payment api to make the cart empty..
   bool isCartClearLoading = false;
 
-  // Future<void> clearTheCartAPI({
-  //   required String transactionId,
-  //   required String paymentStatus,
-  //   required String paymentMethod,
-  //   required String paymentNotes,
-  //   required var orderId,
-  //   required int paymentAmount, // ✅ New parameter added
-  // })
-  // async {
-  //   isCartClearLoading = true;
-  //   var clientId = await localStorage.getCId();
-  //   var userId = await localStorage.getUId();
-  //
-  //   Map<String, dynamic> sendMap = {
-  //     "cart_id": sendCartID,
-  //     "user_id": userId,
-  //     "payment_amount": paymentAmount, // ✅ Add payment amount here
-  //     "transaction_id": transactionId,
-  //     "payment_status": paymentStatus,
-  //     "payment_method": paymentMethod,
-  //     "payment_notes": paymentNotes,
-  //     "order_id": orderId,
-  //     "client_id": "$clientId",
-  //   };
-  //
-  //   print("📝 Payload to clear cart: $sendMap");
-  //
-  //   update();
-  //   try {
-  //     var response = await hitClearTheCart(sendMap);
-  //     Get.log("Cart Clear Response: ${response['success']}");
-  //
-  //     if (response['success'] == true) {
-  //       showDialog(
-  //         context: Get.context!,
-  //         barrierDismissible: false,
-  //         builder: (context) => PaymentSuccessPopup(
-  //           transactionId: transactionId.toString(),
-  //           transactionType: paymentMethod.toString(),
-  //         ),
-  //       );
-  //
-  //       // Remove the order ID from local storage
-  //       cartList();
-  //     }
-  //   } catch (e) {
-  //     print("❌ Clear Cart Failed: $e");
-  //   } finally {
-  //     isCartClearLoading = false;
-  //     update();
-  //   }
-  // }
-
-  // TODO ? Process the payment
-  // Example updated clearTheCartAPI (when payment successful)
-  Future<void> clearTheCartAPI({ /* params */ required String transactionId, required String paymentStatus, required String paymentMethod, required String paymentNotes, required var orderId, required int paymentAmount }) async {
+  Future<void> clearTheCartAPI({
+    required String transactionId,
+    required String paymentStatus,
+    required String paymentMethod,
+    required String paymentNotes,
+    required var orderId,
+    required int paymentAmount, // ✅ New parameter added
+  }) async {
     isCartClearLoading = true;
+    var clientId = await localStorage.getCId();
+    var userId = await localStorage.getUId();
+
+    Map<String, dynamic> sendMap = {
+      "cart_id": sendCartID,
+      "user_id": userId,
+      "payment_amount": paymentAmount, // ✅ Add payment amount here
+      "transaction_id": transactionId,
+      "payment_status": paymentStatus,
+      "payment_method": paymentMethod,
+      "payment_notes": paymentNotes,
+      "order_id": orderId,
+      "client_id": "$clientId",
+    };
+
+    print("📝 Payload to clear cart: $sendMap");
+
     update();
     try {
-      var clientId = await localStorage.getCId();
-      var userId = await localStorage.getUId();
-
-      Map<String, dynamic> sendMap = {
-        "cart_id": sendCartID,
-        "user_id": userId,
-        "payment_amount": paymentAmount,
-        "transaction_id": transactionId,
-        "payment_status": paymentStatus,
-        "payment_method": paymentMethod,
-        "payment_notes": paymentNotes,
-        "order_id": orderId,
-        "client_id": "$clientId",
-      };
-
       var response = await hitClearTheCart(sendMap);
-      if (response != null && response['success'] == true) {
-        // show success popup...
-        // Now clear local cart state because server cleared it
-        clearCartState();
-        // Optionally delete the controller if you don't need it anymore:
-        // releaseController();
-      } else {
-        // handle failure
+      Get.log("Cart Clear Response: ${response['success']}");
+
+      if (response['success'] == true) {
+        showDialog(
+          context: Get.context!,
+          barrierDismissible: false,
+          builder: (context) => PaymentSuccessPopup(
+            transactionId: transactionId.toString(),
+            transactionType: paymentMethod.toString(),
+          ),
+        );
+
+        // Remove the order ID from local storage
+        cartList();
       }
     } catch (e) {
       print("❌ Clear Cart Failed: $e");
@@ -638,6 +562,8 @@ class CartController extends GetxController {
       update();
     }
   }
+
+  // TODO ? Process the payment
 
   Future<void> _processPayment(String clientSecret, String orderId) async {
     try {
@@ -799,6 +725,52 @@ class CartController extends GetxController {
       }
     }
   }
+
+  // selectPromoCode(code, index, offerId, isSelected, cartId) async {
+  //   isApplyLoading = true;
+  //   update();
+  //   try {
+  //     print("Apply offer to cart1 $cartId");
+  //     promoErrorText = ''; //todo Reset error
+  //     var clientId = await localStorage.getCId();
+  //     var userId = await localStorage.getUId();
+  //
+  //     Map<String, dynamic> map = {
+  //       "promo_code": code,
+  //       "cart_id": cartId.toString(),
+  //       "user_id": userId.toString(),
+  //       "client_id": clientId.toString(),
+  //     };
+  //     print("Apply offer to cart1");
+  //     Get.log("apply Cart list :$map");
+  //     var response = await hiApplyCouponCodeAPI(map);
+  //     if (response['success'] == true) {
+  //       selectedPromoIndex.value = index;
+  //       offerselectedId.value = isSelected.toString();
+  //       isApplyLoading = false;
+  //       isUpdateSomething.value = true;
+  //       promoErrorText = ''; // Reset error
+  //       appliedName = couponAvailableData[index].title ?? '';
+  //       applyPromo = true;
+  //       applyReward = false;
+  //       rewardId = '';
+  //       rewardName = '';
+  //       update();
+  //       cartList();
+  //       Get.back();
+  //     } else {
+  //       isUpdateSomething.value = false;
+  //       // promoErrorText = "Invalid code. Please enter a valid promo code.";
+  //       print("object: ${promoErrorText}");
+  //       isApplyLoading = false;
+  //       update();
+  //     }
+  //   } on Exception catch (e) {
+  //     isUpdateSomething.value = false;
+  //     isApplyLoading = false;
+  //     update();
+  //   }
+  // }
   var isLoadingPromo = false;
 
 // Improved selectPromoCode method
@@ -863,6 +835,7 @@ class CartController extends GetxController {
 //       update();
 //     }
 //   }
+
   Future<void> selectPromoCode(code, index, offerId, isSelected, cartId) async {
     if (isLoadingPromo) return;
     isLoadingPromo = true;
@@ -931,89 +904,7 @@ class CartController extends GetxController {
       update();
     }
   }
-  // applyAvailableCode(rewardId, index, cartId) async {
-  //   isApplyLoading = true;
-  //   update();
-  //   try {
-  //     var clientId = await localStorage.getCId();
-  //     var userId = await localStorage.getUId();
-  //     Map<String, dynamic> map = {
-  //       "reward_id": rewardId,
-  //       "cart_id": cartId,
-  //       "user_id": userId,
-  //       "client_id": "${clientId}",
-  //     };
-  //     Get.log("apply Cart list :$map");
-  //     var response = await hiApplyAvailableAPI(map);
-  //     if (response['success'] == true) {
-  //       isUpdateSomething.value = true;
-  //       selectedPromoIndex.value = index;
-  //       selectedId.value = rewardId.toString();
-  //       applyReward = true;
-  //       applyPromo = false;
-  //       isApplyLoading = false;
-  //       promoId = '';
-  //       promoname = '';
-  //       promoErrorText = ''; // Reset error
-  //       cartList();
-  //       Get.back();
-  //       update();
-  //     } else {
-  //       isUpdateSomething.value = false;
-  //       print("object: ${promoErrorText}");
-  //       isApplyLoading = false;
-  //       update();
-  //     }
-  //   } on Exception catch (e) {
-  //     isUpdateSomething.value = false;
-  //     isApplyLoading = false;
-  //     update();
-  //   }
-  // }
 
-  // applyMembership(memId, cartId) async {
-  //   isApplyLoading = true;
-  //   update();
-  //   try {
-  //     var clientId = await localStorage.getCId();
-  //     var userId = await localStorage.getUId();
-  //     Map<String, dynamic> map = {
-  //       "membership_id": memId,
-  //       "cart_id": cartId,
-  //       "user_id": userId,
-  //       "client_id": "${clientId}",
-  //     };
-  //     Get.log("apply Cart list :$map");
-  //     var response = await hiApplyMembershipAPI(map);
-  //     if (response == null || response.toString() == "null") {
-  //       cartList();
-  //       Get.back();
-  //     }
-  //     if (response['success'] == true) {
-  //       isUpdateSomething.value = true;
-  //       selectedId.value = rewardId.toString();
-  //       rewardId = '';
-  //       applyReward = true;
-  //       isApplyLoading = false;
-  //       cartList();
-  //       Get.back();
-  //       update();
-  //     } else {
-  //       isUpdateSomething.value = false;
-  //       print("object: ${promoErrorText}");
-  //       isApplyLoading = false;
-  //       Get.back();
-  //       update();
-  //     }
-  //   } on Exception catch (e) {
-  //     isUpdateSomething.value = false;
-  //     isApplyLoading = false;
-  //     Get.back();
-  //     update();
-  //   }
-  // }
-// Improved applyMembership method
-  // Improved applyAvailableCode method
   Future<void> applyAvailableCode(rewardId, index, cartId) async {
     if (isApplyLoading) return; // Prevent multiple calls
 
@@ -1068,7 +959,6 @@ class CartController extends GetxController {
   @override
   void onClose() {
     _debounceTimer?.cancel();
-    promoTextController.dispose();
     super.onClose();
   }
 
