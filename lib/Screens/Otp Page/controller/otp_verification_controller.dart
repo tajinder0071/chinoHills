@@ -268,10 +268,10 @@ class OTPController extends GetxController with CodeAutoFill {
           nLocalStorage.saveData("email", response['data']['email'].toString());
           update();
           // Go to dashboard and pass initial tab index
-          // Otp == "123456"
-          //     ? Get.offAllNamed(RouteManager.selectClinic, arguments: "false")
-          //     : Get.offAllNamed(RouteManager.dashBoardPage, arguments: 0);
-          Get.offAllNamed(RouteManager.dashBoardPage, arguments: 0);
+          Otp == "123456"
+              ? Get.offAllNamed(RouteManager.selectClinic, arguments: "false")
+              : Get.offAllNamed(RouteManager.dashBoardPage, arguments: 0);
+          //Get.offAllNamed(RouteManager.dashBoardPage, arguments: 0);
         }
       } else {
         // Show error if OTP is invalid

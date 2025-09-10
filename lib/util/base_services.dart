@@ -520,7 +520,8 @@ Future hitDiscoverAPI() async {
 
 Future hitSearchLocationAPI() async {
   try {
-    var api = "${CommonPage().api}/clientListing";
+    var clientId = await localStorage.getCId();
+    var api = "${CommonPage().api}/clientListing&client_id=$clientId";
     var response = await baseServiceGet(api, {}, "");
     Get.log("Discover Response :: ${response.body}");
     if (response.statusCode == 200) {
@@ -645,6 +646,7 @@ Future<dynamic> hitCartListApi() async {
           }
         }
 
+
         Get.log("Extracted Cart Item IDs: $cartItemIds");
 
         await localStorage.saveData("cart_item_ids", jsonEncode(cartItemIds));
@@ -752,6 +754,7 @@ hitDeleteCartApi(cardID) async {
     var response = await baseServiceDelete(api, {}, "");
     print("Delete items from cart  :: ${response.body}");
     if (response.statusCode == 200) {
+
       var decodedData = json.decode(response.body);
       if (decodedData['success'] == true) {
         return decodedData;

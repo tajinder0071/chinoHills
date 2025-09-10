@@ -137,18 +137,21 @@ String formatCurrency(dynamic price) {
       : (price ?? 0);
   return NumberFormat.simpleCurrency().format(parsed);
 }
-
-// TODO >>
 InlineSpan buildPriceTextSpan({
   required dynamic originalPrice,
   dynamic memberPrice,
   String? unit,
-}) {
+})
+{
+  print("object$memberPrice");
   final currencyOriginalPrice = formatCurrency(originalPrice);
-  final currencyMemberPrice = formatCurrency(memberPrice);
+  final currencyMemberPrice = formatCurrency(
+    memberPrice.toString().replaceAll("\$", ""),
+  );
+  print("currencyMemberPrice$currencyMemberPrice");
   bool hasUnit = unit != null && unit.isNotEmpty;
   bool hasMember =
-      (memberPrice != null &&
+  (memberPrice != null &&
       (memberPrice is num
           ? memberPrice != 0
           : double.tryParse(memberPrice.toString()) != 0));
@@ -175,7 +178,6 @@ InlineSpan buildPriceTextSpan({
     ],
   );
 }
-
 bool isTablet(BuildContext context) {
   final size = MediaQuery.of(context).size;
   final diagonal = sqrt(
