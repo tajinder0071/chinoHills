@@ -853,8 +853,8 @@ class CartController extends GetxController {
         "client_id": clientId.toString(),
       };
 
-      // Only add cart_id parameter if cartId is not null and not empty
-      if (cartId != null && cartId.toString().isNotEmpty && cartId.toString() != "null") {
+      // Only add cart_id parameter if cartData is not empty
+      if(cartData.isNotEmpty){
         map["cart_id"] = cartId.toString();
       }
 
