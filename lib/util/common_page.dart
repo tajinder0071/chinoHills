@@ -143,9 +143,14 @@ InlineSpan buildPriceTextSpan({
   required dynamic originalPrice,
   dynamic memberPrice,
   String? unit,
-}) {
+})
+{
+  print("object$memberPrice");
   final currencyOriginalPrice = formatCurrency(originalPrice);
-  final currencyMemberPrice = formatCurrency(memberPrice);
+  final currencyMemberPrice = formatCurrency(
+    memberPrice.toString().replaceAll("\$", ""),
+  );
+  print("currencyMemberPrice$currencyMemberPrice");
   bool hasUnit = unit != null && unit.isNotEmpty;
   bool hasMember =
       (memberPrice != null &&

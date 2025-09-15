@@ -213,20 +213,37 @@ class CartController extends GetxController {
   // TODO >>. Request the Location permission...
   Future<void> requestPermission() async {
     LocationPermission permission = await Geolocator.requestPermission();
+
     if (permission == LocationPermission.always ||
         permission == LocationPermission.whileInUse) {
       isPermissionGranted = true;
       await _getCurrentLocation(); // Get coordinates and address
     } else if (permission == LocationPermission.denied) {
+      isPermissionGranted = false;
+      Get.snackbar(
+        "Permission Denied",
+        "Location permission is denied. Please allow it to use location features.",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.shade400,
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(12),
+        duration: const Duration(seconds: 3),
+      );
     } else if (permission == LocationPermission.deniedForever) {
       Get.defaultDialog(
         title: "Location Permission",
-        contentPadding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
-        titleStyle: TextStyle(
-            fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 10.0,
+          vertical: 20.0,
+        ),
+        titleStyle: const TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
+        ),
         backgroundColor: Colors.white,
-        content: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        content: const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.0),
           child: Text(
             "You have permanently denied location access. Please enable it from settings.",
             textAlign: TextAlign.center,
@@ -241,28 +258,14 @@ class CartController extends GetxController {
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColor.dynamicColor,
-            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
           ),
-          child: Text(
+          child: const Text(
             "Open Settings",
             style: TextStyle(color: Colors.white, fontSize: 16),
-          ),
-        ),
-        cancel: OutlinedButton(
-          onPressed: () => Get.back(),
-          style: OutlinedButton.styleFrom(
-            side: BorderSide(color: AppColor.dynamicColor),
-            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-          child: Text(
-            "Cancel",
-            style: TextStyle(color: AppColor.dynamicColor, fontSize: 16),
           ),
         ),
       );
@@ -286,11 +289,7 @@ class CartController extends GetxController {
       }
     }
 
-    itemList = {
-      "treatment_id": tId,
-      "package_id": pId,
-      "membership_id": mId,
-    };
+    itemList = {"treatment_id": tId, "package_id": pId, "membership_id": mId};
 
     Get.log("Built itemList: $itemList");
   }
@@ -299,7 +298,8 @@ class CartController extends GetxController {
   Future<void> _getCurrentLocation() async {
     try {
       Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
+        desiredAccuracy: LocationAccuracy.high,
+      );
       currentLat.value = position.latitude;
       currentLng.value = position.longitude;
       Get.log(" Currnt :${currentLat.value}");
@@ -317,12 +317,8 @@ class CartController extends GetxController {
     }
   }
 
-//TODO >> Update the Product Items..
-  Future<void> updateProduct(
-      variationId,
-      cartID,
-      int cartitemID,
-      ) async {
+  //TODO >> Update the Product Items..
+  Future<void> updateProduct(variationId, cartID, int cartitemID) async {
     isUpdate = true;
     var clientId = await localStorage.getCId();
     var userId = await localStorage.getUId();
@@ -332,7 +328,7 @@ class CartController extends GetxController {
       "cart_id": cartID ?? 0,
       "treatment_variation_id": variationId,
       "cart_item_id": cartitemID,
-      "client_id": "${clientId}"
+      "client_id": "${clientId}",
     };
     print("Update Map : $map");
     try {
@@ -395,10 +391,11 @@ class CartController extends GetxController {
       print("object::$paymentIntentClientSecret");
 
       await Stripe.instance.initPaymentSheet(
-          paymentSheetParameters: SetupPaymentSheetParameters(
-            paymentIntentClientSecret: paymentIntentClientSecret,
-            merchantDisplayName: 'NIMA',
-          ));
+        paymentSheetParameters: SetupPaymentSheetParameters(
+          paymentIntentClientSecret: paymentIntentClientSecret,
+          merchantDisplayName: 'NIMA',
+        ),
+      );
       await _processPayment(paymentIntentClientSecret, orderId);
     } catch (e) {
       print(e);
@@ -446,9 +443,7 @@ class CartController extends GetxController {
         data: map,
         options: Options(
           contentType: Headers.formUrlEncodedContentType,
-          headers: {
-            "Authorization": "Bearer ${CommonPage().stripeSicretKey}",
-          },
+          headers: {"Authorization": "Bearer ${CommonPage().stripeSicretKey}"},
         ),
       );
 
@@ -556,9 +551,7 @@ class CartController extends GetxController {
       final response = await dio.get(
         "https://api.stripe.com/v1/payment_intents/$paymentIntentId",
         options: Options(
-          headers: {
-            "Authorization": "Bearer ${CommonPage().stripeSicretKey}",
-          },
+          headers: {"Authorization": "Bearer ${CommonPage().stripeSicretKey}"},
         ),
       );
 
@@ -573,14 +566,15 @@ class CartController extends GetxController {
           transactionId: paymentIntentData['id'],
           paymentStatus: paymentIntentData['status'],
           paymentMethod:
-          paymentIntentData['payment_method_types']?[0] ?? 'card',
+              paymentIntentData['payment_method_types']?[0] ?? 'card',
           paymentNotes: 'Stripe Payment',
           orderId: orderId,
           paymentAmount: paymentAmount, // ✅ Added this
         );
       } else {
         print(
-            "❌ Failed to retrieve payment intent. Status code: ${response.statusCode}");
+          "❌ Failed to retrieve payment intent. Status code: ${response.statusCode}",
+        );
       }
     } on DioError catch (dioError) {
       print("❌ DioError occurred:");
@@ -617,7 +611,7 @@ class CartController extends GetxController {
   bool get isPromoApplied =>
       selectedPromoIndex.value != -1 || enteredCode.isNotEmpty;
 
-//todo apply promo code
+  //todo apply promo code
   applyPromoCode(code) async {
     isApplyLoading = true;
     update();
@@ -629,7 +623,7 @@ class CartController extends GetxController {
         "promo_code": code,
         "cart_id": sendCartID,
         "user_id": userId,
-        "client_id": "${clientId}"
+        "client_id": "${clientId}",
       };
       Get.log("apply Cart list :$map");
       var response = await hiApplyCouponCodeAPI(map);
@@ -734,7 +728,7 @@ class CartController extends GetxController {
   // }
   var isLoadingPromo = false;
 
-// Improved selectPromoCode method
+  // Improved selectPromoCode method
   Future<void> selectPromoCode(code, index, offerId, isSelected, cartId) async {
     if (isLoadingPromo) return;
     isLoadingPromo = true;
@@ -878,7 +872,7 @@ class CartController extends GetxController {
   //     update();
   //   }
   // }
-// Improved applyMembership method
+  // Improved applyMembership method
   // Improved applyAvailableCode method
   Future<void> applyAvailableCode(rewardId, index, cartId) async {
     if (isApplyLoading) return; // Prevent multiple calls
@@ -995,8 +989,10 @@ class CartController extends GetxController {
     isApplyLoading = true;
     update();
     try {
-      var respons =
-      await hiRemoveCouponCodeAPI(rewardid, cartModel1.value.data!.cartId);
+      var respons = await hiRemoveCouponCodeAPI(
+        rewardid,
+        cartModel1.value.data!.cartId,
+      );
       print(respons['success']);
       if (respons['success'] == true) {
         isUpdateSomething.value = true;
@@ -1012,7 +1008,9 @@ class CartController extends GetxController {
         selectedComingId = '';
         memberTitle = response.membership!.membershipTitle;
         applyMembership(
-            response.membership!.membershipId, cartModel1.value.data!.cartId);
+          response.membership!.membershipId,
+          cartModel1.value.data!.cartId,
+        );
         update();
       } else {
         isUpdateSomething.value = false;
@@ -1031,8 +1029,10 @@ class CartController extends GetxController {
     isApplyLoading = true;
     update();
     try {
-      var respons =
-      await hitRemoveAddedCouponAPI(promoID, cartModel1.value.data!.cartId);
+      var respons = await hitRemoveAddedCouponAPI(
+        promoID,
+        cartModel1.value.data!.cartId,
+      );
       if (respons['success'] == true) {
         isUpdateSomething.value = true;
         memberTitle = response.membership!.membershipTitle;
@@ -1043,7 +1043,9 @@ class CartController extends GetxController {
         rewardName = '';
         rewardName = '';
         applyMembership(
-            response.membership!.membershipId, cartModel1.value.data!.cartId);
+          response.membership!.membershipId,
+          cartModel1.value.data!.cartId,
+        );
         isApplyLoading = false;
         await cartList(); // Ensure cartList completes before Get.back()
         Get.back();
@@ -1135,11 +1137,7 @@ class CartController extends GetxController {
 
       addToIdList();
 
-      response = await hitPromoRewardAPI(
-        tId,
-        pId,
-        mId,
-      );
+      response = await hitPromoRewardAPI(tId, pId, mId);
 
       couponAvailableData.addAll(response.offers ?? []);
       availableData.addAll(response.rewards ?? []);
