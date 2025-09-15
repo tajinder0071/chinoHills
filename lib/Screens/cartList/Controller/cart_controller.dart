@@ -75,6 +75,8 @@ class CartController extends GetxController {
     }
   }
 
+  var itemCount = 0;
+
   //TODO >>  Fetch the Cart List...
 
   Future<void> cartList() async {
@@ -140,6 +142,7 @@ class CartController extends GetxController {
         isLoading = false;
         update();
       } else {
+        cartData.clear();
         isMemberAvailable = false;
         cartItemCount = 0;
         isLoading = false;
@@ -155,9 +158,10 @@ class CartController extends GetxController {
   List<Membership> membership = [];
   List<Package> package = [];
   OfferDetailModel offerDetailModel = OfferDetailModel();
+  var isLoadings = false;
 
   learnMore(id) async {
-    isLoading = true;
+    isLoadings = true;
     tratment.clear();
     membership.clear();
     package.clear();
@@ -169,10 +173,10 @@ class CartController extends GetxController {
       tratment.addAll(offerDetailModel.data!.treatments!);
       membership.addAll(offerDetailModel.data!.memberships!);
       package.addAll(offerDetailModel.data!.packages!);
-      isLoading = false;
+      isLoadings = false;
       update();
     } on Exception catch (e) {
-      isLoading = false;
+      isLoadings = false;
       update();
     }
   }
@@ -729,43 +733,71 @@ class CartController extends GetxController {
   var isLoadingPromo = false;
 
   // Improved selectPromoCode method
-  Future<void> selectPromoCode(code, index, offerId, isSelected, cartId) async {
-    if (isLoadingPromo) return;
-    isLoadingPromo = true;
+  Future<void> selectPromoCode(
+    code,
+    index,
+    offerId,
+    isSelected,
+    cartId,
+    context,
+    isPage,
+  ) async {
+    if (isApplyLoading) return;
+    isApplyLoading = true;
     update();
     try {
       print("Apply offer to cart1 $cartId");
       promoErrorText = '';
       var clientId = await localStorage.getCId();
       var userId = await localStorage.getUId();
+
+      // Create base map with required parameters
       Map<String, dynamic> map = {
         "promo_code": code,
-        "cart_id": cartId.toString(),
         "user_id": userId.toString(),
         "client_id": clientId.toString(),
       };
+
+      // Only add cart_id parameter if cartId is not null and not empty
+      if (cartData.isNotEmpty) {
+        map["cart_id"] = cartId.toString();
+      }
+
       Get.log("apply Cart list :$map");
       var response = await hiApplyCouponCodeAPI(map);
-
+      print("Response:: $response");
       if (response['success'] == true) {
+        print("Are you come");
+        Get.snackbar(
+          response['message'],
+          "",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.black,
+          colorText: Colors.white,
+          margin: const EdgeInsets.all(12),
+          duration: const Duration(seconds: 3),
+        );
+
+        await cartList();
         selectedPromoIndex.value = index;
         offerselectedId.value = isSelected.toString();
         isUpdateSomething.value = true;
         promoErrorText = '';
         appliedName = couponAvailableData[index].title ?? '';
+        print("Are you come: Yes");
         applyPromo = true;
         applyReward = false;
-        isLoadingPromo = false;
+        isApplyLoading = false;
         rewardId = '';
         rewardName = '';
-        await cartList();
+        print("Back to list");
+        isPage ? Navigator.of(context).pop() : null;
         update();
-        Get.back();
       } else {
         isUpdateSomething.value = false;
         Get.snackbar(
-          "Invalid Promo Code",
-          "Please enter a valid promo code.",
+          response['message'],
+          "",
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.red.shade400,
           colorText: Colors.white,
@@ -774,106 +806,14 @@ class CartController extends GetxController {
         );
       }
     } catch (e) {
-      print("Error selecting promo code: $e");
       isUpdateSomething.value = false;
-      Get.snackbar(
-        "Error",
-        "Something went wrong. Please try again.",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade400,
-        colorText: Colors.white,
-        margin: const EdgeInsets.all(12),
-        duration: const Duration(seconds: 3),
-      );
+      update();
     } finally {
-      isLoadingPromo = false;
+      isApplyLoading = false;
       update();
     }
   }
 
-  // applyAvailableCode(rewardId, index, cartId) async {
-  //   isApplyLoading = true;
-  //   update();
-  //   try {
-  //     var clientId = await localStorage.getCId();
-  //     var userId = await localStorage.getUId();
-  //     Map<String, dynamic> map = {
-  //       "reward_id": rewardId,
-  //       "cart_id": cartId,
-  //       "user_id": userId,
-  //       "client_id": "${clientId}",
-  //     };
-  //     Get.log("apply Cart list :$map");
-  //     var response = await hiApplyAvailableAPI(map);
-  //     if (response['success'] == true) {
-  //       isUpdateSomething.value = true;
-  //       selectedPromoIndex.value = index;
-  //       selectedId.value = rewardId.toString();
-  //       applyReward = true;
-  //       applyPromo = false;
-  //       isApplyLoading = false;
-  //       promoId = '';
-  //       promoname = '';
-  //       promoErrorText = ''; // Reset error
-  //       cartList();
-  //       Get.back();
-  //       update();
-  //     } else {
-  //       isUpdateSomething.value = false;
-  //       print("object: ${promoErrorText}");
-  //       isApplyLoading = false;
-  //       update();
-  //     }
-  //   } on Exception catch (e) {
-  //     isUpdateSomething.value = false;
-  //     isApplyLoading = false;
-  //     update();
-  //   }
-  // }
-
-  // applyMembership(memId, cartId) async {
-  //   isApplyLoading = true;
-  //   update();
-  //   try {
-  //     var clientId = await localStorage.getCId();
-  //     var userId = await localStorage.getUId();
-  //     Map<String, dynamic> map = {
-  //       "membership_id": memId,
-  //       "cart_id": cartId,
-  //       "user_id": userId,
-  //       "client_id": "${clientId}",
-  //     };
-  //     Get.log("apply Cart list :$map");
-  //     var response = await hiApplyMembershipAPI(map);
-  //     if (response == null || response.toString() == "null") {
-  //       cartList();
-  //       Get.back();
-  //     }
-  //     if (response['success'] == true) {
-  //       isUpdateSomething.value = true;
-  //       selectedId.value = rewardId.toString();
-  //       rewardId = '';
-  //       applyReward = true;
-  //       isApplyLoading = false;
-  //       cartList();
-  //       Get.back();
-  //       update();
-  //     } else {
-  //       isUpdateSomething.value = false;
-  //       print("object: ${promoErrorText}");
-  //       isApplyLoading = false;
-  //       Get.back();
-  //       update();
-  //     }
-  //   } on Exception catch (e) {
-  //     isUpdateSomething.value = false;
-  //     isApplyLoading = false;
-  //     Get.back();
-  //     update();
-  //   }
-  // }
-  // Improved applyMembership method
-  // Improved applyAvailableCode method
   Future<void> applyAvailableCode(rewardId, index, cartId) async {
     if (isApplyLoading) return; // Prevent multiple calls
 

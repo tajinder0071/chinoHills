@@ -49,7 +49,7 @@ class _DiscoverSection extends StatelessWidget {
         children: [
           ConstantNetworkImage(
             isLoad: true,
-            imageUrl:  cardData.cloudUrl.toString(),
+            imageUrl: cardData.cloudUrl.toString(),
             width: double.infinity,
             height: 200.h,
             boxFit: BoxFit.cover,
@@ -82,12 +82,15 @@ class _DiscoverSection extends StatelessWidget {
       ),
       bottomNavigationBar: SafeArea(
         minimum: EdgeInsets.only(bottom: 8.h),
-        child: GetBuilder<DiscoverController>(builder: (controller) {
-          return _BottomButton(
-            label: cardData.callToAction ?? "Learn More",
-            onTap: () => controller.launchURL(cardData.customUrl!),
-          );
-        }),
+        child: GetBuilder<DiscoverController>(
+          builder: (controller) {
+            return _BottomButton(
+              isApplyLoading: false,
+              label: cardData.callToAction ?? "Learn More",
+              onTap: () => controller.launchURL(cardData.customUrl!),
+            );
+          },
+        ),
       ),
     );
   }
@@ -106,7 +109,7 @@ class _OfferDetailSection extends StatelessWidget {
         ..cartList()
         ..learnMore(id.toString()),
       builder: (controller) {
-        if (controller.isLoading) {
+        if (controller.isLoadings) {
           return _LoadingState();
         }
         if (controller.offerDetailModel.data == null) {
@@ -116,8 +119,11 @@ class _OfferDetailSection extends StatelessWidget {
         final offer = controller.offerDetailModel.data!;
         return Scaffold(
           backgroundColor: AppColor().background,
-          appBar:
-          commonAppBar(isLeading: true, title: "Learn More", action: []),
+          appBar: commonAppBar(
+            isLeading: true,
+            title: "Learn More",
+            action: [],
+          ),
           body: ListView(
             padding: EdgeInsets.all(12.w),
             children: [
@@ -142,24 +148,24 @@ class _OfferDetailSection extends StatelessWidget {
               offer.description == ""
                   ? SizedBox.shrink()
                   : Text(
-                offer.description.toString() ?? '',
-                style: GoogleFonts.merriweather(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+                      offer.description.toString() ?? '',
+                      style: GoogleFonts.merriweather(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
               offer.description == ""
                   ? SizedBox.shrink()
                   : SizedBox(height: 10.h),
               offer.discountType == ""
                   ? SizedBox.shrink()
                   : Text(
-                offer.discountType.toString() ?? '',
-                style: GoogleFonts.merriweather(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+                      offer.discountType.toString() ?? '',
+                      style: GoogleFonts.merriweather(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
               SizedBox(height: 16.h),
               if ((offer.treatments?.isNotEmpty ?? false) ||
                   (offer.packages?.isNotEmpty ?? false) ||
@@ -183,14 +189,12 @@ class _OfferDetailSection extends StatelessWidget {
                   ),
                 ),
             ],
-          ), // bottomNavigationBar: controller.cartModel1.value.data == null || controller.cartModel1.value.data!.items!.isEmpty || controller.cartModel1.value.data!.cartId.toString() == "0" // ? SizedBox.shrink() :
-          bottomNavigationBar: controller.isApplyLoading
-              ? Center(
-            child: CircularProgressIndicator(),
-          )
-              : SafeArea(
+          ),
+          // bottomNavigationBar: controller.cartModel1.value.data == null || controller.cartModel1.value.data!.items!.isEmpty || controller.cartModel1.value.data!.cartId.toString() == "0" // ? SizedBox.shrink() :
+          bottomNavigationBar: SafeArea(
             minimum: EdgeInsets.only(bottom: 8.h),
             child: _BottomButton(
+              isApplyLoading: controller.isApplyLoading,
               label: "Apply offer to cart",
               onTap: () => controller.selectPromoCode(
                 offer.promoCode,
@@ -198,6 +202,8 @@ class _OfferDetailSection extends StatelessWidget {
                 offer.id,
                 controller,
                 controller.cartModel1.value.data?.cartId ?? "",
+                context,
+                false
               ),
             ),
           ),
@@ -211,8 +217,13 @@ class _OfferDetailSection extends StatelessWidget {
 class _BottomButton extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
+  final bool isApplyLoading;
 
-  const _BottomButton({required this.label, required this.onTap});
+  const _BottomButton({
+    required this.label,
+    required this.onTap,
+    required this.isApplyLoading,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -227,16 +238,20 @@ class _BottomButton extends StatelessWidget {
         ),
         height: 55.h,
         alignment: Alignment.center,
-        child: Text(
-          label,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18.h,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
+        child: isApplyLoading
+            ? Center(
+                child: CircularProgressIndicator(color: AppColor().whiteColor),
+              )
+            : Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18.h,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
       ),
     );
   }
@@ -274,19 +289,22 @@ class _TreatmentList extends StatelessWidget {
         return _ListItem(
           title: treatment.treatmentName ?? '',
           onTap: () => Get.to(
-                () => TreatmentDetailsPage(),
+            () => TreatmentDetailsPage(),
             arguments: treatment.treatmentId,
             binding: CommonBinding(),
             transition: Transition.fadeIn,
             duration: const Duration(milliseconds: 500),
           ),
-          children: treatment.variations?.map((v) {
-            return Padding(
-              padding: EdgeInsets.only(left: 16.w, top: 4.h),
-              child: Text("• ${v.variationName}",
-                  style: GoogleFonts.roboto(fontSize: 14.sp)),
-            );
-          }).toList() ??
+          children:
+              treatment.variations?.map((v) {
+                return Padding(
+                  padding: EdgeInsets.only(left: 16.w, top: 4.h),
+                  child: Text(
+                    "• ${v.variationName}",
+                    style: GoogleFonts.roboto(fontSize: 14.sp),
+                  ),
+                );
+              }).toList() ??
               [],
         );
       }).toList(),
@@ -306,7 +324,7 @@ class _PackageList extends StatelessWidget {
         return _ListItem(
           title: package.packageName ?? '',
           onTap: () => Get.to(
-                () => PackageDetailPage(),
+            () => PackageDetailPage(),
             arguments: package.packageId,
             binding: CommonBinding(),
             transition: Transition.fadeIn,
@@ -330,7 +348,7 @@ class _MembershipList extends StatelessWidget {
         return _ListItem(
           title: membership.membershipName ?? '',
           onTap: () => Get.to(
-                () => MembersShipDetailsPage(onlyShow: false),
+            () => MembersShipDetailsPage(onlyShow: false),
             arguments: membership.membershipId,
             binding: CommonBinding(),
             transition: Transition.fadeIn,
@@ -363,11 +381,14 @@ class _ListItem extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                  child:
-                  Text(title, style: GoogleFonts.roboto(fontSize: 15.sp))),
+                child: Text(title, style: GoogleFonts.roboto(fontSize: 15.sp)),
+              ),
               IconButton(
-                icon: Icon(Icons.arrow_forward_ios,
-                    size: 16.sp, color: AppColor().blueColor),
+                icon: Icon(
+                  Icons.arrow_forward_ios,
+                  size: 16.sp,
+                  color: AppColor().blueColor,
+                ),
                 onPressed: onTap,
               ),
             ],
@@ -407,7 +428,8 @@ class _LoadingState extends StatelessWidget {
       backgroundColor: AppColor().background,
       appBar: commonAppBar(isLeading: true, title: "Learn More", action: []),
       body: Center(
-          child: CircularProgressIndicator(color: AppColor.dynamicColor)),
+        child: CircularProgressIndicator(color: AppColor.dynamicColor),
+      ),
     );
   }
 }
