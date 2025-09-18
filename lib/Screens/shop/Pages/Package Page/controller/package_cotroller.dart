@@ -53,12 +53,12 @@ class PackageController extends GetxController
   List filter = [
     {"title": "Price: Low to High"},
     {"title": "Price: High to Low"},
-    {"title": "Recently added"}
+    {"title": "Recently added"},
   ];
   List filterBack = [
     {"title": "Low_to_high"},
     {"title": "High_to_low"},
-    {"title": "Recently_added"}
+    {"title": "Recently_added"},
   ];
 
   var packageHeaderImage = "";
@@ -102,14 +102,20 @@ class PackageController extends GetxController
     update();
   }
 
-  Future<void> packageList(List<String> selectedOptions,
-      List<String> selectedArea, String selectFilter) async {
+  Future<void> packageList(
+    List<String> selectedOptions,
+    List<String> selectedArea,
+    String selectFilter,
+  ) async {
     load = true;
     // update();
     try {
       shopDatum.clear();
-      model =
-      await hitAllPackageAPI(selectedOptions, selectedArea, selectFilter);
+      model = await hitAllPackageAPI(
+        selectedOptions,
+        selectedArea,
+        selectFilter,
+      );
       shopDatum.addAll(model.packages!);
       packageHeaderImage = model.headerDetails!.headerImage ?? "";
       load = false;
@@ -153,8 +159,10 @@ class PackageController extends GetxController
     try {
       String filterusedat = name;
       var concern_id = selectedOptions.toString();
-      NewBrowseModel response =
-      await hitAllenabledBrowseAPI(concern_id, filterusedat);
+      NewBrowseModel response = await hitAllenabledBrowseAPI(
+        concern_id,
+        filterusedat,
+      );
 
       Datum.clear();
 
@@ -195,9 +203,8 @@ class PackageController extends GetxController
 
   Future<void> memberShipList() async {
     bload = true;
-    memberShip.clear();
-    // update();
     try {
+      memberShip.clear();
       response = await hitAllMemberShipAPI();
       memberShip.addAll(response.memberships!);
       bload = false;
@@ -257,13 +264,19 @@ class PackageController extends GetxController
   //? Todo // Scroll the image
   void changePage(int index) {
     currentPage.value = index;
-    pageController.animateToPage(index,
-        duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+    pageController.animateToPage(
+      index,
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
   }
 
   // Let's hit the addToCart API ...
-  Future addToCart(bool isPackagebottom,
-      {membershipId, memberShipPrice}) async {
+  Future addToCart(
+    bool isPackagebottom, {
+    membershipId,
+    memberShipPrice,
+  }) async {
     isAddingCart = true;
     print("member==> $membershipId,$memberShipPrice");
     try {
@@ -271,29 +284,29 @@ class PackageController extends GetxController
       var userId = await localStorage.getUId();
       Map<String, dynamic> map = isMemberChecked == true
           ? {
-        "client_id": clientId,
-        "user_id": userId,
-        "CartDetails": {
-          "type": "Packages",
-          "package_id": packageDetailsModel.package!.packageId.toString(),
-          "package_price": price,
-          "package_qty": quantity,
-          "become_membership": {
-            "membership_id": isMemberChecked ? membershipId : "",
-            "membership_price": isMemberChecked ? memberShipPrice : ""
-          }
-        }
-      }
+              "client_id": clientId,
+              "user_id": userId,
+              "CartDetails": {
+                "type": "Packages",
+                "package_id": packageDetailsModel.package!.packageId.toString(),
+                "package_price": price,
+                "package_qty": quantity,
+                "become_membership": {
+                  "membership_id": isMemberChecked ? membershipId : "",
+                  "membership_price": isMemberChecked ? memberShipPrice : "",
+                },
+              },
+            }
           : {
-        "client_id": clientId,
-        "user_id": userId,
-        "CartDetails": {
-          "type": "Packages",
-          "package_id": packageDetailsModel.package!.packageId.toString(),
-          "package_price": price,
-          "package_qty": quantity,
-        }
-      };
+              "client_id": clientId,
+              "user_id": userId,
+              "CartDetails": {
+                "type": "Packages",
+                "package_id": packageDetailsModel.package!.packageId.toString(),
+                "package_price": price,
+                "package_qty": quantity,
+              },
+            };
       Get.log("Add To Cart Map  :$map");
       var response = await hitAddCartAPI(map);
 
@@ -302,20 +315,21 @@ class PackageController extends GetxController
           Get.back();
         }
         await Get.bottomSheet(
-            AddedToCartBottomSheet(
-                titleName: packageDetailsModel.package!.packageName ?? "",
-                quantityName: 'package',
-                price: price,
-                isChecked: isMemberChecked ? true : false,
-                membeTitleName: !isMemberChecked
-                    ? ""
-                    : packageDetailsModel
-                    .package!.membershipInfo!.membershipName ??
-                    "",
-                memberPrice: memberShipPrice ?? "",
-                quantity: quantity),
-            isDismissible: false,
-            isScrollControlled: true);
+          AddedToCartBottomSheet(
+            titleName: packageDetailsModel.package!.packageName ?? "",
+            quantityName: 'package',
+            price: price,
+            isChecked: isMemberChecked ? true : false,
+            membeTitleName: !isMemberChecked
+                ? ""
+                : packageDetailsModel.package!.membershipInfo!.membershipName ??
+                      "",
+            memberPrice: memberShipPrice ?? "",
+            quantity: quantity,
+          ),
+          isDismissible: false,
+          isScrollControlled: true,
+        );
         CartController.cart.cartList();
         isAddingCart = false;
         update();
@@ -338,21 +352,18 @@ class PackageController extends GetxController
 
   Future<void> getBrowserData() async {
     isBrowserLoading = true;
-    membershipPerk.clear();
-    browseCategory.clear();
-    memberships.clear();
-    offerCards.clear();
-    // update();
     try {
-      browseDetailModel = await hitBrowserAPI();
       memberships.clear();
       membershipPerk.clear();
       browseCategory.clear();
       offerCards.clear();
+      print("membershipPerk===>${membershipPerk.length}");
+      browseDetailModel = await hitBrowserAPI();
       membershipPerk.addAll(browseDetailModel.data!.membershipPerks!);
       browseCategory.addAll(browseDetailModel.data!.browseCategories!);
       memberships.addAll(browseDetailModel.data!.memberships!);
       offerCards.addAll(browseDetailModel.data!.offerCards!);
+      print("membershipPerk==>${membershipPerk.length}");
       isBrowserLoading = false;
       update();
     } on Exception catch (e) {
@@ -366,7 +377,7 @@ class PackageController extends GetxController
   List ourServicesData = [];
 
   final GlobalKey<RefreshIndicatorState> refreshIndicatorKey =
-  GlobalKey<RefreshIndicatorState>();
+      GlobalKey<RefreshIndicatorState>();
 
   bool isclick = false;
 

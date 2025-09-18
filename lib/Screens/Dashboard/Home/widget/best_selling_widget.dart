@@ -100,15 +100,7 @@ class BestSellingWidget extends StatelessWidget {
         }
 
         if (bestSellingList.isEmpty) {
-          return SizedBox(
-            height: 150.h,
-            child: Center(
-              child: Text(
-                "No best-selling items available",
-                style: TextStyle(color: Colors.grey, fontSize: 14.sp),
-              ),
-            ),
-          );
+          return SizedBox.shrink();
         }
 
         return SizedBox(
@@ -182,7 +174,7 @@ class BestSellingWidget extends StatelessWidget {
           children: [
             // TODO >> Image...
             CommonNetworkImageWidget(
-              imageUrl: "${imageUrl.toString()}",
+              imageUrl: imageUrl.toString(),
               height: 140.0.h,
               width: double.infinity,
               borderRadius: BorderRadius.vertical(top: Radius.circular(6.0.r)),
@@ -235,7 +227,7 @@ class BestSellingWidget extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "${originalPrice.toString()}",
+                          originalPrice.toString(),
                           style: GoogleFonts.roboto(
                             color: AppColor().blackColor,
                             fontSize: 12.sp,
@@ -253,17 +245,24 @@ class BestSellingWidget extends StatelessWidget {
                         memberPrice.toString() == '\$0.00'
                             ? SizedBox.shrink()
                             : Expanded(
-                                child: Column(
+                                child: Row(
                                   children: [
-                                    Text(
-                                      "${memberPrice.toString()}",
-                                      style: GoogleFonts.roboto(
-                                        color: AppColor().blackColor,
-                                        fontSize: 12.sp,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                    SizedBox(width: 10.w),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          memberPrice.toString(),
+                                          style: GoogleFonts.roboto(
+                                            color: AppColor().blackColor,
+                                            fontSize: 12.sp,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Text("Member"),
+                                      ],
                                     ),
-                                    Text("Member"),
                                   ],
                                 ),
                               ),

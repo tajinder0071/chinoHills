@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../CSS/color.dart';
+import '../CSS/image_page.dart';
 import '../util/common_page.dart';
 
 class CommonNetworkImageWidget extends StatelessWidget {
@@ -36,7 +37,7 @@ class CommonNetworkImageWidget extends StatelessWidget {
               BoxDecoration(color: Colors.black12, borderRadius: borderRadius),
           child: Center(
               child: Image.asset(
-            "assets/images/Image_not_available.png",
+                AppImages.noAvailableImage,
             color: AppColor().blackColor,
             fit: BoxFit.cover,
           )),

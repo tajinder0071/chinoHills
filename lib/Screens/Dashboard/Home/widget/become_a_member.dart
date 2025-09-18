@@ -448,18 +448,21 @@ class BecomeAMember extends StatelessWidget {
   Widget _buildMembershipPerks() {
     return GetBuilder<PackageController>(
       builder: (controller) {
+        print("length::${controller.membershipPerk.length}");
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              "MEMBERSHIP PERKS INCLUDE:",
-              style: GoogleFonts.merriweather(
-                fontWeight: FontWeight.w900,
-                fontSize: 18.sp,
-                color: Colors.white,
-              ),
-            ),
+            controller.membershipPerk.isEmpty && perks!.isEmpty
+                ? SizedBox.shrink()
+                : Text(
+                    "MEMBERSHIP PERKS INCLUDE:",
+                    style: GoogleFonts.merriweather(
+                      fontWeight: FontWeight.w900,
+                      fontSize: 18.sp,
+                      color: Colors.white,
+                    ),
+                  ),
             Padding(
               padding: const EdgeInsets.only(left: 20.0, top: 10),
               child: perks!.isEmpty

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../../CSS/color.dart';
+import '../../../../../CSS/image_page.dart';
 import '../../../../../Model/package_details_model.dart';
 import '../controller/package_cotroller.dart';
 
@@ -63,7 +64,7 @@ class DetailsPageView extends StatelessWidget {
                           color: AppColor.geryBackGroundColor,
                           child: Center(
                               child: Image.asset(
-                                "assets/images/Image_not_available.png",
+                                AppImages.noAvailableImage,
                                 color: AppColor().blackColor,
                                 fit: BoxFit.cover,
                               )),

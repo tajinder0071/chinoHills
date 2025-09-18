@@ -29,13 +29,17 @@
 	<key>NSCameraUsageDescription</key>
 	<string>This app requires camera access to let you upload photos for your profile or share with doctors.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>This app requires location access both in the background and foreground to help connect you with nearby doctors and services.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>This app needs access to your location at all times to provide better healthcare support.</string>
+    <string>Your location is used to verify payments securely and to show nearby services. Without location access, some payment features may not work as expected</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+	<string>Your location is used to verify payments securely and to show nearby services. Without location access, some payment features may not work as expected</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app needs access to your location to help connect you with nearby doctors.</string>
+    <string>Your location is used to verify payments securely and to show nearby services. Without location access, some payment features may not work as expected</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>LSApplicationQueriesSchemes</key>
+    <array>
+    <string>tel</string>
+    </array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

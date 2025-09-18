@@ -26,74 +26,68 @@ class OrderList extends StatelessWidget {
           body: controller.isLoading.value
               ? OrderListLoad()
               : orderController.orderList.isEmpty
-                  ? Center(
-                      child: NoRecord(
-                          "No orders Found",
-                          Icon(Icons.no_accounts),
-                          "We're sorry. no order available at this moment.\nPlease check back later"),
-                    )
-                  : LiquidPullToRefresh(
-                      animSpeedFactor: 1.5,
-                      springAnimationDurationInMilliseconds: 400,
-                      key: controller.refreshIndicatorKey,
-                      color: AppColor.dynamicColor,
-                      showChildOpacityTransition: false,
-                      backgroundColor: Colors.white,
-                      onRefresh: controller.handleRefresh,
-                      child: ListView.builder(
-                          padding: EdgeInsets.only(top: 10),
-                          itemCount: orderController.orderList.length + 1,
-                          itemBuilder: (BuildContext context, int index) {
-                            if (index < orderController.orderList.length) {
-                              return BooksOrderSummaryCard(
-                                orderId: orderController
-                                    .orderList[index].orderId
+              ? Center(
+                  child: NoRecord(
+                    "No orders Found",
+                    Icon(Icons.no_accounts),
+                    "We're sorry. no order available at this moment.\nPlease check back later",
+                  ),
+                )
+              : LiquidPullToRefresh(
+                  animSpeedFactor: 1.5,
+                  springAnimationDurationInMilliseconds: 400,
+                  key: controller.refreshIndicatorKey,
+                  color: AppColor.dynamicColor,
+                  showChildOpacityTransition: false,
+                  backgroundColor: Colors.white,
+                  onRefresh: controller.handleRefresh,
+                  child: ListView.builder(
+                    padding: EdgeInsets.only(top: 10),
+                    itemCount: orderController.orderList.length + 1,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index < orderController.orderList.length) {
+                        return BooksOrderSummaryCard(
+                          orderId: orderController.orderList[index].orderId
+                              .toString(),
+                          totalAmount:
+                              orderController.orderList[index].totalAmount == ""
+                              ? 0.0
+                              : double.parse(
+                                  orderController.orderList[index].totalAmount
+                                      .toString(),
+                                ),
+                          status:
+                              orderController.orderList[index].paymentStatus !=
+                                  ""
+                              ? orderController.orderList[index].paymentStatus
+                                    .toString()
+                              : "pending",
+                          customerName: "",
+                          orderDate: orderController.orderList[index].orderDate
+                              .toString(),
+                          totalItems:
+                              orderController.orderList[index].items!.length,
+                          onTap: () {
+                            Get.to(
+                              () => OrderDetailsPage(
+                                orderController.orderList[index].orderId
                                     .toString(),
-                                totalAmount: orderController
-                                            .orderList[index].totalAmount ==
-                                        ""
-                                    ? 0.0
-                                    : double.parse(orderController
-                                        .orderList[index].totalAmount
-                                        .toString()),
-                                status: orderController
-                                            .orderList[index].paymentStatus !=
-                                        ""
-                                    ? orderController
-                                        .orderList[index].paymentStatus
-                                        .toString()
-                                    : "pending",
-                                customerName: "",
-                                orderDate: orderController
-                                    .orderList[index].orderDate
-                                    .toString(),
-                                totalItems: orderController
-                                    .orderList[index].items!.length,
-                                onTap: () {
-                                  Get.to(
-                                          () => OrderDetailsPage(
-                                                orderController
-                                                    .orderList[index].orderId
-                                                    .toString(),
-                                              ),
-                                          transition: Transition.fadeIn,
-                                          duration:
-                                              Duration(milliseconds: 500))!
-                                      .then((_) {
-                                    orderController.orderListApi();
-                                  });
-                                },
-                              );
-                            } else {
-                              // TODO ?? Footer widget (at the end)
-                              return Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 16.0),
-                                child: Center(child: getBrand()),
-                              );
-                            }
-                          }),
-                    ),
+                              ),
+                              transition: Transition.fadeIn,
+                              duration: Duration(milliseconds: 300),
+                            );
+                          },
+                        );
+                      } else {
+                        // TODO ?? Footer widget (at the end)
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: Center(child: getBrand()),
+                        );
+                      }
+                    },
+                  ),
+                ),
         );
       },
     );

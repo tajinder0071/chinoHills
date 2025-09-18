@@ -37,7 +37,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
-    controller.requestPermission();
+    // controller.requestPermission();
     _selectedIndex = widget.selectIndex;
     getUser();
     fetchAppLogo();

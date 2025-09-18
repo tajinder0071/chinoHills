@@ -48,8 +48,11 @@ class TreatmentDetailsController extends GetxController {
 
   void changePage(int index) {
     currentPage.value = index;
-    pageController.animateToPage(index,
-        duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+    pageController.animateToPage(
+      index,
+      duration: Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
   }
 
   void clearSelectedQuantity() {
@@ -71,10 +74,7 @@ class TreatmentDetailsController extends GetxController {
     selectedQtyPrice = price;
     selectedMembershipPrice = membershipPrice;
     // memberShipPrice = membershipPrice;
-    selectedtype = {
-      "qty": qty,
-      "unit_type": unitType,
-    };
+    selectedtype = {"qty": qty, "unit_type": unitType};
     update();
   }
 
@@ -87,10 +87,7 @@ class TreatmentDetailsController extends GetxController {
     selectedQtyPrice = price;
     selectedMembershipPrice = membershipPrice;
     memberShipPrice = membershipPrice;
-    selectedtype = {
-      "qty": qty,
-      "unit_type": unitType,
-    };
+    selectedtype = {"qty": qty, "unit_type": unitType};
     update();
   }
 
@@ -160,9 +157,15 @@ class TreatmentDetailsController extends GetxController {
     }
   }
 
-// ✅ add to cart method with new payload
-  Future addToCart(var packageId, var treatmentID, var treatmentVarientId,
-      var treatmentPriceId, var treatmentPrice, var qty) async {
+  // ✅ add to cart method with new payload
+  Future addToCart(
+    var packageId,
+    var treatmentID,
+    var treatmentVarientId,
+    var treatmentPriceId,
+    var treatmentPrice,
+    var qty,
+  ) async {
     isAddingCart = true;
     try {
       var clientId = await localStorage.getCId();
@@ -171,33 +174,33 @@ class TreatmentDetailsController extends GetxController {
 
       Map<String, dynamic> map = isTreatmentCheck
           ? {
-        "client_id": clientId,
-        "user_id": userId,
-        "CartDetails": {
-          "type": "Treatments",
-          "treatment_id": treatmentID ?? 0,
-          "treatment_variation_id": treatmentVarientId ?? 0,
-          "treatment_price_id": treatmentPriceId ?? 0,
-          "treatment_price": treatmentPrice ?? 0.0,
-          "treatment_qty": qty ?? 0.0,
-          "become_membership": {
-            "membership_id": isTreatmentCheck ? membershipId : "",
-            "membership_price": isTreatmentCheck ? memberShip : ""
-          }
-        }
-      }
+              "client_id": clientId,
+              "user_id": userId,
+              "CartDetails": {
+                "type": "Treatments",
+                "treatment_id": treatmentID ?? 0,
+                "treatment_variation_id": treatmentVarientId ?? 0,
+                "treatment_price_id": treatmentPriceId ?? 0,
+                "treatment_price": treatmentPrice ?? 0.0,
+                "treatment_qty": qty ?? 0.0,
+                "become_membership": {
+                  "membership_id": isTreatmentCheck ? membershipId : "",
+                  "membership_price": isTreatmentCheck ? memberShip : "",
+                },
+              },
+            }
           : {
-        "client_id": clientId,
-        "user_id": userId,
-        "CartDetails": {
-          "type": "Treatments",
-          "treatment_id": treatmentID ?? 0,
-          "treatment_variation_id": treatmentVarientId ?? 0,
-          "treatment_price_id": treatmentPriceId ?? 0,
-          "treatment_price": treatmentPrice ?? 0.0,
-          "treatment_qty": qty ?? 0.0,
-        },
-      };
+              "client_id": clientId,
+              "user_id": userId,
+              "CartDetails": {
+                "type": "Treatments",
+                "treatment_id": treatmentID ?? 0,
+                "treatment_variation_id": treatmentVarientId ?? 0,
+                "treatment_price_id": treatmentPriceId ?? 0,
+                "treatment_price": treatmentPrice ?? 0.0,
+                "treatment_qty": qty ?? 0.0,
+              },
+            };
       print(map);
 
       // include membership details if checked
@@ -210,19 +213,21 @@ class TreatmentDetailsController extends GetxController {
       }
 
       var response = await hitAddCartAPI(map);
-      print(isTreatmentCheck ?  selectedQtyPrice:memberShipPrice);
+      print(isTreatmentCheck ? selectedQtyPrice : memberShipPrice);
       if (response['success'] == true) {
         await Get.bottomSheet(
           AddedToCartBottomSheet(
             titleName: selectedIndex != -1
                 ? treatmentDetailsModel
-                .treatment!.variations![selectedIndex].variationName
-                .toString()
+                      .treatment!
+                      .variations![selectedIndex]
+                      .variationName
+                      .toString()
                 : "",
             quantityName: selectedQtyLabel ?? 'treatment',
-            price: isTreatmentCheck ? memberShipPrice : selectedQtyPrice,
-            membeTitleName: isTreatmentCheck ?  membershipName:"",
-            memberPrice: isTreatmentCheck ?  "$memberShip.00":"",
+            price: treatmentPrice,
+            membeTitleName: isTreatmentCheck ? membershipName : "",
+            memberPrice: isTreatmentCheck ? "$memberShip" : "",
             isChecked: isTreatmentCheck,
             quantity: selectedtype != null
                 ? "${selectedtype?['qty']} ${selectedtype?['unit_type']}"

@@ -13,15 +13,16 @@ class AddedToCartBottomSheet extends StatelessWidget {
   String membeTitleName;
   var memberPrice;
 
-  AddedToCartBottomSheet(
-      {super.key,
-      required this.titleName,
-      required this.quantity,
-      required this.quantityName,
-      required this.membeTitleName,
-      required this.memberPrice,
-      this.isChecked = false,
-      required this.price});
+  AddedToCartBottomSheet({
+    super.key,
+    required this.titleName,
+    required this.quantity,
+    required this.quantityName,
+    required this.membeTitleName,
+    required this.memberPrice,
+    this.isChecked = false,
+    required this.price,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -62,16 +63,20 @@ class AddedToCartBottomSheet extends StatelessWidget {
                     Text(
                       titleName.toString(),
                       style: TextStyle(
-                          fontSize: 16.sp, fontWeight: FontWeight.w500),
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                     SizedBox(height: 4.h),
                     quantity != null && quantity != 0
                         ? Text(
-                      "$quantity $quantityName",
-                      style: TextStyle(color: Colors.grey, fontSize: 14.sp),
-                    )
+                            "$quantity $quantityName",
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 14.sp,
+                            ),
+                          )
                         : SizedBox.shrink(),
-
                   ],
                 ),
               ),
@@ -82,41 +87,43 @@ class AddedToCartBottomSheet extends StatelessWidget {
               ),
             ],
           ),
-          isChecked
-              ? Divider(
-                  thickness: 1,
-                )
-              : SizedBox.shrink(),
+          isChecked ? Divider(thickness: 1) : SizedBox.shrink(),
           // Todo >>  this is the members id checked...
           isChecked
-              ? Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
+              ? membeTitleName == ""
+                    ? SizedBox.shrink()
+                    : Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            membeTitleName.toString(),
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w500),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  membeTitleName.toString(),
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                SizedBox(height: 4.h),
+                                Text(
+                                  "Membership",
+                                  style: TextStyle(color: Colors.grey),
+                                ),
+                              ],
+                            ),
                           ),
-                          SizedBox(height: 4.h),
+                          SizedBox(width: 12),
                           Text(
-                            "Membership",
-                            style: TextStyle(color: Colors.grey),
+                            "\$$memberPrice",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ],
-                      ),
-                    ),
-                    SizedBox(width: 12),
-                    Text(
-                      "\$$memberPrice",
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                    ),
-                  ],
-                )
+                      )
               : SizedBox.shrink(),
           SizedBox(height: 25.h),
           SafeArea(
