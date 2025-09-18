@@ -1,4 +1,3 @@
-
 import 'package:chino_hills/common_Widgets/common_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:chino_hills/Model/member_ship_details_model.dart';
 import '../../../../CSS/color.dart';
+import '../../../../CSS/image_page.dart';
 import '../../../../common_Widgets/common_terms_condition_widget.dart';
 import '../../../../loading/become_a_member_loading.dart';
 import '../../../../util/common_page.dart';
@@ -27,126 +27,128 @@ class MembersShipDetailsPage extends StatelessWidget {
         var data = controller.memberDetailsModel.membership;
         return Scaffold(
           backgroundColor: AppColor().background,
-          appBar:
-          commonAppBar(isLeading: true, title: "Memberships", action: []),
+          appBar: commonAppBar(
+            isLeading: true,
+            title: "Memberships",
+            action: [],
+          ),
           body: controller.isMemberLoading
               ? TreatementLoadDetail()
               : controller.memberDetailsModel.membership == null
               ? Center(
-            child: Padding(
-              padding: EdgeInsets.only(top: 50.h),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Iconsax.search_normal),
-                  SizedBox(height: 5.0.h),
-                  Text(
-                    "No Data Found",
-                    style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.bold),
-                  )
-                ],
-              ),
-            ),
-          )
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 50.h),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Iconsax.search_normal),
+                        SizedBox(height: 5.0.h),
+                        Text(
+                          "No Data Found",
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
               : ListView(
-            children: [
-              _buildMembershipImage(context, data),
-              _buildMembershipInfo(data),
-              SizedBox(height: 10.h),
-              _buildBenefitsSection(data),
-              onlyShow
-                  ? _buildOnlyShowSection(data!)
-                  : SizedBox.shrink(),
-            ],
-          ),
+                  children: [
+                    _buildMembershipImage(context, data),
+                    _buildMembershipInfo(data),
+                    SizedBox(height: 10.h),
+                    _buildBenefitsSection(data),
+                    onlyShow ? _buildOnlyShowSection(data!) : SizedBox.shrink(),
+                  ],
+                ),
           bottomNavigationBar: controller.isMemberLoading
               ? SizedBox.shrink()
               : controller.memberDetailsModel.membership == null
               ? SizedBox.shrink()
               : onlyShow
               ? SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                height: Get.height * 0.17,
-                child: Column(
-                  children: [
-                    CommonButtonWidget(
-                      isOutlineButton: false,
-                      onTap: () => Get.back(),
-                      buttonName: "Back to treatment",
-                      margin: 10.0.h,
-                      isLoading: false,
-                    ),
-                    SizedBox(
-                      width: Get.width * 0.9,
-                      height: 40.h,
-                      child: OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          side: BorderSide(
-                              color: AppColor.dynamicColor),
-                          shape: RoundedRectangleBorder(
-                            borderRadius:
-                            BorderRadius.circular(5),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: SizedBox(
+                      height: Get.height * 0.17,
+                      child: Column(
+                        children: [
+                          CommonButtonWidget(
+                            isOutlineButton: false,
+                            onTap: () => Get.back(),
+                            buttonName: "Back to treatment",
+                            margin: 10.0.h,
+                            isLoading: false,
                           ),
-                        ),
-                        onPressed: () {
-                          ShopController.shop
-                              .goToTabByName("membership");
-                          Get.offAllNamed(
-                              RouteManager.dashBoardPage,
-                              arguments: 2);
-                        },
-                        child: Text(
-                          "Shop all membership",
-                          style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.bold,
-                              color: AppColor.dynamicColor,
-                              fontSize: 16.sp),
-                        ),
+                          SizedBox(
+                            width: Get.width * 0.9,
+                            height: 40.h,
+                            child: OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                side: BorderSide(color: AppColor.dynamicColor),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                              ),
+                              onPressed: () {
+                                ShopController.shop.goToTabByName("membership");
+                                Get.offAllNamed(
+                                  RouteManager.dashBoardPage,
+                                  arguments: 2,
+                                );
+                              },
+                              child: Text(
+                                "Shop all membership",
+                                style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColor.dynamicColor,
+                                  fontSize: 16.sp,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ),
-          )
+                  ),
+                )
               : SafeArea(
-            minimum: EdgeInsets.only(bottom: 8.h),
-            child: GetBuilder<MembershipDetailController>(
-              builder: (newController) {
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    data!.isActive
-                        ? SizedBox.shrink()
-                        : CommonButtonWidget(
-                      onTap: newController.isAddingCart
-                          ? () {}
-                          : () {
-                        newController.addToCart(
-                            context,
-                            controller
-                                .memberDetailsModel
-                                .membership!
-                                .membershipPricing,
-                            controller
-                                .memberDetailsModel
-                                .membership!
-                                .membershipTitle);
-                      },
-                      buttonName: "Join now",
-                      margin: 10.0.h,
-                      isLoading: newController.isAddingCart,
-                    ),
-                    CommonTermsConditionWidget(),
-                  ],
-                );
-              },
-            ),
-          ),
+                  minimum: EdgeInsets.only(bottom: 8.h),
+                  child: GetBuilder<MembershipDetailController>(
+                    builder: (newController) {
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          data!.isActive
+                              ? SizedBox.shrink()
+                              : CommonButtonWidget(
+                                  onTap: newController.isAddingCart
+                                      ? () {}
+                                      : () {
+                                          newController.addToCart(
+                                            context,
+                                            controller
+                                                .memberDetailsModel
+                                                .membership!
+                                                .membershipPricing,
+                                            controller
+                                                .memberDetailsModel
+                                                .membership!
+                                                .membershipTitle,
+                                          );
+                                        },
+                                  buttonName: "Join now",
+                                  margin: 10.0.h,
+                                  isLoading: newController.isAddingCart,
+                                ),
+                          CommonTermsConditionWidget(),
+                        ],
+                      );
+                    },
+                  ),
+                ),
         );
       },
     );
@@ -160,22 +162,22 @@ class MembersShipDetailsPage extends StatelessWidget {
       fit: BoxFit.contain,
       loadingBuilder:
           (BuildContext ctx, Widget child, ImageChunkEvent? loadingProgress) {
-        if (loadingProgress == null) {
-          return child;
-        }
-        return SizedBox(
-          height: 200.h,
-          child: Center(
-            child: CircularProgressIndicator(
-              color: AppColor.dynamicColor,
-              value: loadingProgress.expectedTotalBytes != null
-                  ? loadingProgress.cumulativeBytesLoaded /
-                  (loadingProgress.expectedTotalBytes ?? 1)
-                  : null,
-            ),
-          ),
-        );
-      },
+            if (loadingProgress == null) {
+              return child;
+            }
+            return SizedBox(
+              height: 200.h,
+              child: Center(
+                child: CircularProgressIndicator(
+                  color: AppColor.dynamicColor,
+                  value: loadingProgress.expectedTotalBytes != null
+                      ? loadingProgress.cumulativeBytesLoaded /
+                            (loadingProgress.expectedTotalBytes ?? 1)
+                      : null,
+                ),
+              ),
+            );
+          },
       errorBuilder: (context, url, error) {
         return Container(
           height: 200.h,
@@ -183,7 +185,7 @@ class MembersShipDetailsPage extends StatelessWidget {
           decoration: BoxDecoration(color: AppColor.geryBackGroundColor),
           child: Center(
             child: Image.asset(
-              "assets/images/Image_not_available.png",
+              AppImages.noAvailableImage,
               color: Colors.black,
               fit: BoxFit.cover,
             ),
@@ -203,65 +205,66 @@ class MembersShipDetailsPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(data?.membershipTitle ?? "",
-                style: GoogleFonts.merriweather(
-                  fontSize: 23.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center),
+            Text(
+              data?.membershipTitle ?? "",
+              style: GoogleFonts.merriweather(
+                fontSize: 23.sp,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
             SizedBox(height: 5.h),
-            Text("\$${data?.membershipPricing}/month",
-                style: GoogleFonts.roboto(
-                    fontSize: 15.sp,
-                    color: Colors.black87,
-                    fontWeight: FontWeight.w600),
-                textAlign: TextAlign.center),
+            Text(
+              "\$${data?.membershipPricing}/month",
+              style: GoogleFonts.roboto(
+                fontSize: 15.sp,
+                color: Colors.black87,
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+            ),
             SizedBox(height: 10.h),
             data!.offerofftext.toString() == ""
                 ? SizedBox.shrink()
                 : Container(
-              margin: EdgeInsets.all(10.h),
-              padding: EdgeInsets.all(10.h),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10.r),
-                color: AppColor.dynamicColor,
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.local_offer_outlined,
-                    color: Colors.white,
-                  ),
-                  SizedBox(width: 10.w),
-                  Expanded(
-                    child: Text(
-                      "Save ${data!.offerofftext.toString()} on your first month of membership when you apply ${data.membershipTitle.toString()} in cart!",
-                      style: TextStyle(color: AppColor().whiteColor),
+                    padding: EdgeInsets.all(10.h),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10.r),
+                      color: AppColor.dynamicColor,
                     ),
-                  )
-                ],
-              ),
-            ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.local_offer_outlined, color: Colors.white),
+                        SizedBox(width: 10.w),
+                        Expanded(
+                          child: Text(
+                            "Save ${data!.offerofftext.toString()} on your first month of membership when you apply ${data.membershipTitle.toString()} in cart!",
+                            style: TextStyle(color: AppColor().whiteColor),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
             SizedBox(height: 10.h),
             Text(
               "${data?.membershipDescription}",
               style: GoogleFonts.roboto(
-                  fontSize: 15.sp,
-                  color: Colors.black54,
-                  fontWeight: FontWeight.w400),
+                fontSize: 15.sp,
+                color: Colors.black54,
+                fontWeight: FontWeight.w400,
+              ),
               textAlign: TextAlign.center,
             ),
             Text(
               "12 month commitment required",
               style: GoogleFonts.roboto(
-                  fontSize: 15.sp,
-                  color: Colors.black,
-                  fontWeight: FontWeight.w500),
+                fontSize: 15.sp,
+                color: Colors.black,
+                fontWeight: FontWeight.w500,
+              ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(
-              height: 10.h,
-            ),
+            SizedBox(height: 10.h),
           ],
         ),
       ),
@@ -272,52 +275,59 @@ class MembersShipDetailsPage extends StatelessWidget {
     if (data?.benefits == null || data!.benefits!.isEmpty) {
       return SizedBox.shrink();
     }
-    return Center(
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: AppColor().whiteColor,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(10.r)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(Icons.star_border, color: AppColor.dynamicColor, size: 30),
-            SizedBox(height: 8),
-            Text(
-              "ACCESS MEMBER-ONLY BENEFITS",
-              style: GoogleFonts.poppins(
-                  fontSize: 16.sp,
-                  color: AppColor.dynamicColor,
-                  fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
+    return data.benefits!.isEmpty
+        ? SizedBox.shrink()
+        : Center(
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppColor().whiteColor,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(10.r)),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.star_border,
+                    color: AppColor.dynamicColor,
+                    size: 30,
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    "ACCESS MEMBER-ONLY BENEFITS",
+                    style: GoogleFonts.poppins(
+                      fontSize: 16.sp,
+                      color: AppColor.dynamicColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    "Sign up today and enjoy exclusive member-only benefits",
+                    style: GoogleFonts.roboto(
+                      fontSize: 15.sp,
+                      color: Colors.black54,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 20.h),
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: data.benefits!.length,
+                    itemBuilder: (context, index) => _buildBulletPoints(
+                      data.benefits![index].benefitTitle.toString(),
+                    ),
+                  ),
+                  SizedBox(height: 25.h),
+                ],
+              ),
             ),
-            SizedBox(height: 8),
-            Text(
-              "Sign up today and enjoy exclusive member-only benefits",
-              style: GoogleFonts.roboto(
-                  fontSize: 15.sp,
-                  color: Colors.black54,
-                  fontWeight: FontWeight.w500),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 20.h),
-            data.benefits!.isEmpty
-                ? SizedBox.shrink()
-                : ListView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: data.benefits!.length,
-              itemBuilder: (context, index) => _buildBulletPoints(
-                  data.benefits![index].benefitTitle.toString()),
-            ),
-            SizedBox(height: 25.h),
-          ],
-        ),
-      ),
-    );
+          );
   }
 
   Widget _buildOnlyShowSection(Membership data) {
@@ -335,18 +345,20 @@ class MembersShipDetailsPage extends StatelessWidget {
             Text(
               "ENJOY ALL OF THE FOLLOWING\nEVERY MONTH!",
               style: GoogleFonts.poppins(
-                  fontSize: 16.sp,
-                  color: AppColor.dynamicColor,
-                  fontWeight: FontWeight.bold),
+                fontSize: 16.sp,
+                color: AppColor.dynamicColor,
+                fontWeight: FontWeight.bold,
+              ),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 8),
             Text(
               "Starting on your 1st day as a member",
               style: GoogleFonts.roboto(
-                  fontSize: 15.sp,
-                  color: Colors.black54,
-                  fontWeight: FontWeight.w500),
+                fontSize: 15.sp,
+                color: Colors.black54,
+                fontWeight: FontWeight.w500,
+              ),
               textAlign: TextAlign.center,
             ),
             Padding(
@@ -364,8 +376,10 @@ class MembersShipDetailsPage extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: 4.h, horizontal: 10.0.w),
       child: Row(
         children: [
-          Text("• ",
-              style: TextStyle(fontSize: 20.sp, color: AppColor().blackColor)),
+          Text(
+            "• ",
+            style: TextStyle(fontSize: 20.sp, color: AppColor().blackColor),
+          ),
           SizedBox(width: 5.w),
           Expanded(
             child: Text(

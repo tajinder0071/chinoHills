@@ -143,25 +143,31 @@ InlineSpan buildPriceTextSpan({
   required dynamic originalPrice,
   dynamic memberPrice,
   String? unit,
-})
-{
-  print("object$memberPrice");
-  final currencyOriginalPrice = formatCurrency(originalPrice);
-  final currencyMemberPrice = formatCurrency(
-    memberPrice.toString().replaceAll("\$", ""),
-  );
-  print("currencyMemberPrice$currencyMemberPrice");
+}) {
+  // Helper to normalize values like "$235.00" → "235.00"
+  String normalizePrice(dynamic value) {
+    if (value == null) return "0.00";
+    return value.toString().replaceAll("\$", "").replaceAll(",", "").trim();
+  }
+
+  final currencyOriginalPrice = formatCurrency(normalizePrice(originalPrice));
+  final currencyMemberPrice = memberPrice != null
+      ? formatCurrency(normalizePrice(memberPrice))
+      : null;
+
+  print("currencyMemberPrice $currencyMemberPrice");
+
   bool hasUnit = unit != null && unit.isNotEmpty;
   bool hasMember =
       (memberPrice != null &&
       (memberPrice is num
           ? memberPrice != 0
-          : double.tryParse(memberPrice.toString()) != 0));
+          : double.tryParse(normalizePrice(memberPrice)) != 0));
 
   String baseText = hasUnit
       ? "$currencyOriginalPrice/$unit"
       : "From $currencyOriginalPrice";
-  String memberText = hasMember ? " | $currencyMemberPrice member" : "";
+  String memberText = hasMember ? " | $currencyMemberPrice Member" : "";
 
   return TextSpan(
     children: [
@@ -175,7 +181,10 @@ InlineSpan buildPriceTextSpan({
       if (hasMember)
         TextSpan(
           text: memberText,
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w600,
+          ),
         ),
     ],
   );

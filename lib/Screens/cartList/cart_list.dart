@@ -21,7 +21,7 @@ class CartList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(CartController());
-    controller.requestPermission();
+    // controller.requestPermission();
     controller.cartList();
 
     return GetBuilder<CartController>(
@@ -142,8 +142,7 @@ class CartList extends StatelessWidget {
                               discountPrice:
                                   item.discountPrice.toString() == '0.0'
                                   ? item.discountPrice
-                                  : formatCurrency(originalAmount ?? 0.00) ??
-                                        0.00,
+                                  : formatCurrency(originalAmount),
                             ),
                           );
                         },
@@ -174,11 +173,12 @@ class CartList extends StatelessWidget {
                           if (controller.isUpdate) {
                             null;
                           } else {
-                            if (controller.currentLocation != null) {
+                            print(controller.currentLocation);
+                            if (controller.currentLocation.toString() !=
+                                "null") {
                               //get order id in local storage
                               LocalStorage localStorage = LocalStorage();
                               var orderid = await localStorage.getOId();
-
                               controller.createOrder(
                                 controller.cartModel1.value.reward == null
                                     ? 0
@@ -241,7 +241,7 @@ class CartList extends StatelessWidget {
       print("discountName${discountName}");
       if (discountName != "") {
         return _buildAppliedCard(context, '$discountName', id, rewardId, memId);
-      } else if (controller.response.membership != null &&
+      } else if (controller.response.membership!.membershipTitle.toString() != "null" &&
           controller.response.offers != [] &&
           controller.response.rewards != []) {
         return _buildAvailableCard(context, memId);

@@ -1,5 +1,6 @@
 import 'package:chino_hills/Screens/shop/Pages/Package%20Page/Widgets/package_detail_page.dart';
 import 'package:chino_hills/Screens/shop/Pages/Treatment%20Page/widgets/treatment_details_page.dart';
+import 'package:chino_hills/loading/become_a_member_loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -85,9 +86,11 @@ class _DiscoverSection extends StatelessWidget {
         child: GetBuilder<DiscoverController>(
           builder: (controller) {
             return _BottomButton(
-              isApplyLoading: false,
               label: cardData.callToAction ?? "Learn More",
-              onTap: () => controller.launchURL(cardData.customUrl!),
+              onTap: () => cardData.callToAction == "Call Now"
+                  ? controller.callNumber(cardData.customUrl.toString())
+                  : controller.launchURL(cardData.customUrl!),
+              isApplyLoading: false,
             );
           },
         ),
@@ -109,8 +112,8 @@ class _OfferDetailSection extends StatelessWidget {
         ..cartList()
         ..learnMore(id.toString()),
       builder: (controller) {
-        if (controller.isLoadings) {
-          return _LoadingState();
+        if(controller.isLoading){
+          return TreatementLoadDetail();
         }
         if (controller.offerDetailModel.data == null) {
           return _EmptyState();
@@ -125,88 +128,96 @@ class _OfferDetailSection extends StatelessWidget {
             action: [],
           ),
           body: ListView(
-            padding: EdgeInsets.all(12.w),
-            children: [
-              ConstantNetworkImage(
-                isLoad: true,
-                imageUrl: offer.image ?? "",
-                width: double.infinity,
-                height: 200.h,
-                boxFit: BoxFit.cover,
-              ),
-              SizedBox(height: 12.h),
-              Text(
-                offer.title?.capitalizeFirst ?? '',
-                style: GoogleFonts.merriweather(
-                  fontSize: 28.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              offer.description == ""
-                  ? SizedBox.shrink()
-                  : SizedBox(height: 10.h),
-              offer.description == ""
-                  ? SizedBox.shrink()
-                  : Text(
-                      offer.description.toString() ?? '',
-                      style: GoogleFonts.merriweather(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-              offer.description == ""
-                  ? SizedBox.shrink()
-                  : SizedBox(height: 10.h),
-              offer.discountType == ""
-                  ? SizedBox.shrink()
-                  : Text(
-                      offer.discountType.toString() ?? '',
-                      style: GoogleFonts.merriweather(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-              SizedBox(height: 16.h),
-              if ((offer.treatments?.isNotEmpty ?? false) ||
-                  (offer.packages?.isNotEmpty ?? false) ||
-                  (offer.memberships?.isNotEmpty ?? false))
-                Container(
                   padding: EdgeInsets.all(12.w),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _SectionTitle("Treatments"),
-                      _TreatmentList(offer.treatments ?? []),
-                      _SectionTitle("Packages"),
-                      _PackageList(offer.packages ?? []),
-                      _SectionTitle("Memberships"),
-                      _MembershipList(offer.memberships ?? []),
-                    ],
+                  children: [
+                    ConstantNetworkImage(
+                      isLoad: true,
+                      imageUrl: offer.image ?? "",
+                      width: double.infinity,
+                      height: 200.h,
+                      boxFit: BoxFit.cover,
+                    ),
+                    SizedBox(height: 12.h),
+                    Text(
+                      offer.title?.capitalizeFirst ?? '',
+                      style: GoogleFonts.merriweather(
+                        fontSize: 28.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    offer.description == ""
+                        ? SizedBox.shrink()
+                        : SizedBox(height: 10.h),
+                    offer.description == ""
+                        ? SizedBox.shrink()
+                        : Text(
+                            offer.description.toString() ?? '',
+                            style: GoogleFonts.merriweather(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                    offer.description == ""
+                        ? SizedBox.shrink()
+                        : SizedBox(height: 10.h),
+                    offer.discountType == ""
+                        ? SizedBox.shrink()
+                        : Text(
+                            offer.discountType.toString() ?? '',
+                            style: GoogleFonts.merriweather(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                    SizedBox(height: 16.h),
+                    if ((offer.treatments?.isNotEmpty ?? false) ||
+                        (offer.packages?.isNotEmpty ?? false) ||
+                        (offer.memberships?.isNotEmpty ?? false))
+                      Container(
+                        padding: EdgeInsets.all(12.w),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (offer.treatments?.isNotEmpty ?? false) ...[
+                              _SectionTitle("Treatments"),
+                              _TreatmentList(offer.treatments ?? []),
+                            ],
+                            if (offer.packages?.isNotEmpty ?? false) ...[
+                              _SectionTitle("Packages"),
+                              _PackageList(offer.packages ?? []),
+                            ],
+                            if (offer.memberships?.isNotEmpty ?? false) ...[
+                              _SectionTitle("Memberships"),
+                              _MembershipList(offer.memberships ?? []),
+                            ],
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+          // bottomNavigationBar: controller.cartModel1.value.data == null || controller.cartModel1.value.data!.items!.isEmpty || controller.cartModel1.value.data!.cartId.toString() == "0" // ? SizedBox.shrink() :
+          bottomNavigationBar: controller.isLoading
+              ? SizedBox.shrink()
+              : SafeArea(
+                  minimum: EdgeInsets.only(bottom: 8.h),
+                  child: _BottomButton(
+                    isApplyLoading: controller.isApplyLoading,
+                    label: "Apply offer to cart",
+                    onTap: () => controller.selectPromoCode(
+                      offer.promoCode,
+                      0,
+                      offer.id,
+                      controller,
+                      controller.cartModel1.value.data?.cartId ?? "",
+                      context,
+                      false,
+                    ),
                   ),
                 ),
-            ],
-          ),
-          // bottomNavigationBar: controller.cartModel1.value.data == null || controller.cartModel1.value.data!.items!.isEmpty || controller.cartModel1.value.data!.cartId.toString() == "0" // ? SizedBox.shrink() :
-          bottomNavigationBar: SafeArea(
-            minimum: EdgeInsets.only(bottom: 8.h),
-            child: _BottomButton(
-              isApplyLoading: controller.isApplyLoading,
-              label: "Apply offer to cart",
-              onTap: () => controller.selectPromoCode(
-                offer.promoCode,
-                0,
-                offer.id,
-                controller,
-                controller.cartModel1.value.data?.cartId ?? "",
-                context,
-                false
-              ),
-            ),
-          ),
         );
       },
     );

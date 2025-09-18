@@ -33,58 +33,55 @@ class DiscoverPage extends StatelessWidget {
           children: [
             controller1.load
                 ? Shimmer.fromColors(
-              baseColor: Colors.grey[300]!,
-              highlightColor: Colors.grey[100]!,
-              child: DiscoverLoadingPage(height: 340.h),
-            )
+                    baseColor: Colors.grey[300]!,
+                    highlightColor: Colors.grey[100]!,
+                    child: DiscoverLoadingPage(height: 340.h),
+                  )
                 : (controller1.cardData.isEmpty)
                 ? Center(
-              child: NoRecord(
-                AppStrings.noDiscoverDataFound,
-                Icon(Icons.no_accounts),
-                AppStrings.weAreSorryNoDiscoverDataAvailable,
-              ),
-            )
-                : LiquidPullToRefresh(
-              animSpeedFactor: 1.5,
-              springAnimationDurationInMilliseconds: 400,
-              key: controller1.refreshIndicatorKey,
-              color: AppColor.dynamicColor,
-              showChildOpacityTransition: false,
-              backgroundColor: Colors.white,
-              onRefresh: controller1.handleRefresh,
-              child: ListView(
-                children: [
-                  ...controller1.cardData
-                      .map((item) => CustomCardWidget(
-                    imageUrl: item.cloudUrl ?? '',
-                    title: item.title ?? '',
-                    headline: item.headline ?? '',
-                    ctaText: item.callToAction == "custom CTA"
-                        ? item.customCallToAction
-                        : item.callToAction ?? '',
-                    description: item.description,
-                    isOffer: false,
-                    offerExpiresText: "",
-                    onTapCTA: () =>
-                    item.callToAction == "Call Now"
-                        ? controller1.callNumber(
-                        item.customUrl.toString())
-                        : controller1
-                        .launchURL(item.customUrl),
-                    onTapLearnMore: () => Get.toNamed(
-                      RouteManager.learnMore,
-                      arguments: {
-                        "cardData": item,
-                        "isExpired": false,
-                      },
+                    child: NoRecord(
+                      AppStrings.noDiscoverDataFound,
+                      Icon(Icons.no_accounts),
+                      AppStrings.weAreSorryNoDiscoverDataAvailable,
                     ),
-                    isOfferApplied: false,
-                  )),
-                  CommonReferWidget(),
-                ],
-              ),
-            ),
+                  )
+                : LiquidPullToRefresh(
+                    animSpeedFactor: 1.5,
+                    springAnimationDurationInMilliseconds: 400,
+                    key: controller1.refreshIndicatorKey,
+                    color: AppColor.dynamicColor,
+                    showChildOpacityTransition: false,
+                    backgroundColor: Colors.white,
+                    onRefresh: controller1.handleRefresh,
+                    child: ListView(
+                      children: [
+                        ...controller1.cardData.map(
+                          (item) => CustomCardWidget(
+                            imageUrl: item.cloudUrl ?? '',
+                            title: item.title ?? '',
+                            headline: item.headline ?? '',
+                            ctaText: item.callToAction == "custom CTA"
+                                ? item.customCallToAction
+                                : item.callToAction ?? '',
+                            description: item.description,
+                            isOffer: false,
+                            offerExpiresText: "",
+                            onTapCTA: () => item.callToAction == "Call Now"
+                                ? controller1.callNumber(
+                                    item.customUrl.toString(),
+                                  )
+                                : controller1.launchURL(item.customUrl),
+                            onTapLearnMore: () => Get.toNamed(
+                              RouteManager.learnMore,
+                              arguments: {"cardData": item, "isExpired": false},
+                            ),
+                            isOfferApplied: false,
+                          ),
+                        ),
+                        CommonReferWidget(),
+                      ],
+                    ),
+                  ),
           ],
         );
       },

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -14,7 +16,6 @@ class ReferFriendPage extends StatefulWidget {
 
   @override
   State<ReferFriendPage> createState() => _ReferFriendPageState();
-
 }
 
 class _ReferFriendPageState extends State<ReferFriendPage> {
@@ -55,8 +56,9 @@ class _ReferFriendPageState extends State<ReferFriendPage> {
                 width: double.infinity,
                 height: 50.h,
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10.r),
-                   color: AppColor.dynamicColor),
+                  borderRadius: BorderRadius.circular(10.r),
+                  color: AppColor.dynamicColor,
+                ),
                 child: ElevatedButton(
                   onPressed: () {
                     Get.log("Refer Pressed");
@@ -68,7 +70,8 @@ class _ReferFriendPageState extends State<ReferFriendPage> {
                     disabledBackgroundColor: Colors.transparent,
                     overlayColor: Colors.transparent,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.r)),
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
                   ),
                   child: Text(
                     "Refer a friend",
@@ -99,11 +102,21 @@ class _ReferFriendPageState extends State<ReferFriendPage> {
   //? Todo ?? Here We add xLetter Nima App And His Functionalities...
   void onShare(BuildContext context) async {
     final box = context.findRenderObject() as RenderBox?;
-    await Share.share(
-      "https://play.google.com/store/apps/details?id=com.io.waxxbrandz",
+    await Share.shareXFiles(
+        [
+          XFile(
+            Platform.isAndroid
+                ? "https://play.google.com/store/apps"
+                : "https://apps.apple.com/us/app",
+          ),
+        ],
+        sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size
+    );
+    /* await Share.share(
+      "https://play.google.com/store/apps/details",
       subject:
           "Send a friend \$${widget.rewardPoints ?? "Not available"}\nTowards Any Service!",
       sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
-    );
+    );*/
   }
 }

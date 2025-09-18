@@ -44,18 +44,29 @@ class CommonReferWidget extends StatelessWidget {
           ),
           SizedBox(height: 15.h),
           CommonButtonWidget(
-              isOutlineButton: true,
-              onTap: () async {
-                final box = context.findRenderObject() as RenderBox?;
-                await Share.share(
+            isOutlineButton: true,
+            onTap: () async {
+              final box = context.findRenderObject() as RenderBox?;
+              /* await Share.share(
+                Platform.isAndroid
+                    ? "https://play.google.com/store/apps/details?id=com.app.nima"
+                    : "https://apps.apple.com/us/app/nima-newport/id6745820609",
+                subject: "",
+                sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+              );*/
+              await Share.shareXFiles(
+                [
+                  XFile(
                     Platform.isAndroid
-                        ? "https://play.google.com/store/apps/details?id=com.app.nima"
-                        : "https://apps.apple.com/us/app/nima-newport/id6745820609",
-                    subject: "",
-                    sharePositionOrigin:
-                        box!.localToGlobal(Offset.zero) & box.size);
-              },
-              buttonName: "Send to a friend"),
+                        ? "https://play.google.com/store/apps"
+                        : "https://apps.apple.com/us/app",
+                  ),
+                ],
+                sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size
+              );
+            },
+            buttonName: "Send to a friend",
+          ),
         ],
       ),
     );

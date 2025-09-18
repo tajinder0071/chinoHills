@@ -221,60 +221,24 @@ class CartController extends GetxController {
     if (permission == LocationPermission.always ||
         permission == LocationPermission.whileInUse) {
       isPermissionGranted = true;
-      await _getCurrentLocation(); // Get coordinates and address
+      await _getCurrentLocation(); // ✅ Get coordinates and address
     } else if (permission == LocationPermission.denied) {
+      // ❌ Do nothing here (Apple doesn’t allow nagging the user right away)
       isPermissionGranted = false;
+    } else if (permission == LocationPermission.deniedForever) {
+      // ✅ Show info only when the user tries to use a location-dependent feature
       Get.snackbar(
-        "Permission Denied",
-        "Location permission is denied. Please allow it to use location features.",
+        "Location Disabled",
+        "Some features may not work without location. You can enable it anytime in Settings.",
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade400,
+        backgroundColor: Colors.red.shade300,
         colorText: Colors.white,
         margin: const EdgeInsets.all(12),
         duration: const Duration(seconds: 3),
       );
-    } else if (permission == LocationPermission.deniedForever) {
-      Get.defaultDialog(
-        title: "Location Permission",
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 10.0,
-          vertical: 20.0,
-        ),
-        titleStyle: const TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-          color: Colors.black,
-        ),
-        backgroundColor: Colors.white,
-        content: const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.0),
-          child: Text(
-            "You have permanently denied location access. Please enable it from settings.",
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 16, color: Colors.black87),
-          ),
-        ),
-        radius: 10,
-        confirm: ElevatedButton(
-          onPressed: () {
-            Get.back();
-            Geolocator.openAppSettings();
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColor.dynamicColor,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-          child: const Text(
-            "Open Settings",
-            style: TextStyle(color: Colors.white, fontSize: 16),
-          ),
-        ),
-      );
     }
   }
+
 
   var itemList = {};
 

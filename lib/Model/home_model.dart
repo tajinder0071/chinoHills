@@ -153,7 +153,7 @@ class HomeDatum {
 class BestSelling {
   String? membershipOfferPrice;
   String? itemImage;
-  int? itemId;
+  var itemId;
   String? itemType;
   String? itemPrice;
   String? itemName;
@@ -194,9 +194,9 @@ class BestSelling {
 
 class AnnouncementOffers {
   String? image;
-  int? discountValue;
+  var discountValue;
   String? title;
-  int? id;
+  var id;
   String? discountType;
 
   AnnouncementOffers({
@@ -246,9 +246,9 @@ class MembershipPerk {
 }
 
 class Membership {
-  int? membershipPricing;
+  var membershipPricing;
   String? offeroffText;
-  int? membershipId;
+  var membershipId;
   String? membershipTitle;
   String? membershipDescription;
   String? membershipImage;

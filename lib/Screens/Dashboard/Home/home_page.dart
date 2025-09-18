@@ -10,6 +10,7 @@ import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:upgrader/upgrader.dart';
 import '../../../CSS/app_strings.dart';
 import '../../../CSS/color.dart';
+import '../../../CSS/image_page.dart';
 import '../../../common_Widgets/cacheNetworkImage.dart';
 import '../../../common_Widgets/common_button_widget.dart';
 import '../../../common_Widgets/common_refer_widget.dart';
@@ -58,42 +59,50 @@ class HomePage extends StatelessWidget {
                 SizedBox(height: 10.h),
                 controller.homeData.isEmpty
                     ? SizedBox.shrink()
+                    : controller.homeData[0].unlockAtCount.toString() == "0" ||
+                          controller.homeData[0].unlockAtCount.toString() == ""
+                    ? SizedBox.shrink()
                     : buildRewardSection(context, controller),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 60.w),
-                  child: ElevatedButton.icon(
-                    onPressed: () =>
-                        Get.toNamed(RouteManager.qRCodeScannerPage)!.then((
-                          onValue,
-                        ) {
-                          shopController.homeApi();
-                        }),
-                    icon: Icon(
-                      AntDesign.scan_outline,
-                      color: Colors.white,
-                      size: 23.h,
-                    ),
-                    label: Text(
-                      AppStrings.checkInForRewards,
-                      style: GoogleFonts.sarabun(
-                        color: Colors.white,
-                        fontSize: 17.sp,
-                        fontWeight: FontWeight.bold,
+                controller.homeData.isEmpty
+                    ? SizedBox.shrink()
+                    : controller.homeData[0].unlockAtCount.toString() == "0" ||
+                          controller.homeData[0].unlockAtCount.toString() == ""
+                    ? SizedBox.shrink()
+                    : Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 60.w),
+                        child: ElevatedButton.icon(
+                          onPressed: () =>
+                              Get.toNamed(RouteManager.qRCodeScannerPage)!.then(
+                                (onValue) {
+                                  shopController.homeApi();
+                                },
+                              ),
+                          icon: Icon(
+                            AntDesign.scan_outline,
+                            color: Colors.white,
+                            size: 23.h,
+                          ),
+                          label: Text(
+                            AppStrings.checkInForRewards,
+                            style: GoogleFonts.sarabun(
+                              color: Colors.white,
+                              fontSize: 17.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColor.dynamicColor,
+                            elevation: 0,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 10.h,
+                              vertical: isTablet(context) ? 5.h : 12.w,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25.r),
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColor.dynamicColor,
-                      elevation: 0,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 10.h,
-                        vertical: isTablet(context) ? 5.h : 12.w,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25.r),
-                      ),
-                    ),
-                  ),
-                ),
                 SizedBox(height: 10.h),
                 buildNimaRewardImageSection(controller, context),
                 controller.homeData.isEmpty
@@ -107,10 +116,14 @@ class HomePage extends StatelessWidget {
                       ),
                 buildBrowseByConcernSection(controller, onBrowseByConcernOnTap),
                 SizedBox(height: 25.h),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: BestSellingWidget(onBrowseByConcernOnTap: () {}),
-                ),
+                controller.homeData.isEmpty
+                    ? SizedBox.shrink()
+                    : controller.homeData[0].bestSelling!.isEmpty
+                    ? SizedBox.shrink()
+                    : Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: BestSellingWidget(onBrowseByConcernOnTap: () {}),
+                      ),
                 SizedBox(height: 25.h),
                 controller.homeData.isEmpty
                     ? SizedBox.shrink()
@@ -235,7 +248,7 @@ class HomePage extends StatelessWidget {
                         color: AppColor.geryBackGroundColor,
                         child: Center(
                           child: Image.asset(
-                            "assets/images/Image_not_available.png",
+                            AppImages.noAvailableImage,
                             color: AppColor().blackColor,
                             fit: BoxFit.cover,
                           ),
@@ -332,7 +345,7 @@ class HomePage extends StatelessWidget {
                               color: AppColor.geryBackGroundColor,
                               child: Center(
                                 child: Image.asset(
-                                  "assets/images/Image_not_available.png",
+                                  AppImages.noAvailableImage,
                                   color: AppColor().blackColor,
                                   fit: BoxFit.cover,
                                 ),
@@ -419,7 +432,7 @@ class HomePage extends StatelessWidget {
                             color: AppColor.geryBackGroundColor,
                             child: Center(
                               child: Image.asset(
-                                "assets/images/Image_not_available.png",
+                                AppImages.noAvailableImage,
                                 color: AppColor().blackColor,
                                 fit: BoxFit.cover,
                               ),

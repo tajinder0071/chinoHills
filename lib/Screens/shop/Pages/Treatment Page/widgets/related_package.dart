@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../CSS/color.dart';
+import '../../../../../CSS/image_page.dart';
 import '../../../../../common_Widgets/common_network_image_widget.dart';
 import '../../../../../common_Widgets/price_section_widget.dart';
 import '../../../../../util/common_page.dart';
@@ -86,7 +87,7 @@ class RelatedPackageCard extends StatelessWidget {
       ),
       child: Center(
           child: Image.asset(
-        "assets/images/Image_not_available.png",
+            AppImages.noAvailableImage,
         color: AppColor().blackColor,
         fit: BoxFit.cover,
       )),

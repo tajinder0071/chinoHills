@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../CSS/color.dart';
+import '../../CSS/image_page.dart';
 import '../../util/common_page.dart';
 import 'controller/order_controller.dart';
 
@@ -135,7 +136,7 @@ class OrderDetailsPage extends StatelessWidget {
                       ),
                       child: Center(
                         child: Image.asset(
-                          "assets/images/Image_not_available.png",
+                          AppImages.noAvailableImage,
                           color: AppColor().blackColor,
                           fit: BoxFit.cover,
                         ),

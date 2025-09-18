@@ -1,3 +1,4 @@
+import 'package:chino_hills/CSS/image_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -148,7 +149,7 @@ class PackageCard extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(10.r)),
                                 child: Center(
                                   child: Image.asset(
-                                    "assets/images/Image_not_available.png",
+                                    AppImages.noAvailableImage,
                                     color: AppColor().blackColor,
                                     fit: BoxFit.cover,
                                   ),

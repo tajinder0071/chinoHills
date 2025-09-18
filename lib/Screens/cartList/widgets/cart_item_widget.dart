@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../CSS/color.dart';
+import '../../../CSS/image_page.dart';
 import '../../../util/common_page.dart';
 
 enum RewardType { treatment, membership, package }
@@ -67,7 +68,7 @@ class RewardItemCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8.r)),
                   child: Center(
                     child: Image.asset(
-                      "assets/images/Image_not_available.png",
+                      AppImages.noAvailableImage,
                       color: AppColor().blackColor,
                       fit: BoxFit.cover,
                     ),
