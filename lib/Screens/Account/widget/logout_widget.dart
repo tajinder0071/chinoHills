@@ -42,12 +42,12 @@ class _LogoutWidgetState extends State<LogoutWidget> {
           // Icon(Icons.warning_amber_rounded, size: 40, color: AppColor().blueColor),
           SizedBox(height: 10.h),
           Text(
-            "Logout from CH BUCKS",
+            "Logout from Chino Hills",
             style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 10.h),
           Text(
-            "Are you sure you would like to logout of your CH BUCKS account?",
+            "Are you sure you would like to logout of your Chino Hills account?",
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 14.sp, color: Colors.black54),
           ),

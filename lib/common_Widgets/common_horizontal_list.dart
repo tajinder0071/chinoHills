@@ -24,6 +24,7 @@ class CommonHorizontalList<T> extends StatelessWidget {
     return SizedBox(
       height: height,
       child: ListView.builder(
+        padding: EdgeInsets.only(bottom: 10.h),
         scrollDirection: Axis.horizontal,
         itemCount: items.length,
         physics: physics,

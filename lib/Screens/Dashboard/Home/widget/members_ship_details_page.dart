@@ -1,4 +1,5 @@
 import 'package:chino_hills/common_Widgets/common_button_widget.dart';
+import 'package:chino_hills/common_Widgets/no_record.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -35,24 +36,10 @@ class MembersShipDetailsPage extends StatelessWidget {
           body: controller.isMemberLoading
               ? TreatementLoadDetail()
               : controller.memberDetailsModel.membership == null
-              ? Center(
-                  child: Padding(
-                    padding: EdgeInsets.only(top: 50.h),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Iconsax.search_normal),
-                        SizedBox(height: 5.0.h),
-                        Text(
-                          "No Data Found",
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+              ? NoRecord(
+                  "Membership",
+                  Icon(Icons.search),
+                  "Membership not available",
                 )
               : ListView(
                   children: [

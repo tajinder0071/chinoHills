@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../Model/browse_Model.dart';
 import '../../../Model/dynamic_tab_model.dart';
 import '../../../util/base_services.dart';
 
@@ -8,6 +10,7 @@ class DynamicTabController extends GetxController {
   DynamicTabController(this.dynamicId);
 
   RxBool isLoading = false.obs;
+
   Rx<DynaminTabModel?> dynamicTabModel = Rx<DynaminTabModel?>(null);
   @override
   void onInit() {
@@ -15,6 +18,13 @@ class DynamicTabController extends GetxController {
     fetchDynamicTabData();
   }
 
+  final GlobalKey<RefreshIndicatorState> refreshIndicatorKey =
+  GlobalKey<RefreshIndicatorState>();
+
+  Future<void> handleRefresh() async {
+    updateDynamicId(dynamicId);
+    await fetchDynamicTabData();
+  }
   Future<void> fetchDynamicTabData() async {
     isLoading.value = true;
     try {

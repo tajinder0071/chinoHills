@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import '../../../CSS/color.dart';
 import '../../../common_Widgets/cacheNetworkImage.dart';
 import '../../../common_Widgets/common_button_widget.dart';
@@ -20,9 +21,10 @@ class CustomCardWidget extends StatelessWidget {
   final bool isOffer;
   final String? offerExpiresText;
   bool isOfferApplied;
+  final int index;
 
   CustomCardWidget({
-    Key? key,
+    super.key,
     required this.imageUrl,
     required this.title,
     required this.headline,
@@ -33,26 +35,32 @@ class CustomCardWidget extends StatelessWidget {
     this.onTapLearnMore,
     this.isOffer = false,
     this.offerExpiresText,
-  }) : super(key: key);
+    required this.index,
+  });
 
   @override
   Widget build(BuildContext context) {
     final ShopController controller = Get.find();
-
+    //print("offerExpiresText:$offerExpiresText");
     return Container(
       clipBehavior: Clip.antiAlias,
-      margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
-      padding: EdgeInsets.all(8.h),
+      // margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
+      padding: EdgeInsets.only(
+        top: 30.h,
+        bottom: 20.h,
+        left: 10.w,
+        right: 10.w,
+      ),
       decoration: BoxDecoration(
-        color: AppColor().whiteColor,
-        borderRadius: BorderRadius.circular(10.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            offset: Offset(2, 2),
-            blurRadius: 5.r,
-          ),
-        ],
+        color: index.isEven ? AppColor().whiteColor : AppColor().lightGrey,
+        //borderRadius: BorderRadius.circular(10.r),
+        // boxShadow: [
+        //   BoxShadow(
+        //     color: Colors.black12,
+        //     offset: Offset(2, 2),
+        //     blurRadius: 5.r,
+        //   ),
+        // ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -76,7 +84,9 @@ class CustomCardWidget extends StatelessWidget {
                           left: 15.w,
                           child: Container(
                             padding: EdgeInsets.symmetric(
-                                horizontal: 8.w, vertical: 6.h),
+                              horizontal: 8.w,
+                              vertical: 6.h,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.black,
                               borderRadius: BorderRadius.circular(20.r),
@@ -100,7 +110,7 @@ class CustomCardWidget extends StatelessWidget {
                                 ),
                                 SizedBox(width: 8.w),
                                 Text(
-                                  "Expire in ${getTimeDifference(offerExpiresText.toString())}",
+                                  "Expire in ${getTimeDifference(offerExpiresText!)}",
                                   style: GoogleFonts.roboto(
                                     color: Colors.white,
                                     fontSize: 12.sp,
@@ -123,15 +133,16 @@ class CustomCardWidget extends StatelessWidget {
                     isLoad: true,
                     imageUrl: imageUrl,
                     boxFit: BoxFit.cover,
-                    height: 180.h,
+                    height: 222.h,
                     width: double.infinity,
                   ),
                 ),
-          SizedBox(height: 10.h),
+          SizedBox(height: 20.h),
           Text(
-            title
-                .toString()
-                .replaceAll(title[0].toString(), title[0].toUpperCase()),
+            title.toString().replaceAll(
+              title[0].toString(),
+              title[0].toUpperCase(),
+            ),
             maxLines: 2,
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
@@ -140,7 +151,7 @@ class CustomCardWidget extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: 15.h),
           Text(
             headline,
             maxLines: 2,
@@ -148,12 +159,15 @@ class CustomCardWidget extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: GoogleFonts.inter(fontSize: 15.sp),
           ),
+          SizedBox(height: 15.h),
+
           CommonButtonWidget(
-              isDisabled: isOfferApplied,
-              isOutlineButton: false,
-              onTap: isOfferApplied ? null : onTapCTA,
-              buttonName: ctaText.replaceAll("  ", " ")),
-          SizedBox(height: 10.h),
+            isDisabled: isOfferApplied,
+            isOutlineButton: false,
+            onTap: isOfferApplied ? null : onTapCTA,
+            buttonName: ctaText.replaceAll("  ", " "),
+          ),
+          SizedBox(height: 20.h),
           // if ((description?.isNotEmpty ?? false) && onTapLearnMore != null)
           InkWell(
             onTap: onTapLearnMore,
@@ -164,7 +178,7 @@ class CustomCardWidget extends StatelessWidget {
                   "Learn More",
                   style: GoogleFonts.roboto(
                     color: AppColor.dynamicColor,
-                    fontSize: 15.h,
+                    fontSize: 17.h,
                     fontWeight: FontWeight.w700,
                   ),
                 ),

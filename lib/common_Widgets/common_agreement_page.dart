@@ -39,7 +39,7 @@ class CommonAgreementPage extends StatelessWidget {
                     Expanded(
                       child: Center(
                         child: Text(
-                          "PATIENT MEMBERSHIP AGREEMENT".toUpperCase(),
+                          "PATIENT MEMBERSHIP AGREEMENT",
                           style: TextStyle(
                             fontSize: 15.sp,
                             fontWeight: FontWeight.bold,
@@ -56,12 +56,12 @@ class CommonAgreementPage extends StatelessWidget {
                 child: memController.isLoading
                     ? Center(child: commonLoader())
                     : memController.response != null
-                    ? SizedBox.shrink()
-                    : SingleChildScrollView(
+                    ? SingleChildScrollView(
                         child: SafeArea(
                           child: Html(data: memController.response.content),
                         ),
-                      ),
+                      )
+                    : SizedBox.shrink(),
               ),
             ],
           ),
