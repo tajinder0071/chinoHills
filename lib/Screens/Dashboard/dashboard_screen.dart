@@ -2,19 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:icons_plus/icons_plus.dart';
-import '../../CSS/app_strings.dart';
-import '../../CSS/color.dart';
-import '../../util/base_services.dart';
-import '../../util/common_page.dart';
+import 'package:chino_hills/CSS/app_strings.dart';
+import 'package:chino_hills/CSS/color.dart';
+import 'package:chino_hills/Screens/Dashboard/Home/home_page.dart';
+import 'package:chino_hills/Screens/cartList/Controller/cart_controller.dart';
+import 'package:chino_hills/util/base_services.dart';
+import 'package:chino_hills/util/common_page.dart';
+import '../../util/local_stoage.dart';
 import '../../util/local_store_data.dart';
 import '../../util/route_manager.dart';
 import '../Account/widget/wallet_page.dart';
 import '../Discover/discover_page.dart';
 import '../Reward/reward_page.dart';
-import '../cartList/Controller/cart_controller.dart';
 import '../shop/controller/shop_controller.dart';
 import '../shop/shop_page.dart';
-import 'Home/home_page.dart' hide AppStrings;
 
 class DashboardScreen extends StatefulWidget {
   final int selectIndex;
@@ -22,10 +23,10 @@ class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key, required this.selectIndex});
 
   @override
-  _DashboardScreenState createState() => _DashboardScreenState();
+  DashboardScreenState createState() => DashboardScreenState();
 }
 
-class _DashboardScreenState extends State<DashboardScreen> {
+class DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 0;
   bool isLogoLoading = false;
   String logoPath = "";
@@ -37,7 +38,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
-    // controller.requestPermission();
+    controller.requestPermission();
     _selectedIndex = widget.selectIndex;
     getUser();
     fetchAppLogo();
@@ -93,10 +94,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
             setState(() => _selectedIndex = 2);
             ShopController.shop.goToTabByName(AppStrings.membership);
           },
-          exploreAllServiceIOnTap: () {
+          exploreAllServiceOnTap: () {
             setState(() => _selectedIndex = 2);
             local.saveData(AppStrings.shopIndex, 0);
-          }, onTap: () {  },
+          },
+          onTap: () {
+            setState(() => _selectedIndex = 2);
+          },
         );
       case 1:
         return DiscoverPage(

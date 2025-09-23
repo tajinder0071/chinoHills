@@ -186,7 +186,7 @@ class MembershipInfo {
 
   factory MembershipInfo.fromJson(Map<String, dynamic> json) => MembershipInfo(
     membershipName: json["membership_name"],
-    membershipOfferPrice: json["membership_offer_price"] ?? "0.0",
+    membershipOfferPrice: json["membership_offer_price"],
     membershipPrice: json["membership_pricing"],
     includedServiceName: json["included_service_name"],
     discountamount: json["discount_amount"],

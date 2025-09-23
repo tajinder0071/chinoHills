@@ -124,7 +124,7 @@ class BrowseCategory {
 
 class HeaderDetails {
   var clientId;
-  String?browseServices;
+  String? browseServices;
   String? promotiontitle;
   String? mainheader;
   String? promotiondetails;

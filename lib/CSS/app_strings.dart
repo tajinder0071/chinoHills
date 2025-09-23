@@ -62,6 +62,8 @@ class AppStrings {
   // -------------------- Membership --------------------
   static const membership = 'Membership';
   static const seeAllBenefits = 'See all benefits';
+  static const joinNowSignupBonus = 'JOIN NOW FOR YOUR SIGN-UP BONUS!';
+  static const joinNowSignupBonusDesc = 'Receive a one-time sign-up bonus when you join as a ';
 
   // -------------------- Navigation Tabs --------------------
   static const home = 'Home';
@@ -116,4 +118,7 @@ class AppStrings {
   static const noVariationsAvailable = 'No variations available';
   static const selectAVariation = 'Select a Variation';
   static const exploreAllService = "Explore all services";
+  static const joinNow = "Join now";
+  static const moreDetails = "More details";
+  static const signUpBonusCapital = "SIGN-UP BONUS";
 }

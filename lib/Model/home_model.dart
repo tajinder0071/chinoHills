@@ -1,4 +1,10 @@
+import 'dart:convert';
+
 import 'detail_browse_model.dart';
+
+HomeModel homeModelFromJson(String str) => HomeModel.fromJson(json.decode(str));
+
+String homeModelToJson(HomeModel data) => json.encode(data.toJson());
 
 class HomeModel {
   String? message;
@@ -48,25 +54,24 @@ class HomeDatum {
   String? mainheader;
   String? concernsImage;
 
-  HomeDatum({
-    this.membershipsPerksHeader,
-    this.unlockSpend,
-    this.headerImage,
-    this.linkedImage,
-    this.unlockAtCount,
-    this.bestSelling,
-    this.announcementOffers,
-    this.membershipPerks,
-    this.clientId,
-    this.nextRewardId,
-    this.color,
-    this.subheader,
-    this.memberships,
-    this.id,
-    this.offerCards,
-    this.mainheader,
-    this.concernsImage,
-  });
+  HomeDatum(
+      {this.membershipsPerksHeader,
+        this.unlockSpend,
+        this.headerImage,
+        this.linkedImage,
+        this.unlockAtCount,
+        this.bestSelling,
+        this.announcementOffers,
+        this.membershipPerks,
+        this.clientId,
+        this.nextRewardId,
+        this.color,
+        this.subheader,
+        this.memberships,
+        this.id,
+        this.offerCards,
+        this.mainheader,
+        this.concernsImage});
 
   HomeDatum.fromJson(Map<String, dynamic> json) {
     membershipsPerksHeader = json['memberships_perks_header'];
@@ -124,14 +129,12 @@ class HomeDatum {
       data['best_selling'] = bestSelling!.map((v) => v.toJson()).toList();
     }
     if (announcementOffers != null) {
-      data['announcement_offers'] = announcementOffers!
-          .map((v) => v.toJson())
-          .toList();
+      data['announcement_offers'] =
+          announcementOffers!.map((v) => v.toJson()).toList();
     }
     if (membershipPerks != null) {
-      data['membershipPerks'] = membershipPerks!
-          .map((v) => v.toJson())
-          .toList();
+      data['membershipPerks'] =
+          membershipPerks!.map((v) => v.toJson()).toList();
     }
     data['client_id'] = this.clientId;
     data['next_reward_id'] = this.nextRewardId;
@@ -159,15 +162,14 @@ class BestSelling {
   String? itemName;
   String? offerText;
 
-  BestSelling({
-    this.membershipOfferPrice,
-    this.itemImage,
-    this.itemId,
-    this.itemType,
-    this.itemPrice,
-    this.itemName,
-    this.offerText,
-  });
+  BestSelling(
+      {this.membershipOfferPrice,
+        this.itemImage,
+        this.itemId,
+        this.itemType,
+        this.itemPrice,
+        this.itemName,
+        this.offerText});
 
   BestSelling.fromJson(Map<String, dynamic> json) {
     membershipOfferPrice = json['membership_offer_price'];
@@ -199,13 +201,8 @@ class AnnouncementOffers {
   var id;
   String? discountType;
 
-  AnnouncementOffers({
-    this.image,
-    this.discountValue,
-    this.title,
-    this.id,
-    this.discountType,
-  });
+  AnnouncementOffers(
+      {this.image, this.discountValue, this.title, this.id, this.discountType});
 
   AnnouncementOffers.fromJson(Map<String, dynamic> json) {
     image = json['image'];
@@ -253,14 +250,13 @@ class Membership {
   String? membershipDescription;
   String? membershipImage;
 
-  Membership({
-    this.membershipPricing,
-    this.offeroffText,
-    this.membershipId,
-    this.membershipTitle,
-    this.membershipDescription,
-    this.membershipImage,
-  });
+  Membership(
+      {this.membershipPricing,
+        this.offeroffText,
+        this.membershipId,
+        this.membershipTitle,
+        this.membershipDescription,
+        this.membershipImage});
 
   Membership.fromJson(Map<String, dynamic> json) {
     membershipPricing = json['membership_pricing'];
@@ -282,3 +278,4 @@ class Membership {
     return data;
   }
 }
+

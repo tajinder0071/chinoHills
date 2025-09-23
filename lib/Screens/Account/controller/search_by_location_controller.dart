@@ -5,7 +5,6 @@ import 'package:get/get_rx/src/rx_workers/utils/debouncer.dart';
 import '../../../Model/client_list_model.dart';
 import '../../../util/base_services.dart';
 import '../../../../../util/local_store_data.dart';
-import '../../../util/route_manager.dart';
 
 class SearchbyController extends GetxController {
   var searchQuery = ''.obs;

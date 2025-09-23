@@ -14,14 +14,16 @@ import '../../../../Model/home_model.dart';
 
 class BestSellingWidget extends StatelessWidget {
   final bool isEnable;
-  final VoidCallback onBrowseByConcernOnTap;
+  final VoidCallback exploreAllServiceOnTap;
   final VoidCallback onTap;
+  final bool showExploreAllService;
 
-  BestSellingWidget({
+  const BestSellingWidget({
     super.key,
     this.isEnable = false,
-    required this.onBrowseByConcernOnTap,
+    required this.exploreAllServiceOnTap,
     required this.onTap,
+    this.showExploreAllService = true
   });
 
   @override
@@ -42,7 +44,7 @@ class BestSellingWidget extends StatelessWidget {
             ),
           ),
           _buildServiceList(context, size),
-          _buildExploreAllServices(onBrowseByConcernOnTap, size),
+          showExploreAllService? _buildExploreAllServices(exploreAllServiceOnTap, size):SizedBox.shrink(),
           SizedBox(height: size.height * .01),
         ],
       ),
@@ -99,8 +101,7 @@ class BestSellingWidget extends StatelessWidget {
 
         if (bestSellingList.isEmpty) {
           print(
-            "${bestSellingList.any((e) => e.itemType != null && e.itemType.toString().isNotEmpty) ? size.height * .34 : size.height * .2}",
-          );
+              "${bestSellingList.any((e) => e.itemType != null && e.itemType.toString().isNotEmpty) ? size.height * .34 : size.height * .2}");
           return SizedBox(
             height: size.height * .2,
             child: Center(
@@ -113,42 +114,36 @@ class BestSellingWidget extends StatelessWidget {
         }
 
         return SizedBox(
-          height:
-              (bestSellingList.any(
-                (e) => e.itemType != null && e.itemType.toString().isNotEmpty,
-              ))
-              ? size.height * .34
+          height: (bestSellingList.any((e) =>
+          e.itemType != null && e.itemType.toString().isNotEmpty))
+              ? size.height * .36
               : size.height * .2,
           child: CommonHorizontalList(
             items: bestSellingList,
-            itemBuilder: (context, data, index) => _buildOfferCard(
-              data.itemImage,
-              data.itemName,
-              '',
-              () {
-                if (data.itemType?.toLowerCase() == "treatments") {
-                  Get.to(
-                    () => TreatmentDetailsPage(),
-                    arguments: data.itemId,
-                    binding: CommonBinding(),
-                    transition: Transition.fadeIn,
-                    duration: const Duration(milliseconds: 500),
-                  );
-                } else {
-                  Get.to(
-                    () => PackageDetailPage(sectionName: "Package"),
-                    arguments: data.itemId,
-                    binding: CommonBinding(),
-                    transition: Transition.fadeIn,
-                    duration: const Duration(milliseconds: 500),
-                  );
-                }
-              },
-              originalPrice: data.itemPrice,
-              memberPrice: data.membershipOfferPrice?.toString() ?? "",
-              type: data.itemType.toString(),
-              size: size,
-            ),
+            itemBuilder: (context, data, index) =>
+                _buildOfferCard(data.itemImage, data.itemName, '', () {
+                  if (data.itemType?.toLowerCase() == "treatments") {
+                    Get.to(
+                          () => TreatmentDetailsPage(),
+                      arguments: data.itemId,
+                      binding: CommonBinding(),
+                      transition: Transition.fadeIn,
+                      duration: const Duration(milliseconds: 500),
+                    );
+                  } else {
+                    Get.to(
+                          () => PackageDetailPage(sectionName: "Package"),
+                      arguments: data.itemId,
+                      binding: CommonBinding(),
+                      transition: Transition.fadeIn,
+                      duration: const Duration(milliseconds: 500),
+                    );
+                  }
+                },
+                    originalPrice: data.itemPrice,
+                    memberPrice: data.membershipOfferPrice?.toString() ?? "",
+                    type: data.itemType.toString(),
+                    size: size),
           ),
         );
       },
@@ -156,23 +151,17 @@ class BestSellingWidget extends StatelessWidget {
   }
 
   Widget _buildOfferCard(
-    imageUrl,
-    title,
-    var daysLeft,
-    VoidCallback onTapDetails, {
-    required originalPrice,
-    required String memberPrice,
-    required String type,
-    required Size size,
-  }) {
+      imageUrl, title, var daysLeft, VoidCallback onTapDetails,
+      {required originalPrice,
+        required String memberPrice,
+        required String type,
+        required Size size}) {
     return InkWell(
       overlayColor: WidgetStatePropertyAll(AppColor().transparent),
       onTap: () => onTapDetails(),
       child: Container(
         margin: EdgeInsets.symmetric(
-          vertical: size.height * .001,
-          horizontal: size.width * .002,
-        ),
+            vertical: size.height * .001, horizontal: size.width * .002),
         width: size.height * .24,
         decoration: BoxDecoration(
           color: AppColor().whiteColor,
@@ -201,43 +190,36 @@ class BestSellingWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 10.w,
-                      vertical: 4.h,
-                    ),
+                    padding:
+                    EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                     margin: EdgeInsets.only(left: 5.w),
                     decoration: BoxDecoration(
-                      color: AppColor.dynamicColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(4.r),
-                    ),
+                        color: AppColor.dynamicColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(4.r)),
                     child: Text(
                       type.toUpperCase(),
                       style: GoogleFonts.roboto(
-                        color: AppColor.dynamicColor,
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
+                          color: AppColor.dynamicColor,
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
                   SizedBox(height: 10.h),
                   SizedBox(
-                    height: 50,
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 5),
-                      child: Text(
-                        title.toString().replaceAll(
-                          title.toString()[0],
-                          title.toString()[0].toUpperCase(),
+                      height: 50,
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 5),
+                        child: Text(
+                          title.toString().replaceAll(title.toString()[0],
+                              title.toString()[0].toUpperCase()),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.merriweather(
+                            fontSize: 15.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.merriweather(
-                          fontSize: 15.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
+                      )),
                   Padding(
                     padding: EdgeInsets.only(left: 5.w, right: 5.w),
                     child: Row(
@@ -246,37 +228,35 @@ class BestSellingWidget extends StatelessWidget {
                         Text(
                           "${originalPrice.toString()}",
                           style: GoogleFonts.roboto(
-                            color: AppColor().blackColor,
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w400,
-                          ),
+                              color: AppColor().blackColor,
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w400),
                         ),
                         SizedBox(width: 10.w),
                         memberPrice.toString() == '\$0.00'
                             ? SizedBox.shrink()
                             : Container(
-                                height: 20.h,
-                                width: 2.w,
-                                color: AppColor().blackColor,
-                              ),
+                          height: 20.h,
+                          width: 2.w,
+                          color: AppColor().blackColor,
+                        ),
                         memberPrice.toString() == '\$0.00'
                             ? SizedBox.shrink()
                             : Expanded(
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      "${memberPrice.toString()}",
-                                      style: GoogleFonts.roboto(
-                                        color: AppColor().blackColor,
-                                        fontSize: 12.sp,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Text("Member"),
-                                  ],
-                                ),
+                          child: Column(
+                            children: [
+                              Text(
+                                "${memberPrice.toString()}",
+                                style: GoogleFonts.roboto(
+                                    color: AppColor().blackColor,
+                                    fontSize: 12.sp,
+                                    fontWeight: FontWeight.bold),
                               ),
-                        Icon(Icons.arrow_forward_ios_sharp),
+                              Text("Member"),
+                            ],
+                          ),
+                        ),
+                        Icon(Icons.arrow_forward_ios_sharp)
                       ],
                     ),
                   ),
@@ -290,9 +270,7 @@ class BestSellingWidget extends StatelessWidget {
   }
 
   Widget _buildExploreAllServices(
-    VoidCallback onBrowseByConcernOnTap,
-    Size size,
-  ) {
+      VoidCallback onBrowseByConcernOnTap, Size size) {
     return Center(
       child: Row(
         mainAxisSize: MainAxisSize.min,

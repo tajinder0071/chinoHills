@@ -836,7 +836,7 @@ class CartController extends GetxController {
 //     }
 //   }
 
-  Future<void> selectPromoCode(code, index, offerId, isSelected, cartId) async {
+  Future<void> selectPromoCode(code, index, offerId, isSelected, cartId, {VoidCallback? onSuccess}) async {
     if (isLoadingPromo) return;
     isLoadingPromo = true;
     update();
@@ -853,33 +853,36 @@ class CartController extends GetxController {
         "client_id": clientId.toString(),
       };
 
-      // Only add cart_id parameter if cartData is not empty
-      if(cartData.isNotEmpty){
+      // Only add cart_id parameter if cartId is not null and not empty
+      if (cartData.isNotEmpty) {
         map["cart_id"] = cartId.toString();
       }
 
       Get.log("apply Cart list :$map");
       var response = await hiApplyCouponCodeAPI(map);
-
+      print("Response:: $response");
       if (response['success'] == true) {
+        if(onSuccess!=null){
+          onSuccess();
+        }
+        await cartList();
         selectedPromoIndex.value = index;
         offerselectedId.value = isSelected.toString();
         isUpdateSomething.value = true;
         promoErrorText = '';
         appliedName = couponAvailableData[index].title ?? '';
+        print("Are you come: Yes");
         applyPromo = true;
         applyReward = false;
         isLoadingPromo = false;
         rewardId = '';
         rewardName = '';
-        await cartList();
         update();
-        Get.back();
       } else {
         isUpdateSomething.value = false;
         Get.snackbar(
-          "Invalid Promo Code",
-          "Please enter a valid promo code.",
+          response['message'],
+          "",
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.red.shade400,
           colorText: Colors.white,
@@ -888,17 +891,8 @@ class CartController extends GetxController {
         );
       }
     } catch (e) {
-      print("Error selecting promo code: $e");
       isUpdateSomething.value = false;
-      Get.snackbar(
-        "Error",
-        "Something went wrong. Please try again.",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade400,
-        colorText: Colors.white,
-        margin: const EdgeInsets.all(12),
-        duration: const Duration(seconds: 3),
-      );
+      update();
     } finally {
       isLoadingPromo = false;
       update();

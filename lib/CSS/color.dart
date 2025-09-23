@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-
-import '../Screens/shop/controller/shop_controller.dart';
 
 //TODO >> Declare color in this page to access full app
 
@@ -12,6 +9,7 @@ class AppColor {
   Color black80 = Colors.black54;
   Color whiteColor = Colors.white;
   Color light = Color(0xffE6E9F2);
+  Color mediumGreyColor = Colors.grey.shade600;
   Color greyColor = Colors.grey;
   Color lightBlue = Color(0xfff56B9F4);
   Color blueColor = Colors.blue;

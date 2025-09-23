@@ -950,8 +950,6 @@ class PromocodeWidget extends StatelessWidget {
                       controller.couponAvailableData[index].id,
                       selectedId,
                       controller.cartModel1.value.data!.cartId,
-                      context,
-                      true
                     );
                   }
                   // Remove this update() call as it's redundant

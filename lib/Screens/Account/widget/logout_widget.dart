@@ -113,7 +113,7 @@ class _LogoutWidgetState extends State<LogoutWidget> {
     setState(() {});
     try {
       LocalStorage localStorage = LocalStorage();
-      var isUser = await localStorage.getUId();
+      //var isUser = await localStorage.getUId();
       var response = await hitUserAPI();
       Get.log("Coming Response :${response['success']}");
       if (response['success'] == true) {

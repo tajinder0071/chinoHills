@@ -2,16 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
-import '../../../CSS/app_strings.dart';
+import 'package:chino_hills/CSS/app_strings.dart';
+import 'package:chino_hills/Screens/Discover/widgets/discover_card_widget.dart';
+import 'package:chino_hills/Screens/cartList/Controller/cart_controller.dart';
+import 'package:chino_hills/common_Widgets/no_record.dart';
+import 'package:chino_hills/loading/discover_loading_page.dart';
+import 'package:chino_hills/util/route_manager.dart';
+
+import 'package:shimmer/shimmer.dart';
+
 import '../../../CSS/color.dart';
 import '../../../common_Widgets/common_refer_widget.dart';
-import '../../../common_Widgets/no_record.dart';
-import '../../../loading/discover_loading_page.dart';
-import '../../../util/route_manager.dart';
 import '../../Discover/controller/discover_controller.dart';
-import '../../Discover/widgets/discover_card_widget.dart';
-import '../../cartList/Controller/cart_controller.dart';
-import 'package:shimmer/shimmer.dart';
 
 class DiscoverPage extends StatelessWidget {
   final VoidCallback goToShopOnTap;
