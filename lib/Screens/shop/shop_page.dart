@@ -11,6 +11,7 @@ import 'Pages/MemberShip Page/membership_page.dart';
 import 'Pages/Package Page/controller/package_cotroller.dart';
 import 'Pages/Package Page/packages_page.dart';
 import 'Pages/Treatment Page/treatment_page.dart';
+import 'Pages/dynamic_data/dynamic_data.dart';
 import 'controller/shop_controller.dart';
 
 class ShopPage extends StatelessWidget {
@@ -24,53 +25,55 @@ class ShopPage extends StatelessWidget {
   Widget build(BuildContext context) {
     controller.getShopByItem();
 
-    return GetBuilder<ShopController>(builder: (controller) {
-      return Scaffold(
-        backgroundColor: AppColor().background,
-        appBar: AppBar(
-          toolbarHeight: 10.h,
+    return GetBuilder<ShopController>(
+      builder: (controller) {
+        return Scaffold(
           backgroundColor: AppColor().background,
-          elevation: 0.5,
-          bottom: PreferredSize(
-            preferredSize: Size.fromHeight(50.h),
-            child: TabBar(
-              isScrollable: true,
-              controller: controller.tabController,
-              indicatorColor: AppColor.dynamicColor,
-              labelColor: AppColor.dynamicColor,
-              unselectedLabelColor: Colors.black54,
-              labelStyle:
-              TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
-              unselectedLabelStyle: TextStyle(fontSize: 13.sp),
-              overlayColor: WidgetStatePropertyAll(
-                AppColor.dynamicColor.withOpacity(0.1),
-              ),
-              dividerColor: Colors.transparent,
-              tabs: [
-                ...controller.tabList.map(
-                      (tabTitle) =>
-                      Tab(child: FittedBox(child: Text(tabTitle.toString()))),
+          appBar: AppBar(
+            toolbarHeight: 10.h,
+            backgroundColor: AppColor().background,
+            elevation: 0.5,
+            bottom: PreferredSize(
+              preferredSize: Size.fromHeight(50.h),
+              child: TabBar(
+                isScrollable: true,
+                controller: controller.tabController,
+                indicatorColor: AppColor.dynamicColor,
+                labelColor: AppColor.dynamicColor,
+                unselectedLabelColor: Colors.black54,
+                labelStyle: TextStyle(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w500,
                 ),
-              ],
+                unselectedLabelStyle: TextStyle(fontSize: 13.sp),
+                overlayColor: WidgetStatePropertyAll(
+                  AppColor.dynamicColor.withOpacity(0.1),
+                ),
+                dividerColor: Colors.transparent,
+                tabs: [
+                  ...controller.tabList.map(
+                    (tabTitle) =>
+                        Tab(child: FittedBox(child: Text(tabTitle.toString()))),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-        body: TabBarView(
-          dragStartBehavior: DragStartBehavior.down,
-          controller: controller.tabController,
-          physics: NeverScrollableScrollPhysics(), // disable swipe
-          children: [
-            BrowsePage(),
-            MembershipPage(),
-            TreatmentPage(),
-            PackagesPage(),
-            BrowseByConcernPage(),
-            ...controller.dynamictab.map(
-                  (id) => DynamicData(dynamicId: id),
-            ),
-          ],
-        ),
-      );
-    });
+          body: TabBarView(
+            dragStartBehavior: DragStartBehavior.down,
+            controller: controller.tabController,
+            physics: NeverScrollableScrollPhysics(),
+            children: [
+              BrowsePage(),
+              ...controller.dynamictab.map((id) => DynamicData(dynamicId: id)),
+              MembershipPage(),
+              TreatmentPage(),
+              PackagesPage(),
+              BrowseByConcernPage(),
+            ],
+          ),
+        );
+      },
+    );
   }
 }

@@ -143,7 +143,8 @@ InlineSpan buildPriceTextSpan({
   required dynamic originalPrice,
   dynamic memberPrice,
   String? unit,
-}) {
+})
+{
   // Helper to normalize values like "$235.00" → "235.00"
   String normalizePrice(dynamic value) {
     if (value == null) return "0.00";

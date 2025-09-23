@@ -38,6 +38,7 @@ class AppStrings {
   static const browseByConcernInCapital = 'BROWSE BY CONCERN';
   static const browseByConcernNormal = 'Browse by Concern';
   static const chooseTreatment = "Not sure which\ntreatment to choose?";
+  static const browseConcern = "browse by concern";
   static const shopNow = 'Shop Now';
   static const findTheBestOptions =
       'Find the best options for you in just a few clicks.';
@@ -54,6 +55,9 @@ class AppStrings {
   static const featured = 'Featured';
   static const selectYourService = 'SELECT YOUR SERVICE';
   static const treatment = 'Treatment';
+  static const membershipPerks = 'MEMBERSHIP PERKS INCLUDE:';
+  static const specialOffer =  "SPECIAL OFFERS";
+  static const noDetail =  "No details available";
 
   // -------------------- Membership --------------------
   static const membership = 'Membership';
@@ -104,9 +108,12 @@ class AppStrings {
   static const memberInSmallLetters = 'member';
   static const viewMoreInfoInCapitalLetters = 'VIEW MORE INFO';
   static const convenienceFeeAppliedAtCheckout = 'Convenience fee applied at checkout';
+  static const favTreatmentMessage = 'Your favorite treatments and expertly curated packages—all in one place.';
   static const helpsWithTheseConcerns = 'HELPS WITH THESE CONCERNS';
   static const addToCart = 'Add to cart';
+  static const noBestSellingText = '"No best-selling items available"';
   static const selectYourQuantity = 'SELECT YOUR QUANTITY';
   static const noVariationsAvailable = 'No variations available';
   static const selectAVariation = 'Select a Variation';
+  static const exploreAllService = "Explore all services";
 }

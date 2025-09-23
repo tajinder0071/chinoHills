@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../../CSS/app_strings.dart';
 import '../../../../CSS/color.dart';
 import '../../../../binding/cart_billing.dart';
 import '../../../../common_Widgets/common_horizontal_list.dart';
 import '../../../../common_Widgets/common_network_image_widget.dart';
-import '../../../../util/common_page.dart';
 import '../../../shop/Pages/Package Page/Widgets/package_detail_page.dart';
 import '../../../shop/Pages/Treatment Page/widgets/treatment_details_page.dart';
 import '../../../shop/controller/shop_controller.dart';
@@ -15,60 +15,58 @@ import '../../../../Model/home_model.dart';
 class BestSellingWidget extends StatelessWidget {
   final bool isEnable;
   final VoidCallback onBrowseByConcernOnTap;
+  final VoidCallback onTap;
 
   BestSellingWidget({
     super.key,
     this.isEnable = false,
     required this.onBrowseByConcernOnTap,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: isEnable
-          ? AppColor().greyColor.withValues(alpha: 0.1)
-          : AppColor().whiteColor,
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(height: 10.h),
-            Center(
-              child: Column(
-                children: [
-                  _buildTitle(),
-                  SizedBox(height: 8.h),
-                  isEnable ? _buildSubtitle() : SizedBox.shrink(),
-                  SizedBox(height: isEnable ? 16.h : 5.0),
-                ],
-              ),
+    var size = MediaQuery.of(context).size;
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          SizedBox(height: size.height * .02),
+          Center(
+            child: Column(
+              children: [
+                _buildTitle(size),
+                SizedBox(height: size.height * .02),
+                isEnable ? _buildSubtitle(size) : SizedBox.shrink(),
+                SizedBox(height: size.height * .01),
+              ],
             ),
-            _buildServiceList(context),
-            isEnable
-                ? _buildExploreAllServices(onBrowseByConcernOnTap)
-                : SizedBox.shrink(),
-            SizedBox(height: isEnable ? 24.h : 0.0),
-          ],
-        ),
+          ),
+          _buildServiceList(context, size),
+          _buildExploreAllServices(onBrowseByConcernOnTap, size),
+          SizedBox(height: size.height * .01),
+        ],
       ),
     );
   }
 
-  Widget _buildTitle() {
+  // there is no backend developer available to work on the backend api
+
+  Widget _buildTitle(Size size) {
     return Column(
       children: [
         Icon(
           Icons.star_border_rounded,
           color: AppColor.dynamicColor,
-          size: 30.h,
+          size: size.height * .04,
         ),
-        SizedBox(height: 10.h),
+        SizedBox(height: size.height * .02),
         Text(
           isEnable
               ? "EXPLORE OUR BEST–SELLING SERVICES"
               : "best-selling services".toUpperCase(),
           style: GoogleFonts.roboto(
             color: AppColor.dynamicColor,
-            fontSize: 16.sp,
+            fontSize: size.height * .025,
             fontWeight: FontWeight.bold,
           ),
           textAlign: TextAlign.center,
@@ -77,18 +75,18 @@ class BestSellingWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildSubtitle() {
+  Widget _buildSubtitle(Size size) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20.w),
+      padding: EdgeInsets.symmetric(horizontal: size.width * .1),
       child: Text(
-        "Your favorite treatments and expertly curated packages—all in one place.",
+        AppStrings.favTreatmentMessage,
         style: TextStyle(color: Colors.grey.shade700, fontSize: 14.sp),
         textAlign: TextAlign.center,
       ),
     );
   }
 
-  Widget _buildServiceList(BuildContext context) {
+  Widget _buildServiceList(BuildContext context, Size size) {
     return GetBuilder<ShopController>(
       builder: (controller) {
         // Collect all best-selling items from HomeDatum
@@ -100,15 +98,27 @@ class BestSellingWidget extends StatelessWidget {
         }
 
         if (bestSellingList.isEmpty) {
-          return SizedBox.shrink();
+          print(
+            "${bestSellingList.any((e) => e.itemType != null && e.itemType.toString().isNotEmpty) ? size.height * .34 : size.height * .2}",
+          );
+          return SizedBox(
+            height: size.height * .2,
+            child: Center(
+              child: Text(
+                AppStrings.noBestSellingText,
+                style: TextStyle(color: Colors.grey, fontSize: 14.sp),
+              ),
+            ),
+          );
         }
 
         return SizedBox(
-          height: isTablet(context)
-              ? MediaQuery.of(context).size.height * .38
-              : MediaQuery.of(context).size.height < 812
-              ? MediaQuery.of(context).size.height * .36
-              : 273.h,
+          height:
+              (bestSellingList.any(
+                (e) => e.itemType != null && e.itemType.toString().isNotEmpty,
+              ))
+              ? size.height * .34
+              : size.height * .2,
           child: CommonHorizontalList(
             items: bestSellingList,
             itemBuilder: (context, data, index) => _buildOfferCard(
@@ -135,8 +145,9 @@ class BestSellingWidget extends StatelessWidget {
                 }
               },
               originalPrice: data.itemPrice,
-              memberPrice: data.membershipOfferPrice.toString(),
+              memberPrice: data.membershipOfferPrice?.toString() ?? "",
               type: data.itemType.toString(),
+              size: size,
             ),
           ),
         );
@@ -152,13 +163,17 @@ class BestSellingWidget extends StatelessWidget {
     required originalPrice,
     required String memberPrice,
     required String type,
+    required Size size,
   }) {
     return InkWell(
       overlayColor: WidgetStatePropertyAll(AppColor().transparent),
       onTap: () => onTapDetails(),
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 5.0.h, horizontal: 7.0.w),
-        width: 200.w,
+        margin: EdgeInsets.symmetric(
+          vertical: size.height * .001,
+          horizontal: size.width * .002,
+        ),
+        width: size.height * .24,
         decoration: BoxDecoration(
           color: AppColor().whiteColor,
           borderRadius: BorderRadius.circular(6.r),
@@ -174,7 +189,7 @@ class BestSellingWidget extends StatelessWidget {
           children: [
             // TODO >> Image...
             CommonNetworkImageWidget(
-              imageUrl: imageUrl.toString(),
+              imageUrl: "${imageUrl.toString()}",
               height: 140.0.h,
               width: double.infinity,
               borderRadius: BorderRadius.vertical(top: Radius.circular(6.0.r)),
@@ -205,32 +220,34 @@ class BestSellingWidget extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 10.h),
-                  Padding(
-                    padding: EdgeInsets.only(left: 5.w),
-                    child: Text(
-                      title.toString().replaceAll(
-                        title.toString()[0],
-                        title.toString()[0].toUpperCase(),
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.merriweather(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w900,
+                  SizedBox(
+                    height: 50,
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 5),
+                      child: Text(
+                        title.toString().replaceAll(
+                          title.toString()[0],
+                          title.toString()[0].toUpperCase(),
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.merriweather(
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
-                  Divider(),
                   Padding(
                     padding: EdgeInsets.only(left: 5.w, right: 5.w),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          originalPrice.toString(),
+                          "${originalPrice.toString()}",
                           style: GoogleFonts.roboto(
                             color: AppColor().blackColor,
-                            fontSize: 12.sp,
+                            fontSize: 14.sp,
                             fontWeight: FontWeight.w400,
                           ),
                         ),
@@ -245,24 +262,17 @@ class BestSellingWidget extends StatelessWidget {
                         memberPrice.toString() == '\$0.00'
                             ? SizedBox.shrink()
                             : Expanded(
-                                child: Row(
+                                child: Column(
                                   children: [
-                                    SizedBox(width: 10.w),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          memberPrice.toString(),
-                                          style: GoogleFonts.roboto(
-                                            color: AppColor().blackColor,
-                                            fontSize: 12.sp,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        Text("Member"),
-                                      ],
+                                    Text(
+                                      "${memberPrice.toString()}",
+                                      style: GoogleFonts.roboto(
+                                        color: AppColor().blackColor,
+                                        fontSize: 12.sp,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
+                                    Text("Member"),
                                   ],
                                 ),
                               ),
@@ -279,7 +289,10 @@ class BestSellingWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildExploreAllServices(VoidCallback onBrowseByConcernOnTap) {
+  Widget _buildExploreAllServices(
+    VoidCallback onBrowseByConcernOnTap,
+    Size size,
+  ) {
     return Center(
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -287,7 +300,7 @@ class BestSellingWidget extends StatelessWidget {
           TextButton(
             onPressed: onBrowseByConcernOnTap,
             style: TextButton.styleFrom(
-              padding: EdgeInsets.all(8),
+              padding: EdgeInsets.all(size.height * .015),
               minimumSize: Size(0, 0),
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
@@ -295,14 +308,14 @@ class BestSellingWidget extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  "Explore all services",
+                  AppStrings.exploreAllService,
                   style: TextStyle(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.bold,
                     color: AppColor.dynamicColor,
                   ),
                 ),
-                SizedBox(width: 6.w),
+                SizedBox(width: size.width * .01),
                 Icon(
                   Icons.arrow_forward_ios_rounded,
                   color: AppColor.dynamicColor,

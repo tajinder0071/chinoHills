@@ -43,12 +43,12 @@ class _DeleteWidgetState extends State<DeleteWidget> {
           ),
           SizedBox(height: 10.h),
           Text(
-            "Delete Account from CH BUCKS",
+            "Delete Account from Chino Hills",
             style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 10.h),
           Text(
-            "Are you sure you would like to delete of your CH BUCKS account?",
+            "Are you sure you would like to delete of your Chino Hills account?",
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 14.sp, color: Colors.black54),
           ),

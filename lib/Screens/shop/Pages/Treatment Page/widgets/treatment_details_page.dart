@@ -75,8 +75,9 @@ class TreatmentDetailsPage extends GetView<TreatmentDetailsController> {
                                     children: [
                                       TextSpan(
                                         text:
-                                            '${controller.selectedQtyPrice.toString()
-                                                .replaceAll(".0", ".00") ?? ""}',
+                                            controller.selectedQtyPrice
+                                                .toString() ??
+                                            "",
                                         style: const TextStyle(
                                           fontWeight: FontWeight.normal,
                                           fontSize: 16,
@@ -112,7 +113,7 @@ class TreatmentDetailsPage extends GetView<TreatmentDetailsController> {
                                 controller.memberShipPrice.toString() == "0"
                                     ? SizedBox.shrink()
                                     : Text(
-                                        '\$${controller.memberShipPrice.toString().replaceAll(".0", ".00")} member',
+                                        '\$${controller.memberShipPrice.toString()} member',
                                         style: GoogleFonts.roboto(
                                           fontWeight: FontWeight.w900,
                                           fontSize: 14.sp,
@@ -147,7 +148,8 @@ class TreatmentDetailsPage extends GetView<TreatmentDetailsController> {
                                           MainAxisAlignment.center,
                                       children: [
                                         Text(
-                                          "${AppStrings.save} \$${controller.discountamount.toString().replaceAll(".0", ".00")} ${AppStrings.withA} ${controller.membershipName}",
+                                          "${AppStrings.save} \$${controller.discountamount.toString()} ${AppStrings.withA} ${controller.membershipName}",
+                                          textAlign: TextAlign.center,
                                         ),
                                         //add $ sign before discount price
                                         TextButton(
@@ -190,10 +192,10 @@ class TreatmentDetailsPage extends GetView<TreatmentDetailsController> {
                                           Icons.local_offer_outlined,
                                           color: AppColor().whiteColor,
                                         ),
-                                        SizedBox(width: 10.w),
+                                        SizedBox(width: 15.w),
                                         Expanded(
                                           child: Text(
-                                            "${AppStrings.save} ${controller.discounttext.toString().replaceAll(".0", ".00")} ${AppStrings.onThisItemWhenYouApply} ${controller.membershipName} ${AppStrings.inCart}",
+                                            "${AppStrings.save} ${controller.discounttext.toString()} ${AppStrings.onThisItemWhenYouApply} ${controller.membershipName} ${AppStrings.inCart}",
                                             style: GoogleFonts.roboto(
                                               color: AppColor().whiteColor,
                                               fontSize: 13.sp,
@@ -266,20 +268,23 @@ class TreatmentDetailsPage extends GetView<TreatmentDetailsController> {
                                             ),
                                           );
                                         },
-                                        errorBuilder: (context, error, stackTrace) {
-                                          return Container(
-                                            height: 250.h,
-                                            width: double.infinity,
-                                            color: AppColor.geryBackGroundColor,
-                                            child: Center(
-                                              child: Image.asset(
-                                                AppImages.noAvailableImage,
-                                                color: AppColor().blackColor,
-                                                fit: BoxFit.cover,
-                                              ),
-                                            ),
-                                          );
-                                        },
+                                        errorBuilder:
+                                            (context, error, stackTrace) {
+                                              return Container(
+                                                height: 250.h,
+                                                width: double.infinity,
+                                                color: AppColor
+                                                    .geryBackGroundColor,
+                                                child: Center(
+                                                  child: Image.asset(
+                                                    AppImages.noAvailableImage,
+                                                    color:
+                                                        AppColor().blackColor,
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                ),
+                                              );
+                                            },
                                       );
                                     },
                                   ),
@@ -323,7 +328,9 @@ class TreatmentDetailsPage extends GetView<TreatmentDetailsController> {
                                           ? 16.0.w
                                           : 8.0.w,
                                       decoration: BoxDecoration(
-                                        color: controller.currentPage.value == index
+                                        color:
+                                            controller.currentPage.value ==
+                                                index
                                             ? AppColor.dynamicColor
                                             : Colors.grey,
                                         borderRadius: BorderRadius.circular(
@@ -556,22 +563,30 @@ class TreatmentDetailsPage extends GetView<TreatmentDetailsController> {
                                                   );
                                                 },
                                                 onBack: () {},
-                                                treatmentVarLists: controller.variationList,
+                                                treatmentVarLists:
+                                                    controller.variationList,
                                               ),
                                               isDismissible: false,
                                               isScrollControlled: true,
                                             )
                                           : Get.bottomSheet(
                                               TreatmentQuantityBottomSheet(
-                                                treatmentVarLists: controller.variationList,
-                                                // pass all or default variation
+                                                treatmentVarLists:
+                                                    controller.variationList,
                                                 addToCart: () {
                                                   final selectedVariation =
-                                                      data.variations![controller.selectedIndex];
+                                                      data.variations![controller
+                                                          .selectedIndex];
                                                   final selectedPrice =
-                                                      controller.selectedIndexKey == null
-                                                      ? selectedVariation.prices!.first
-                                                      : selectedVariation.prices![controller.selectedIndexKey];
+                                                      controller
+                                                              .selectedIndexKey ==
+                                                          null
+                                                      ? selectedVariation
+                                                            .prices!
+                                                            .first
+                                                      : selectedVariation
+                                                            .prices![controller
+                                                            .selectedIndexKey];
                                                   Get.back();
                                                   controller.addToCart(
                                                     0,
@@ -614,12 +629,10 @@ class TreatmentDetailsPage extends GetView<TreatmentDetailsController> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          GetBuilder<TreatmentDetailsController>(
+                                          GetBuilder<
+                                            TreatmentDetailsController
+                                          >(
                                             builder: (controller) {
-                                              bool hasSelection =
-                                                  controller.selectedQtyLabel !=
-                                                  null;
-
                                               return Row(
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.center,
@@ -646,7 +659,6 @@ class TreatmentDetailsPage extends GetView<TreatmentDetailsController> {
                                   ),
                               ],
                             ),
-
                             SizedBox(height: 10.h),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -663,7 +675,7 @@ class TreatmentDetailsPage extends GetView<TreatmentDetailsController> {
                                     children: [
                                       TextSpan(
                                         text:
-                                            '\$${controller.selectedQtyPrice.toString().replaceAll(".0", ".00") ?? ""}',
+                                            '\$${controller.selectedQtyPrice.toString() ?? ""}',
                                         style: const TextStyle(
                                           fontWeight: FontWeight.normal,
                                           fontSize: 16,
@@ -696,7 +708,7 @@ class TreatmentDetailsPage extends GetView<TreatmentDetailsController> {
                                 controller.memberShipPrice.toString() == "0"
                                     ? SizedBox.shrink()
                                     : Text(
-                                        '\$${controller.memberShipPrice.toString().replaceAll(".0", ".00")} ${AppStrings.memberInSmallLetters}',
+                                        '\$${controller.memberShipPrice.toString()} ${AppStrings.memberInSmallLetters}',
                                         style: GoogleFonts.roboto(
                                           fontWeight: FontWeight.w900,
                                           fontSize: 14.sp,
@@ -793,14 +805,14 @@ class TreatmentDetailsPage extends GetView<TreatmentDetailsController> {
                                                   ),
                                                 ),
                                                 Text(
-                                                  "${AppStrings.addToCartNowToSave} \$${controller.memberShipPrice.toString().replaceAll(".0", ".00")} "
+                                                  "${AppStrings.addToCartNowToSave} \$${controller.memberShipPrice.toString()} "
                                                   "${AppStrings.onThisTreatmentToday}",
                                                   style: TextStyle(
                                                     fontSize: 14,
                                                   ),
                                                 ),
                                                 Text(
-                                                  "\$${controller.memberShip.toString().replaceAll(".0", ".00")}${AppStrings.monthMemberShipFeeApplies}",
+                                                  "\$${controller.memberShip.toString()}${AppStrings.monthMemberShipFeeApplies}",
                                                   style: TextStyle(
                                                     color: Colors.grey[600],
                                                   ),
@@ -861,7 +873,7 @@ class TreatmentDetailsPage extends GetView<TreatmentDetailsController> {
                                             children: [
                                               TextSpan(
                                                 text:
-                                                    "${AppStrings.save} \$${controller.discountamount.toString().replaceAll(".0", ".00")} ",
+                                                    "${AppStrings.save} \$${controller.discountamount.toString()} ",
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                 ),

@@ -8,7 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../../../CSS/app_strings.dart';
 import '../../../../CSS/color.dart';
-import '../../../../binding/cart_billing.dart';
+import '../../../../binding/account_Binding.dart';
 import '../../../../common_Widgets/common_refer_widget.dart';
 import '../../../../loading/become_a_member_loading.dart';
 import '../../../../util/common_page.dart';
@@ -235,7 +235,10 @@ class BrowsePage extends StatelessWidget {
                             .data!
                             .bestSelling!
                             .isNotEmpty
-                      ? BestSellingWidget(onBrowseByConcernOnTap: () {})
+                      ? BestSellingWidget(
+                          onBrowseByConcernOnTap: () {},
+                          onTap: () {},
+                        )
                       : SizedBox.shrink(),
                   SizedBox(height: 10.h),
                   //? TODO?  our services section is here...

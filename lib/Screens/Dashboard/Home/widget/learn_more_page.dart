@@ -112,9 +112,6 @@ class _OfferDetailSection extends StatelessWidget {
         ..cartList()
         ..learnMore(id.toString()),
       builder: (controller) {
-        if(controller.isLoading){
-          return TreatementLoadDetail();
-        }
         if (controller.offerDetailModel.data == null) {
           return _EmptyState();
         }
@@ -127,7 +124,12 @@ class _OfferDetailSection extends StatelessWidget {
             title: "Learn More",
             action: [],
           ),
-          body: ListView(
+          body: controller.isLoading
+              ? Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TreatementLoadDetail(),
+                )
+              : ListView(
                   padding: EdgeInsets.all(12.w),
                   children: [
                     ConstantNetworkImage(

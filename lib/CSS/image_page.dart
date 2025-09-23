@@ -5,6 +5,7 @@ class AppImages {
   static String noDataFoundImage = "assets/images/file.png";
   static String signUpRewardImage = "assets/images/gift_image.jpg";
   static String noAvailableImage = "assets/images/Image_not_available.png";
+  static String qrImage = "assets/images/qr_image.png";
   static String laserImage = "assets/images/laser-treatments.jpg";
   static String walletImage = "assets/images/wallet_image.png";
 

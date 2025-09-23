@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
       splitScreenMode: true,
       builder: (context, child) {
         return GetMaterialApp(
-          title: 'CH BUCKS',
+          title: 'Chino Hills',
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
             useMaterial3: true,

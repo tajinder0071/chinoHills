@@ -96,7 +96,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           exploreAllServiceIOnTap: () {
             setState(() => _selectedIndex = 2);
             local.saveData(AppStrings.shopIndex, 0);
-          },
+          }, onTap: () {  },
         );
       case 1:
         return DiscoverPage(

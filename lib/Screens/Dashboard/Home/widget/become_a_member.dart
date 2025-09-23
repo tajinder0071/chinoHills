@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../../CSS/app_strings.dart';
 import '../../../../CSS/color.dart';
+import '../../../../CSS/image_page.dart';
 import '../../../../Model/home_model.dart';
 import '../../../../common_Widgets/common_button_widget.dart';
 import '../../../../common_Widgets/common_horizontal_list.dart';
@@ -29,22 +31,17 @@ class BecomeAMember extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(
-      controller.membershipPerk.isEmpty
-          ? ""
-          : "membershipPerk:: ${controller.membershipPerk[0].membershipPerk}",
-    );
-    print("perks::$perks");
+    print(controller.memberships.length);
     return data!.isEmpty || data == null
         ? Container(
-            padding: EdgeInsets.only(top: 25.h, left: 0.w, bottom: 10.0.h),
+            padding: EdgeInsets.only(top: 5.h, left: 0.w, bottom: 10.0.h),
             width: double.infinity,
             decoration: BoxDecoration(color: AppColor.dynamicColor),
             child: Column(
               children: [
                 controller.memberships.isEmpty
                     ? SizedBox.shrink()
-                    : SizedBox(height: 15.h),
+                    : SizedBox(height: 20.h),
                 controller.memberships.isEmpty
                     ? SizedBox.shrink()
                     : Icon(
@@ -64,7 +61,7 @@ class BecomeAMember extends StatelessWidget {
                 controller.memberships.isEmpty
                     ? SizedBox.shrink()
                     : _buildMembershipList(context),
-                SizedBox(height: 10.h),
+                SizedBox(height: 20.h),
                 // TODO: Extract Membership Perks Section into a reusable widget
                 _buildMembershipPerks(),
                 SizedBox(height: 20.h),
@@ -75,7 +72,7 @@ class BecomeAMember extends StatelessWidget {
             ),
           )
         : Container(
-            padding: EdgeInsets.only(top: 25.h, left: 0.w, bottom: 10.0.h),
+            padding: EdgeInsets.only(top: 5.h, left: 0.w, bottom: 10.0.h),
             width: double.infinity,
             decoration: BoxDecoration(color: AppColor.dynamicColor),
             child: Column(
@@ -96,7 +93,7 @@ class BecomeAMember extends StatelessWidget {
                 data!.isEmpty
                     ? SizedBox.shrink()
                     : _buildMembershipList(context),
-                SizedBox(height: 10.h),
+                SizedBox(height: 20.h),
                 // TODO: Extract Membership Perks Section into a reusable widget
                 _buildMembershipPerks(),
                 SizedBox(height: 20.h),
@@ -118,9 +115,8 @@ class BecomeAMember extends StatelessWidget {
           controller.browseDetailModel.data == null
               ? membershipPerkHeader
               : controller.browseDetailModel.data!.membershipHeader,
-
           style: GoogleFonts.merriweather(
-            fontSize: 30.sp,
+            fontSize: 25.sp,
             fontWeight: FontWeight.bold,
             color: AppColor().whiteColor,
           ),
@@ -161,7 +157,7 @@ class BecomeAMember extends StatelessWidget {
                       width: double.infinity,
                       color: AppColor.geryBackGroundColor,
                       child: Image.asset(
-                        "assets/images/Image_not_available.png",
+                        AppImages.noAvailableImage,
                         color: AppColor().blackColor,
                         fit: BoxFit.cover,
                       ),
@@ -243,31 +239,46 @@ class BecomeAMember extends StatelessWidget {
                               ],
                             ),
                           ),
-                          Padding(
-                            padding: EdgeInsets.only(left: 5.w, top: 10.h),
-                            child: Text(
-                              member.membershipTitle.toString(),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.merriweather(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.w900,
+                          SizedBox(
+                            height: 50.h,
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 8.w,
+                                vertical: 5.h,
+                              ),
+                              child: Text(
+                                member.membershipTitle.toString(),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.merriweather(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w900,
+                                ),
                               ),
                             ),
                           ),
                           SizedBox(height: 5.h),
-                          Divider(),
                           Padding(
-                            padding: const EdgeInsets.only(left: 4.0),
+                            padding: EdgeInsets.symmetric(horizontal: 8.w),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  "\$${member.membershipPricing}/month",
-                                  style: GoogleFonts.roboto(
-                                    fontSize: 17.sp,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      "\$${member.membershipPricing}",
+                                      style: GoogleFonts.roboto(
+                                        fontSize: 17.sp,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      "/month",
+                                      style: GoogleFonts.roboto(
+                                        fontSize: 15.sp,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 InkWell(
                                   onTap: () {
@@ -297,7 +308,7 @@ class BecomeAMember extends StatelessWidget {
                     ? MediaQuery.of(context).size.height * .35
                     : MediaQuery.of(context).size.height < 812
                     ? MediaQuery.of(context).size.height * .31
-                    : 230.h,
+                    : 235.h,
                 itemWidth: 200.w,
                 items: data!,
                 itemBuilder: (context, member, index) {
@@ -310,7 +321,7 @@ class BecomeAMember extends StatelessWidget {
                       width: double.infinity,
                       color: AppColor.geryBackGroundColor,
                       child: Image.asset(
-                        "assets/images/Image_not_available.png",
+                        AppImages.noAvailableImage,
                         color: AppColor().blackColor,
                         fit: BoxFit.cover,
                       ),
@@ -392,30 +403,46 @@ class BecomeAMember extends StatelessWidget {
                               ],
                             ),
                           ),
-                          Padding(
-                            padding: EdgeInsets.only(left: 5.w, top: 10.h),
-                            child: Text(
-                              member.membershipTitle.toString(),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.merriweather(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.bold,
+                          SizedBox(
+                            height: 50.h,
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 8.w,
+                                vertical: 5.h,
+                              ),
+                              child: Text(
+                                member.membershipTitle.toString(),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.merriweather(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),
-                          Divider(),
+                          // Divider(),
                           Padding(
-                            padding: const EdgeInsets.only(left: 4.0),
+                            padding: EdgeInsets.symmetric(horizontal: 8.w),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  "\$${member.membershipPricing}/month",
-                                  style: GoogleFonts.roboto(
-                                    fontSize: 17.sp,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      "\$${member.membershipPricing}",
+                                      style: GoogleFonts.roboto(
+                                        fontSize: 17.sp,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      "/month",
+                                      style: GoogleFonts.roboto(
+                                        fontSize: 15.sp,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 InkWell(
                                   onTap: () {
@@ -448,23 +475,20 @@ class BecomeAMember extends StatelessWidget {
   Widget _buildMembershipPerks() {
     return GetBuilder<PackageController>(
       builder: (controller) {
-        print("length::${controller.membershipPerk.length}");
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            controller.membershipPerk.isEmpty && perks!.isEmpty
-                ? SizedBox.shrink()
-                : Text(
-                    "MEMBERSHIP PERKS INCLUDE:",
-                    style: GoogleFonts.merriweather(
-                      fontWeight: FontWeight.w900,
-                      fontSize: 18.sp,
-                      color: Colors.white,
-                    ),
-                  ),
+            Text(
+              AppStrings.membershipPerks,
+              style: GoogleFonts.roboto(
+                fontWeight: FontWeight.w900,
+                fontSize: 17.sp,
+                color: Colors.white,
+              ),
+            ),
             Padding(
-              padding: const EdgeInsets.only(left: 20.0, top: 10),
+              padding: const EdgeInsets.only(left: 30.0, top: 10),
               child: perks!.isEmpty
                   ? ListView.builder(
                       shrinkWrap: true,
@@ -508,7 +532,7 @@ class BecomeAMember extends StatelessWidget {
     return GetBuilder<PackageController>(
       builder: (controller) {
         return Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10.0.w),
+          padding: EdgeInsets.symmetric(horizontal: 20.0.w),
           child: CommonButtonWidget(
             onTap: () => onPressed(),
             isOutlineButton: true,
@@ -531,16 +555,20 @@ class PerkRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 6.h, horizontal: 40.w),
+      padding: const EdgeInsets.all(3.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Icon(icon, color: Colors.white, size: 18.h),
+          Icon(icon, color: Colors.white, size: 20.h),
           SizedBox(width: 8.w),
           Expanded(
             child: Text(
               text,
-              style: GoogleFonts.poppins(fontSize: 15.sp, color: Colors.white),
+              style: GoogleFonts.poppins(
+                fontSize: 17.sp,
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ],

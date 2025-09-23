@@ -162,11 +162,12 @@ class CartController extends GetxController {
 
   learnMore(id) async {
     isLoadings = true;
-    tratment.clear();
-    membership.clear();
-    package.clear();
+
     // update();
     try {
+      tratment.clear();
+      membership.clear();
+      package.clear();
       id.toString() == "null"
           ? null
           : offerDetailModel = await hitLearnDetail(id);
@@ -238,7 +239,6 @@ class CartController extends GetxController {
       );
     }
   }
-
 
   var itemList = {};
 
