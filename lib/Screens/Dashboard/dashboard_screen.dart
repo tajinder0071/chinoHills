@@ -119,6 +119,10 @@ class DashboardScreenState extends State<DashboardScreen> {
             setState(() => _selectedIndex = 2);
             local.saveData(AppStrings.shopIndex, 0);
           },
+          shopAllMemberOnTap: () {
+            setState(() => _selectedIndex = 2);
+            ShopController.shop.goToTabByName(AppStrings.membership);
+          },
         );
       default:
         return Container();
@@ -136,17 +140,22 @@ class DashboardScreenState extends State<DashboardScreen> {
     return AppBar(elevation: 0, backgroundColor: AppColor().background);
   }
 
-  AppBar _buildCommonAppBar(
-      {required String title, required BuildContext context}) {
+  AppBar _buildCommonAppBar({
+    required String title,
+    required BuildContext context,
+  }) {
     return AppBar(
       scrolledUnderElevation: 0.0,
       elevation: 0,
       backgroundColor: AppColor().background,
-      title: Text(title,
-          style: TextStyle(
-              fontSize: 17.sp,
-              fontWeight: FontWeight.w500,
-              color: AppColor().blackColor)),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontSize: 17.sp,
+          fontWeight: FontWeight.w500,
+          color: AppColor().blackColor,
+        ),
+      ),
       actions: _buildAppBarActions(context),
     );
   }
@@ -158,34 +167,36 @@ class DashboardScreenState extends State<DashboardScreen> {
       backgroundColor: AppColor().background,
       title: isLogoLoading
           ? SizedBox(
-        height: 25.h,
-        width: 25.w,
-        child: Center(
-          child: CircularProgressIndicator(
-              color: AppColor.dynamicColorWithOpacity),
-        ),
-      )
+              height: 25.h,
+              width: 25.w,
+              child: Center(
+                child: CircularProgressIndicator(
+                  color: AppColor.dynamicColorWithOpacity,
+                ),
+              ),
+            )
           : logoPath.isEmpty
           ? SizedBox.shrink()
           : SizedBox(
-        height: 60.h,
-        width: 80.w,
-        child: Image.network(
-          logoPath,
-          fit: BoxFit.contain,
-          errorBuilder: (context, url, error) {
-            return Container(
-              height: 50.h,
-              width: 50.w,
-              clipBehavior: Clip.antiAlias,
-              decoration: BoxDecoration(
-                  color: Colors.black12,
-                  borderRadius: BorderRadius.circular(10.r)),
-              child: Center(child: Icon(Icons.error)),
-            );
-          },
-        ),
-      ),
+              height: 60.h,
+              width: 80.w,
+              child: Image.network(
+                logoPath,
+                fit: BoxFit.contain,
+                errorBuilder: (context, url, error) {
+                  return Container(
+                    height: 50.h,
+                    width: 50.w,
+                    clipBehavior: Clip.antiAlias,
+                    decoration: BoxDecoration(
+                      color: Colors.black12,
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                    child: Center(child: Icon(Icons.error)),
+                  );
+                },
+              ),
+            ),
       actions: _buildAppBarActions(context),
     );
   }
@@ -199,8 +210,10 @@ class DashboardScreenState extends State<DashboardScreen> {
         child: SizedBox(
           height: 30.h,
           width: 30.w,
-          child: Icon(Iconsax.search_normal_outline,
-              size: isTablet(context) ? 30.h : 20.h),
+          child: Icon(
+            Iconsax.search_normal_outline,
+            size: isTablet(context) ? 30.h : 20.h,
+          ),
         ),
       ),
       SizedBox(width: 10.w),
@@ -209,10 +222,13 @@ class DashboardScreenState extends State<DashboardScreen> {
         highlightColor: Colors.transparent,
         onTap: () => Get.toNamed(RouteManager.settingsTab),
         child: SizedBox(
-            height: 30.h,
-            width: 30.w,
-            child: Icon(Iconsax.user_outline,
-                size: isTablet(context) ? 30.h : 20.h)),
+          height: 30.h,
+          width: 30.w,
+          child: Icon(
+            Iconsax.user_outline,
+            size: isTablet(context) ? 30.h : 20.h,
+          ),
+        ),
       ),
       SizedBox(width: 10.w),
       GetBuilder<CartController>(
@@ -223,8 +239,10 @@ class DashboardScreenState extends State<DashboardScreen> {
             child: Badge.count(
               count: cartController.cartItemCount ?? 0,
               backgroundColor: AppColor.dynamicColor,
-              child: Icon(Iconsax.shopping_cart_outline,
-                  size: isTablet(context) ? 30.h : 23.h),
+              child: Icon(
+                Iconsax.shopping_cart_outline,
+                size: isTablet(context) ? 30.h : 23.h,
+              ),
             ),
             onTap: () {
               Get.put(() => CartController());
