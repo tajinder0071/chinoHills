@@ -106,8 +106,8 @@ class SettingsTab extends StatelessWidget {
     final box = context.findRenderObject() as RenderBox?;
 
     final String shareText = Platform.isAndroid
-        ? "https://play.google.com/store/apps/details?id=com.app.nima"
-        : "https://apps.apple.com/us/app/nima-newport/id6745820609";
+        ? "https://play.google.com/store/apps/details?id=com.io.chino_hills"
+        : "https://apps.apple.com/us/app/ch-eyecare/id6752308586";
 
     await Share.share(
       "$shareText\n\nSend a friend \$25\nTowards Any Service!",

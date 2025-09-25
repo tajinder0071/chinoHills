@@ -49,9 +49,9 @@ class CommonReferWidget extends StatelessWidget {
               final box = context.findRenderObject() as RenderBox?;
               await Share.share(
                 Platform.isAndroid
-                    ? "https://play.google.com/store/apps/details?id=com.app.nima"
-                    : "https://apps.apple.com/us/app/nima-newport/id6745820609",
-                subject: "Discover Nima – Book appointments & packages easily", // iOS requires non-empty title
+                    ? "https://play.google.com/store/apps/details?id=com.io.chino_hills"
+                    : "https://apps.apple.com/us/app/ch-eyecare/id6752308586",
+                subject: "Discover CH Eyecare – Book appointments & packages easily", // iOS requires non-empty title
                 sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
               );
             },

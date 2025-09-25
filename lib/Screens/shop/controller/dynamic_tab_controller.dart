@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../Model/browse_Model.dart';
 import '../../../Model/dynamic_tab_model.dart';
 import '../../../util/base_services.dart';
 

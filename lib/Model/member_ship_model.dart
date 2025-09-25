@@ -3,7 +3,11 @@ class MemberShipModel {
   bool? success;
   List<MembershipData>? memberships;
 
-  MemberShipModel({this.headerDetails, this.success, this.memberships});
+  MemberShipModel({
+    this.headerDetails,
+    this.success,
+    this.memberships,
+  });
 
   factory MemberShipModel.fromJson(Map<String, dynamic> json) =>
       MemberShipModel(
@@ -14,8 +18,7 @@ class MemberShipModel {
         memberships: json["memberships"] == null
             ? []
             : List<MembershipData>.from(
-                json["memberships"]!.map((x) => MembershipData.fromJson(x)),
-              ),
+            json["memberships"]!.map((x) => MembershipData.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -32,7 +35,11 @@ class HeaderDetails {
   String? headerDescription;
   String? headerimage;
 
-  HeaderDetails({this.headerTitle, this.headerDescription, this.headerimage});
+  HeaderDetails({
+    this.headerTitle,
+    this.headerDescription,
+    this.headerimage,
+  });
 
   factory HeaderDetails.fromJson(Map<String, dynamic> json) => HeaderDetails(
     headerTitle: json["headerTitle"],
@@ -75,7 +82,8 @@ class MembershipData {
     membershipImage: json["membership_image"],
     benefits: json["benefits"] == null
         ? []
-        : List<Benefit>.from(json["benefits"]!.map((x) => Benefit.fromJson(x))),
+        : List<Benefit>.from(
+        json["benefits"]!.map((x) => Benefit.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
@@ -94,10 +102,15 @@ class MembershipData {
 class Benefit {
   String? benefitTitle;
 
-  Benefit({this.benefitTitle});
+  Benefit({
+    this.benefitTitle,
+  });
 
-  factory Benefit.fromJson(Map<String, dynamic> json) =>
-      Benefit(benefitTitle: json["benefit_title"]);
+  factory Benefit.fromJson(Map<String, dynamic> json) => Benefit(
+    benefitTitle: json["benefit_title"],
+  );
 
-  Map<String, dynamic> toJson() => {"benefit_title": benefitTitle};
+  Map<String, dynamic> toJson() => {
+    "benefit_title": benefitTitle,
+  };
 }

@@ -27,6 +27,7 @@ class MemberShipDetailsModel {
 
 class Membership {
   String? offeroffText;
+  String? offerName;
   var membershipId;
   List<IncludedTreatment>? includedTreatments;
   var isActive;
@@ -41,6 +42,7 @@ class Membership {
 
   Membership({
     this.offeroffText,
+    this.offerName,
     this.membershipId,
     this.includedTreatments,
     this.isActive,
@@ -56,6 +58,7 @@ class Membership {
 
   factory Membership.fromJson(Map<String, dynamic> json) => Membership(
     offeroffText: json["offeroffText"],
+    offerName: json["offerName"],
     membershipId: json["membership_id"],
     includedTreatments: json["includedTreatments"] == null
         ? []
@@ -85,6 +88,7 @@ class Membership {
 
   Map<String, dynamic> toJson() => {
     "offeroffText": offeroffText,
+    "offerName": offerName,
     "membership_id": membershipId,
     "includedTreatments": includedTreatments == null
         ? []
@@ -331,4 +335,24 @@ class MilestoneTreatmentItems {
     data['treatment_name'] = treatmentName;
     return data;
   }
+}
+
+class OfferoffText {
+  String? offertext;
+  String? offername;
+
+  OfferoffText({
+    this.offertext,
+    this.offername,
+  });
+
+  factory OfferoffText.fromJson(Map<String, dynamic> json) => OfferoffText(
+    offertext: json["OFFERTEXT"],
+    offername: json["OFFERNAME"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "OFFERTEXT": offertext,
+    "OFFERNAME": offername,
+  };
 }

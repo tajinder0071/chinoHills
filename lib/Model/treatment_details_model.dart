@@ -34,6 +34,10 @@ class Treatment {
   List<String>? treatmentConcerns;
   String? treatmentName;
   var unitType;
+  String? offeroffText;
+  String? offerName;
+
+
 
   Treatment({
     this.treatmentDescription,
@@ -44,6 +48,8 @@ class Treatment {
     this.treatmentConcerns,
     this.treatmentName,
     this.unitType,
+    this.offeroffText,
+    this.offerName,
   });
 
   factory Treatment.fromJson(Map<String, dynamic> json) => Treatment(
@@ -64,6 +70,8 @@ class Treatment {
         : List<String>.from(json["treatment_concerns"]!.map((x) => x)),
     treatmentName: json["treatment_name"],
     unitType: json["unit_type"],
+    offeroffText: json["offeroffText"],
+    offerName: json["offerName"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -82,6 +90,8 @@ class Treatment {
         : List<dynamic>.from(treatmentConcerns!.map((x) => x)),
     "treatment_name": treatmentName,
     "unit_type": unitType,
+    "offeroffText": offeroffText,
+    "offerName": offerName,
   };
 }
 

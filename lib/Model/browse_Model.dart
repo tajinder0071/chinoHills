@@ -12,28 +12,28 @@ class BrowseModel {
   });
 
   factory BrowseModel.fromJson(Map<String, dynamic> json) => BrowseModel(
-        message: json["message"],
-        success: json["success"],
-        data: json["data"] == null
-            ? []
-            : List<ConcernDatum>.from(
-                json["data"]!.map((x) => ConcernDatum.fromJson(x))),
-        concernImageData: json["concernImageData"] == null
-            ? []
-            : List<ConcernImageDatum>.from(json["concernImageData"]!
-                .map((x) => ConcernImageDatum.fromJson(x))),
-      );
+    message: json["message"],
+    success: json["success"],
+    data: json["data"] == null
+        ? []
+        : List<ConcernDatum>.from(
+        json["data"]!.map((x) => ConcernDatum.fromJson(x))),
+    concernImageData: json["concernImageData"] == null
+        ? []
+        : List<ConcernImageDatum>.from(json["concernImageData"]!
+        .map((x) => ConcernImageDatum.fromJson(x))),
+  );
 
   Map<String, dynamic> toJson() => {
-        "message": message,
-        "success": success,
-        "data": data == null
-            ? []
-            : List<dynamic>.from(data!.map((x) => x.toJson())),
-        "concernImageData": concernImageData == null
-            ? []
-            : List<dynamic>.from(concernImageData!.map((x) => x.toJson())),
-      };
+    "message": message,
+    "success": success,
+    "data": data == null
+        ? []
+        : List<dynamic>.from(data!.map((x) => x.toJson())),
+    "concernImageData": concernImageData == null
+        ? []
+        : List<dynamic>.from(concernImageData!.map((x) => x.toJson())),
+  };
 }
 
 class ConcernImageDatum {
@@ -52,9 +52,9 @@ class ConcernImageDatum {
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "concerns_image": concernsImage,
-      };
+    "id": id,
+    "concerns_image": concernsImage,
+  };
 }
 
 class ConcernDatum {
@@ -73,18 +73,18 @@ class ConcernDatum {
   });
 
   factory ConcernDatum.fromJson(Map<String, dynamic> json) => ConcernDatum(
-        createdAt: json["created_at"],
-        treatmentCount: json["treatments_count"],
-        updatedAt: json["updated_at"],
-        id: json["id"],
-        concernName: json["concern_name"],
-      );
+    createdAt: json["created_at"],
+    treatmentCount: json["treatments_count"],
+    updatedAt: json["updated_at"],
+    id: json["id"],
+    concernName: json["concern_name"],
+  );
 
   Map<String, dynamic> toJson() => {
-        "created_at": createdAt,
-        "treatment_count": treatmentCount,
-        "updated_at": updatedAt,
-        "id": id,
-        "concern_name": concernName,
-      };
+    "created_at": createdAt,
+    "treatment_count": treatmentCount,
+    "updated_at": updatedAt,
+    "id": id,
+    "concern_name": concernName,
+  };
 }

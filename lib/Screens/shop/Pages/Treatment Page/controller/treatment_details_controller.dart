@@ -27,6 +27,8 @@ class TreatmentDetailsController extends GetxController {
       discountPrice,
       membershipName,
       discountamount,
+      offeroffText,
+      offerName,
       discounttext;
   var membershipId;
   List<Variation> variationList = [];
@@ -136,14 +138,14 @@ class TreatmentDetailsController extends GetxController {
 
           // membership info
           if (firstPrice.membershipInfo != null) {
-            memberShipPrice =
-                firstPrice.membershipInfo!.membershipOfferPrice ?? "";
+            memberShipPrice = firstPrice.membershipInfo!.membershipOfferPrice ?? "";
             memberShip = firstPrice.membershipInfo!.membershipPrice ?? "";
             discountPrice = firstPrice.membershipInfo!.discountedPrice ?? "";
             discountamount = firstPrice.membershipInfo!.discountamount ?? "";
             discounttext = firstPrice.membershipInfo!.discounttext ?? "";
             membershipName = firstPrice.membershipInfo!.membershipName ?? "";
             membershipId = firstPrice.membershipInfo!.membershipId ?? "";
+
           } else {
             memberShipPrice = 0;
           }

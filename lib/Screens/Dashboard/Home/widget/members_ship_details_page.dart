@@ -37,7 +37,8 @@ class MembersShipDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<MembershipDetailController>(
-      init: Get.find<MembershipDetailController>()..fetchMemberShipDetails(),
+      init: Get.find<MembershipDetailController>()
+        ..fetchMemberShipDetails(),
       builder: (controller) {
         var data = controller.memberDetailsModel.membership;
         return Scaffold(
@@ -84,7 +85,7 @@ class MembersShipDetailsPage extends StatelessWidget {
                   return Column(
                     children: [
                       (data.includedTreatments!.isEmpty ||
-                          !hasValidTreatment(treatment))
+                          !hasValidTreatment(treatment) || data.benefits == null || data.benefits!.isEmpty || data.benefits!.every((benefit)=>(benefit.benefitTitle ?? "").trim().isEmpty))
                           ? SizedBox.shrink()
                           : Divider(
                         thickness: 5.h,
@@ -212,11 +213,12 @@ class MembersShipDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget treatmentSection(
-      BuildContext context, IncludedTreatment includedTreatments) {
+  Widget treatmentSection(BuildContext context,
+      IncludedTreatment includedTreatments) {
     final List<TreatmentItem> treatmentItems =
     (includedTreatments.treatmentItems ?? [])
-        .where((item) => (item.treatmentName != null &&
+        .where((item) =>
+    (item.treatmentName != null &&
         item.treatmentName!.trim().isNotEmpty))
         .toList();
 
@@ -259,7 +261,10 @@ class MembersShipDetailsPage extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 20.h),
-            ...treatmentItems.asMap().entries.map((entry) {
+            ...treatmentItems
+                .asMap()
+                .entries
+                .map((entry) {
               int idx = entry.key;
               TreatmentItem treatmentItem = entry.value;
 
@@ -341,7 +346,7 @@ class MembersShipDetailsPage extends StatelessWidget {
                   fontWeight: FontWeight.w600),
               textAlign: TextAlign.center),
           SizedBox(height: 10.h),
-          data.offeroffText.toString() == ""
+          (data.offeroffText.toString() == null || data.offeroffText.toString() == "")
               ? SizedBox.shrink()
               : Container(
             margin: EdgeInsets.all(10.h),
@@ -359,7 +364,8 @@ class MembersShipDetailsPage extends StatelessWidget {
                 SizedBox(width: 10.w),
                 Expanded(
                   child: Text(
-                    "Save ${data.offeroffText.toString()} on your first month of membership when you apply ${data.membershipTitle.toString()} in cart!",
+                    "Save ${data.offeroffText.toString()} on your first month of membership when you apply "
+                        "'${data.offerName.toString()}' in cart!",
                     style: TextStyle(color: AppColor().whiteColor),
                   ),
                 )
@@ -392,7 +398,8 @@ class MembersShipDetailsPage extends StatelessWidget {
             showIcon: true,
             title: AppStrings.joinNowSignupBonus,
             desc:
-            "${AppStrings.joinNowSignupBonusDesc}${data.membershipTitle} member",
+            "${AppStrings.joinNowSignupBonusDesc}${data
+                .membershipTitle} member",
             buttonText: "More details",
             //data.signupBonus
           )
@@ -444,8 +451,9 @@ class MembersShipDetailsPage extends StatelessWidget {
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
               itemCount: data.benefits!.length,
-              itemBuilder: (context, index) => _buildBulletPoints(
-                  data.benefits![index].benefitTitle.toString()),
+              itemBuilder: (context, index) =>
+                  _buildBulletPoints(
+                      data.benefits![index].benefitTitle.toString()),
             ),
             SizedBox(height: 25.h),
           ],
@@ -587,8 +595,8 @@ class MembersShipDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _milestoneBonusSection(
-      context, Membership data, MembershipMilestoneBonuses milestoneBonus,
+  Widget _milestoneBonusSection(context, Membership data,
+      MembershipMilestoneBonuses milestoneBonus,
       {required String title,
         String? desc,
         required String buttonText,
@@ -651,11 +659,10 @@ class MembersShipDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget commonText(
-      {required String text,
-        fontSize = 0.0,
-        fontWeight = FontWeight.normal,
-        color = Colors.black}) {
+  Widget commonText({required String text,
+    fontSize = 0.0,
+    fontWeight = FontWeight.normal,
+    color = Colors.black}) {
     return Text(
       text,
       textAlign: TextAlign.center,
@@ -748,7 +755,8 @@ class MembersShipDetailsPage extends StatelessWidget {
                               TextStyle(fontWeight: FontWeight.bold)),
                           TextSpan(
                             text:
-                            ' bonus treatments from the below when you sign up as a ${data.membershipTitle} member',
+                            ' bonus treatments from the below when you sign up as a ${data
+                                .membershipTitle} member',
                           ),
                         ],
                       ),

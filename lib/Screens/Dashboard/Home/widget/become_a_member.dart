@@ -1,9 +1,9 @@
-import 'package:chino_hills/CSS/color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:chino_hills/CSS/app_strings.dart';
+import 'package:chino_hills/CSS/color.dart';
 import 'package:chino_hills/CSS/image_page.dart';
 import 'package:chino_hills/Model/home_model.dart';
 import '../../../../common_Widgets/common_button_widget.dart';
@@ -13,7 +13,6 @@ import '../../../../loading/become_a_member_loading.dart';
 import '../../../../util/common_page.dart';
 import '../../../../util/route_manager.dart';
 import '../../../shop/Pages/Package Page/controller/package_cotroller.dart';
-
 class BecomeAMember extends StatelessWidget {
   final VoidCallback onPressed;
   List<Membership>? data;
@@ -30,6 +29,7 @@ class BecomeAMember extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(controller.memberships.length);
     return data!.isEmpty || data == null
         ? Container(
       padding: EdgeInsets.only(top: 5.h, left: 0.w, bottom: 10.0.h),
@@ -197,50 +197,34 @@ class BecomeAMember extends StatelessWidget {
                                     member.offeroffText!.isEmpty
                                         ? SizedBox.shrink()
                                         : Positioned(
-                                        top: 10.h,
-                                        left: 5.w,
-                                        child: Container(
-                                          height: 25.h,
-                                          width: 60.w,
-                                          decoration: BoxDecoration(
-                                            color:
-                                            AppColor.dynamicColor,
-                                            borderRadius:
-                                            BorderRadius.circular(
-                                                5.r),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.black12,
-                                                offset: Offset(2, 2),
-                                                blurRadius: 5.r,
-                                              ),
-                                            ],
+                                      top: 10.h,
+                                      left: 5.w,
+                                      child: Container(
+                                        margin: EdgeInsets.zero,
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 6.w, vertical: 3.h),
+                                        decoration: BoxDecoration(
+                                          color: AppColor.dynamicColor,
+                                          borderRadius:
+                                          BorderRadius.circular(5.r),
+                                        ),
+                                        child: Text(member.offeroffText
+                                            .toString()
+                                            .toUpperCase(),
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 10.sp,
                                           ),
-                                          child: Center(
-                                            child: Text(
-                                              member.offeroffText
-                                                  .toString()
-                                                  .toUpperCase(),
-                                              textAlign:
-                                              TextAlign.center,
-                                              style: GoogleFonts
-                                                  .merriweather(
-                                                fontSize: 12.sp,
-                                                fontWeight:
-                                                FontWeight.bold,
-                                                color: AppColor()
-                                                    .whiteColor,
-                                              ),
-                                            ),
-                                          ),
-                                        ))
+                                        ),
+                                      ),)
                                   ],
                                 )),
                             SizedBox(
                               height: 50.h,
                               child: Padding(
                                 padding: EdgeInsets.symmetric(
-                                    horizontal: 8.w,vertical: 5.h),
+                                    horizontal: 8.w, vertical: 5.h),
                                 child: Text(
                                   member.membershipTitle.toString(),
                                   maxLines: 2,
@@ -252,8 +236,12 @@ class BecomeAMember extends StatelessWidget {
                                 ),
                               ),
                             ),
+                            SizedBox(
+                              height: 5.h,
+                            ),
                             Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8.w),
+                              padding:
+                              EdgeInsets.symmetric(horizontal: 8.w),
                               child: Row(
                                 mainAxisAlignment:
                                 MainAxisAlignment.spaceBetween,
@@ -361,46 +349,34 @@ class BecomeAMember extends StatelessWidget {
                                 member.offeroffText!.isEmpty
                                     ? SizedBox.shrink()
                                     : Positioned(
-                                    top: 10.h,
-                                    left: 5.w,
-                                    child: Container(
-                                      height: 25.h,
-                                      width: 60.w,
-                                      decoration: BoxDecoration(
-                                        color: AppColor.dynamicColor,
-                                        borderRadius:
-                                        BorderRadius.circular(5.r),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black12,
-                                            offset: Offset(2, 2),
-                                            blurRadius: 5.r,
-                                          ),
-                                        ],
+                                  top: 10.h,
+                                  left: 5.w,
+                                  child: Container(
+                                    margin: EdgeInsets.zero,
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 6.w, vertical: 3.h),
+                                    decoration: BoxDecoration(
+                                      color: AppColor.dynamicColor,
+                                      borderRadius:
+                                      BorderRadius.circular(5.r),
+                                    ),
+                                    child: Text(member.offeroffText
+                                        .toString()
+                                        .toUpperCase(),
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 10.sp,
                                       ),
-                                      child: Center(
-                                        child: Text(
-                                          member.offeroffText
-                                              .toString()
-                                              .toUpperCase(),
-                                          textAlign: TextAlign.center,
-                                          style:
-                                          GoogleFonts.merriweather(
-                                            fontSize: 12.sp,
-                                            fontWeight: FontWeight.bold,
-                                            color:
-                                            AppColor().whiteColor,
-                                          ),
-                                        ),
-                                      ),
-                                    ))
+                                    ),
+                                  ),)
                               ],
                             )),
                         SizedBox(
                           height: 50.h,
                           child: Padding(
                             padding: EdgeInsets.symmetric(
-                                horizontal: 8.w,vertical: 5.h),
+                                horizontal: 8.w, vertical: 5.h),
                             child: Text(
                               member.membershipTitle.toString(),
                               maxLines: 2,
@@ -414,7 +390,8 @@ class BecomeAMember extends StatelessWidget {
                         ),
                         // Divider(),
                         Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8.w),
+                          padding:
+                          EdgeInsets.symmetric(horizontal: 8.w),
                           child: Row(
                             mainAxisAlignment:
                             MainAxisAlignment.spaceBetween,

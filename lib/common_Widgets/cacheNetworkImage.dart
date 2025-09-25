@@ -14,6 +14,7 @@ class ConstantNetworkImage extends StatelessWidget {
         this.width,
         this.errorWidget,
         this.boxFit = BoxFit.fill,
+        this.alignment = Alignment.center,
         required this.isLoad});
 
   final Widget? errorWidget;
@@ -21,6 +22,7 @@ class ConstantNetworkImage extends StatelessWidget {
   var height, width;
   BoxFit boxFit;
   bool isLoad;
+  final AlignmentGeometry alignment;
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +39,7 @@ class ConstantNetworkImage extends StatelessWidget {
             decoration: BoxDecoration(
               // borderRadius: BorderRadius.circular(10),
               image: DecorationImage(
+                alignment: alignment,
                 filterQuality: FilterQuality.high,
                 fit: boxFit,
                 image: imageProvider,
@@ -58,7 +61,7 @@ class ConstantNetworkImage extends StatelessWidget {
           child: errorWidget ??
               Center(
                   child: Image.asset(
-                    AppImages.noAvailableImage,
+                    "assets/images/Image_not_available.png",
                     color: AppColor().blackColor,
                     // width: 150.w,
                     // height: 150.h,

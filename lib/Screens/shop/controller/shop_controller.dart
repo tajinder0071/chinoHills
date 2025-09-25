@@ -191,15 +191,14 @@ class ShopController extends GetxController with GetTickerProviderStateMixin {
 
   PageController pageController = PageController();
 
-  var currentPage = 0;
+  var currentPage=0;
 
   @override
   void onInit() {
     blinkController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 1),
-    )
-      ..repeat(reverse: true);
+    )..repeat(reverse: true);
 
     blinkAnimation =
         Tween<double>(begin: 1.0, end: 0.0).animate(blinkController);
@@ -222,7 +221,7 @@ class ShopController extends GetxController with GetTickerProviderStateMixin {
   @override
   void onClose() {
     blinkController.dispose();
-    tabController.dispose();
+    // tabController.dispose();
     super.onClose();
   }
 }

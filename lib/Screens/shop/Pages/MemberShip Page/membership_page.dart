@@ -158,17 +158,21 @@ class MembershipPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(5.r),
                       color: Colors.white,
                     ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(5.r),
-                        topLeft: Radius.circular(5.r),
-                      ),
-                      child: ConstantNetworkImage(
-                        isLoad: true,
-                        imageUrl: member.membershipImage.toString(),
-                        width: double.infinity,
-                        height: 170.h,
-                        boxFit: BoxFit.contain,
+                    child: AspectRatio(
+                      aspectRatio: 16 / 9,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(5.r),
+                          topLeft: Radius.circular(5.r),
+                        ),
+                        child: ConstantNetworkImage(
+                          isLoad: true,
+                          imageUrl: member.membershipImage.toString(),
+                          width: double.infinity,
+                          height: 170.h,
+                          boxFit: BoxFit.cover,
+                          alignment: Alignment.topCenter,
+                        ),
                       ),
                     ),
                   ),
@@ -177,31 +181,27 @@ class MembershipPage extends StatelessWidget {
                       : Positioned(
                     top: 10.h,
                     left: 5.w,
-                    child: Container(
-                      height: 25.h,
-                      width: 60.w,
-                      decoration: BoxDecoration(
-                        color: AppColor.dynamicColor,
-                        borderRadius: BorderRadius.circular(5.r),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black12,
-                            offset: Offset(2, 2),
-                            blurRadius: 5.r,
-                          ),
-                        ],
-                      ),
-                      child: Center(
-                        child: Text(
-                          member.offeroffText.toString().toUpperCase(),
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.merriweather(
-                            fontSize: 12.sp,
+                    child: Center(
+                      child: Container(
+                        margin: EdgeInsets.zero,
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 6.w, vertical: 3.h),
+                        decoration: BoxDecoration(
+                          color: AppColor.dynamicColor,
+                          borderRadius:
+                          BorderRadius.circular(5.r),
+                        ),
+                        child: Text(member.offeroffText
+                            .toString()
+                            .toUpperCase(),
+                          style: TextStyle(
+                            color: Colors.white,
                             fontWeight: FontWeight.bold,
-                            color: AppColor().whiteColor,
+                            fontSize: 10.sp,
                           ),
                         ),
                       ),
+
                     ),
                   )
                 ],
@@ -217,7 +217,7 @@ class MembershipPage extends StatelessWidget {
                       children: [
                         Text(
                           member.membershipTitle.toString(),
-                          style: TextStyle(
+                          style: GoogleFonts.merriweather(
                               fontSize: 25.sp, fontWeight: FontWeight.bold),
                         ),
                         descriptionList.isEmpty
@@ -227,8 +227,9 @@ class MembershipPage extends StatelessWidget {
                           child: Text(
                             "• ${descriptionList.join('\n• ')}",
                             style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
+                              fontSize: 14.sp,
+                              //fontWeight: FontWeight.w500,
+                              color: AppColor().black80,
                             ),
                           ),
                         ),
@@ -241,7 +242,7 @@ class MembershipPage extends StatelessWidget {
                     padding: EdgeInsets.all(10.0.h),
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: Colors.grey.withOpacity(0.1),
+                      color: Colors.grey[100]?.withOpacity(0.5),
                       borderRadius: BorderRadius.only(
                         bottomLeft: Radius.circular(5.r),
                         bottomRight: Radius.circular(5.r),
@@ -249,12 +250,28 @@ class MembershipPage extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        Text(
-                          '\$${member.membershipPricing}/month',
-                          style: TextStyle(
-                              fontSize: 16.sp,
-                              color: Colors.black,
-                              decoration: TextDecoration.none),
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: '\$${member.membershipPricing}',
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  decoration: TextDecoration.none,
+                                ),
+                              ),
+                              TextSpan(
+                                text: '/month',
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  color: Colors.black, // Or any other color for "month"
+                                  decoration: TextDecoration.none,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                         SizedBox(width: 10),
                         Spacer(),

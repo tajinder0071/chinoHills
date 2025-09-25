@@ -129,8 +129,7 @@ Future hitAllTreatmentDetailsAPI(var id) async {
   } on SocketException {
     throw Exception('No Internet Connection');
   }
-}
-// Hit the PackagesDetails API
+}// Hit the PackagesDetails API
 Future hitPackagesDetailsAPI(var id) async {
   var clientId = await localStorage.getCId();
   var userId = await localStorage.getUId();

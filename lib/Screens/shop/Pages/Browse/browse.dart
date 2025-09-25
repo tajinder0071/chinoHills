@@ -64,11 +64,7 @@ class BrowsePage extends StatelessWidget {
                       binding: CommonBinding(),
                       transition: Transition.fadeIn,
                       duration: Duration(milliseconds: 500),
-                      arguments:
-                      shopController.browseDetailModel.data ==
-                          null
-                          ? 0
-                          : shopController.browseDetailModel.data!.headerDetails!.browseServices);
+                      arguments: shopController.browseDetailModel.data == null ? 0 : shopController.browseDetailModel.data!.headerDetails!.browseServices);
                 },
                 child: Stack(
                   children: [
@@ -154,8 +150,7 @@ class BrowsePage extends StatelessWidget {
                               SizedBox(height: 5.h),
                               Text(
                                 shopController.browseDetailModel.data!
-                                    .headerDetails ==
-                                    null
+                                    .headerDetails == null
                                     ? ""
                                     : "${shopController.browseDetailModel.data!.headerDetails!.promotiondetails}",
                                 style: GoogleFonts.poppins(
@@ -164,7 +159,7 @@ class BrowsePage extends StatelessWidget {
                                     fontWeight: FontWeight.w500),
                               ),
                               SizedBox(height: 10.h),
-                              Container(
+                              shopController.browseDetailModel.data!.headerDetails!.browseServices!.isEmpty ? SizedBox.shrink() : Container(
                                 padding: EdgeInsets.only(
                                     left: 20.w,
                                     right: 20.w,
