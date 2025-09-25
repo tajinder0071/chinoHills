@@ -47,26 +47,16 @@ class CommonReferWidget extends StatelessWidget {
             isOutlineButton: true,
             onTap: () async {
               final box = context.findRenderObject() as RenderBox?;
-              /* await Share.share(
+              await Share.share(
                 Platform.isAndroid
                     ? "https://play.google.com/store/apps/details?id=com.app.nima"
                     : "https://apps.apple.com/us/app/nima-newport/id6745820609",
-                subject: "",
+                subject: "Discover Nima – Book appointments & packages easily", // iOS requires non-empty title
                 sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
-              );*/
-              await Share.shareXFiles(
-                [
-                  XFile(
-                    Platform.isAndroid
-                        ? "https://play.google.com/store/apps"
-                        : "https://apps.apple.com/us/app",
-                  ),
-                ],
-                sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size
               );
             },
             buttonName: "Send to a friend",
-          ),
+          )
         ],
       ),
     );
