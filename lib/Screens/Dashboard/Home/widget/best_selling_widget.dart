@@ -189,21 +189,27 @@ class BestSellingWidget extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    padding:
-                    EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
-                    margin: EdgeInsets.only(left: 5.w),
-                    decoration: BoxDecoration(
-                        color: AppColor.dynamicColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(4.r)),
-                    child: Text(
-                      type.toUpperCase(),
-                      style: GoogleFonts.roboto(
-                          color: AppColor.dynamicColor,
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.bold),
-                    ),
+              Padding(
+                padding: EdgeInsets.only(left: 5),
+                child: Container(
+                padding: EdgeInsets.symmetric(
+                horizontal: 6.w, vertical: 3.h),
+                decoration: BoxDecoration(
+                  color: AppColor.dynamicColor
+                      .withOpacity(.1),
+                  borderRadius:
+                  BorderRadius.circular(5.r),
+                ),
+                child: Text(
+                  type.toUpperCase(),
+                  style: GoogleFonts.roboto(
+                    color: AppColor.dynamicColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 10.sp,
                   ),
+                ),
+                            ),
+              ),
                   SizedBox(height: 10.h),
                   SizedBox(
                       height: 50,

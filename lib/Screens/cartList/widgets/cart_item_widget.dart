@@ -161,20 +161,23 @@ class RewardItemCard extends StatelessWidget {
                 ),
                 SizedBox(height: 5.0.h),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                  decoration: BoxDecoration(
-                    color: AppColor.dynamicColor.withAlpha(20),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    typeLabel,
-                    style: GoogleFonts.roboto(
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.bold,
-                      color: AppColor.dynamicColor,
+                    padding: EdgeInsets.symmetric(
+                        horizontal: 6.w, vertical: 3.h),
+                    decoration: BoxDecoration(
+                      color: AppColor.dynamicColor
+                          .withOpacity(.1),
+                      borderRadius:
+                      BorderRadius.circular(5.r),
+                    ),
+                    child: Text(
+                      typeLabel,
+                      style: GoogleFonts.roboto(
+                        color: AppColor.dynamicColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 10.sp,
+                      ),
                     ),
                   ),
-                ),
                 SizedBox(height: 10.h),
                 Row(
                   children: [

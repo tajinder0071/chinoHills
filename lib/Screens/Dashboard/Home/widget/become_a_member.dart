@@ -217,7 +217,8 @@ class BecomeAMember extends StatelessWidget {
                                             fontSize: 10.sp,
                                           ),
                                         ),
-                                      ),)
+                                      ),
+                                    )
                                   ],
                                 )),
                             SizedBox(
@@ -235,9 +236,6 @@ class BecomeAMember extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                            ),
-                            SizedBox(
-                              height: 5.h,
                             ),
                             Padding(
                               padding:
