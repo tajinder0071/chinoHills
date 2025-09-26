@@ -242,7 +242,7 @@ class MembershipPage extends StatelessWidget {
                     padding: EdgeInsets.all(10.0.h),
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: Colors.grey[100]?.withOpacity(0.5),
+                      color:Colors.grey.withOpacity(0.05),
                       borderRadius: BorderRadius.only(
                         bottomLeft: Radius.circular(5.r),
                         bottomRight: Radius.circular(5.r),
