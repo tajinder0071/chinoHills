@@ -14,9 +14,9 @@ class OfferDetailModel {
       );
 
   Map<String, dynamic> toJson() => {
-    "success": success,
-    "data": data?.toJson(),
-  };
+        "success": success,
+        "data": data?.toJson(),
+      };
 }
 
 class Data {
@@ -47,47 +47,47 @@ class Data {
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-    image: json["image"],
-    promoCode: json["promoCode"],
-    treatments: json["treatments"] == null
-        ? []
-        : List<Treatment>.from(
-        json["treatments"]!.map((x) => Treatment.fromJson(x))),
-    description: json["description"],
-    discountValue: json["discount_value"],
-    title: json["title"],
-    packages: json["packages"] == null
-        ? []
-        : List<Package>.from(
-        json["packages"]!.map((x) => Package.fromJson(x))),
-    memberships: json["memberships"] == null
-        ? []
-        : List<Membership>.from(
-        json["memberships"]!.map((x) => Membership.fromJson(x))),
-    id: json["id"],
-    offerType: json["offer_type"],
-    discountType: json["discount_type"],
-  );
+        image: json["image"],
+        promoCode: json["promoCode"],
+        treatments: json["treatments"] == null
+            ? []
+            : List<Treatment>.from(
+                json["treatments"]!.map((x) => Treatment.fromJson(x))),
+        description: json["description"],
+        discountValue: json["discount_value"],
+        title: json["title"],
+        packages: json["packages"] == null
+            ? []
+            : List<Package>.from(
+                json["packages"]!.map((x) => Package.fromJson(x))),
+        memberships: json["memberships"] == null
+            ? []
+            : List<Membership>.from(
+                json["memberships"]!.map((x) => Membership.fromJson(x))),
+        id: json["id"],
+        offerType: json["offer_type"],
+        discountType: json["discount_type"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "image": image,
-    "promoCode": promoCode,
-    "treatments": treatments == null
-        ? []
-        : List<dynamic>.from(treatments!.map((x) => x.toJson())),
-    "description": description,
-    "discount_value": discountValue,
-    "title": title,
-    "packages": packages == null
-        ? []
-        : List<dynamic>.from(packages!.map((x) => x.toJson())),
-    "memberships": memberships == null
-        ? []
-        : List<dynamic>.from(memberships!.map((x) => x.toJson())),
-    "id": id,
-    "offer_type": offerType,
-    "discount_type": discountType,
-  };
+        "image": image,
+        "promoCode": promoCode,
+        "treatments": treatments == null
+            ? []
+            : List<dynamic>.from(treatments!.map((x) => x.toJson())),
+        "description": description,
+        "discount_value": discountValue,
+        "title": title,
+        "packages": packages == null
+            ? []
+            : List<dynamic>.from(packages!.map((x) => x.toJson())),
+        "memberships": memberships == null
+            ? []
+            : List<dynamic>.from(memberships!.map((x) => x.toJson())),
+        "id": id,
+        "offer_type": offerType,
+        "discount_type": discountType,
+      };
 }
 
 class Membership {
@@ -100,14 +100,14 @@ class Membership {
   });
 
   factory Membership.fromJson(Map<String, dynamic> json) => Membership(
-    membershipName: json["membership_name"],
-    membershipId: json["membership_id"],
-  );
+        membershipName: json["membership_name"],
+        membershipId: json["membership_id"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "membership_name": membershipName,
-    "membership_id": membershipId,
-  };
+        "membership_name": membershipName,
+        "membership_id": membershipId,
+      };
 }
 
 class Package {
@@ -120,14 +120,14 @@ class Package {
   });
 
   factory Package.fromJson(Map<String, dynamic> json) => Package(
-    packageName: json["package_name"],
-    packageId: json["package_id"],
-  );
+        packageName: json["package_name"],
+        packageId: json["package_id"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "package_name": packageName,
-    "package_id": packageId,
-  };
+        "package_name": packageName,
+        "package_id": packageId,
+      };
 }
 
 class Treatment {
@@ -142,21 +142,21 @@ class Treatment {
   });
 
   factory Treatment.fromJson(Map<String, dynamic> json) => Treatment(
-    variations: json["variations"] == null
-        ? []
-        : List<Variation>.from(
-        json["variations"]!.map((x) => Variation.fromJson(x))),
-    treatmentId: json["treatment_id"],
-    treatmentName: json["treatment_name"],
-  );
+        variations: json["variations"] == null
+            ? []
+            : List<Variation>.from(
+                json["variations"]!.map((x) => Variation.fromJson(x))),
+        treatmentId: json["treatment_id"],
+        treatmentName: json["treatment_name"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "variations": variations == null
-        ? []
-        : List<dynamic>.from(variations!.map((x) => x.toJson())),
-    "treatment_id": treatmentId,
-    "treatment_name": treatmentName,
-  };
+        "variations": variations == null
+            ? []
+            : List<dynamic>.from(variations!.map((x) => x.toJson())),
+        "treatment_id": treatmentId,
+        "treatment_name": treatmentName,
+      };
 }
 
 class Variation {
@@ -169,12 +169,12 @@ class Variation {
   });
 
   factory Variation.fromJson(Map<String, dynamic> json) => Variation(
-    variationId: json["variation_id"],
-    variationName: json["variation_name"],
-  );
+        variationId: json["variation_id"],
+        variationName: json["variation_name"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "variation_id": variationId,
-    "variation_name": variationName,
-  };
+        "variation_id": variationId,
+        "variation_name": variationName,
+      };
 }

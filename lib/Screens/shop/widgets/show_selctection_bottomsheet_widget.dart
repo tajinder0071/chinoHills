@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-
-import '../../../CSS/color.dart';
+import 'package:chino_hills/CSS/appTypography.dart';
+import 'package:chino_hills/CSS/color.dart';
 import '../Pages/Package Page/controller/package_cotroller.dart';
 import '../Pages/Treatment Page/controller/treatment_controller.dart';
 import 'bottom_button.dart';
@@ -65,16 +65,15 @@ class CommonBottomSheet extends StatelessWidget {
                         padding: EdgeInsets.all(8.r),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: AppColor().greyColor.withOpacity(0.1),
+                          color: AppColor().greyColor.withValues(alpha: 0.1),
                         ),
                         child: Icon(Icons.close, size: 20.r),
                       ),
                     ),
                     Text(
                       title.toUpperCase(),
-                      style: TextStyle(
+                      style: AppTypography.hostGroteskSemiBold.copyWith(
                         fontSize: 16.sp,
-                        fontWeight: FontWeight.w600,
                         letterSpacing: 0.5,
                       ),
                     ),
@@ -87,7 +86,7 @@ class CommonBottomSheet extends StatelessWidget {
               Divider(
                 height: 1.h,
                 thickness: 1.h,
-                color: AppColor().greyColor.withOpacity(0.1),
+                color: AppColor().greyColor.withValues(alpha: 0.1),
               ),
 
               Expanded(
@@ -107,17 +106,17 @@ class CommonBottomSheet extends StatelessWidget {
                       margin:
                           EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: AppColor().whiteColor,
                         borderRadius: BorderRadius.circular(12.r),
                         border: Border.all(
                           color: isSelected
-                              ? AppColor.dynamicColor.withOpacity(0.3)
-                              : AppColor().greyColor.withOpacity(0.1),
+                              ? AppColor.dynamicColor.withValues(alpha: 0.3)
+                              : AppColor().greyColor.withValues(alpha: 0.1),
                           width: 1.5.w,
                         ),
                       ),
                       child: Material(
-                        color: Colors.transparent,
+                        color: AppColor().transparent,
                         child: InkWell(
                           borderRadius: BorderRadius.circular(12.r),
                           onTap: isSortBy
@@ -145,12 +144,12 @@ class CommonBottomSheet extends StatelessWidget {
                                 horizontalTitleGap: 12.w,
                                 title: Text(
                                   title,
-                                  style: TextStyle(
+                                  style: AppTypography.hostGroteskSemiBold
+                                      .copyWith(
                                     fontSize: 15.sp,
-                                    fontWeight: FontWeight.w500,
                                     color: isSelected
                                         ? AppColor.dynamicColor
-                                        : Colors.black,
+                                        : AppColor().blackColor,
                                   ),
                                 ),
                                 leading: isSortBy
@@ -178,7 +177,7 @@ class CommonBottomSheet extends StatelessWidget {
                                         value:
                                             selectedOptions.contains(optionId),
                                         activeColor: AppColor.dynamicColor,
-                                        checkColor: Colors.white,
+                                        checkColor: AppColor().whiteColor,
                                         materialTapTargetSize:
                                             MaterialTapTargetSize.shrinkWrap,
                                         visualDensity: VisualDensity.compact,
@@ -190,7 +189,7 @@ class CommonBottomSheet extends StatelessWidget {
                                           width: 1.5.w,
                                           color: AppColor()
                                               .greyColor
-                                              .withOpacity(0.4),
+                                              .withValues(alpha: 0.4),
                                         ),
                                         onChanged: (bool? isChecked) async {
                                           setState(() {
@@ -218,10 +217,10 @@ class CommonBottomSheet extends StatelessWidget {
               ),
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColor().whiteColor,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: AppColor().blackColor.withValues(alpha: 0.05),
                       blurRadius: 8,
                       offset: Offset(0, -4),
                     )

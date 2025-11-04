@@ -1,15 +1,15 @@
-import 'package:chino_hills/Screens/Discover/widgets/discover_card_widget.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
-import '../../CSS/app_strings.dart';
+import 'package:chino_hills/CSS/app_strings.dart';
+import 'package:chino_hills/Screens/Discover/widgets/discover_card_widget.dart';
+import 'package:chino_hills/Screens/cartList/Controller/cart_controller.dart';
+import 'package:chino_hills/common_Widgets/no_record.dart';
+import 'package:chino_hills/loading/discover_loading_page.dart';
+import 'package:chino_hills/util/route_manager.dart';
 import '../../CSS/color.dart';
 import '../../common_Widgets/common_refer_widget.dart';
-import '../../common_Widgets/no_record.dart';
-import '../../loading/discover_loading_page.dart';
-import '../../util/route_manager.dart';
-import '../cartList/Controller/cart_controller.dart';
 import 'controller/discover_controller.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -29,16 +29,14 @@ class DiscoverPage extends StatelessWidget {
       init: Get.find<DiscoverController>()..fetchDiscoverList(),
       builder: (controller1) {
         return Scaffold(
-          backgroundColor: Colors.grey[200],
-          body: Stack(
-            children: [
-              controller1.load
-                  ? Shimmer.fromColors(
-                      baseColor: Colors.grey[300]!,
-                      highlightColor: Colors.grey[100]!,
-                      child: DiscoverLoadingPage(height: 340.h),
-                    )
-                  : (controller1.cardData.isEmpty)
+          backgroundColor: AppColor().transparent,
+          body: controller1.load
+              ? Shimmer.fromColors(
+                  baseColor: AppColor().greyColor.withValues(alpha: .3),
+                  highlightColor: AppColor().greyColor.withValues(alpha: .1),
+                  child: DiscoverLoadingPage(height: 340.h),
+                )
+              : (controller1.cardData.isEmpty)
                   ? Center(
                       child: NoRecord(
                         AppStrings.noDiscoverDataFound,
@@ -46,23 +44,15 @@ class DiscoverPage extends StatelessWidget {
                         AppStrings.weAreSorryNoDiscoverDataAvailable,
                       ),
                     )
-                  : LiquidPullToRefresh(
-                      animSpeedFactor: 1.5,
-                      springAnimationDurationInMilliseconds: 400,
-                      key: controller1.refreshIndicatorKey,
-                      color: AppColor.dynamicColor,
-                      showChildOpacityTransition: false,
-                      backgroundColor: Colors.white,
-                      onRefresh: controller1.handleRefresh,
-                      child: ListView(
-                        padding: EdgeInsets.only(top: 1.h),
+                  : SingleChildScrollView(
+                      child: Column(
                         children: [
+                          // Discover Cards
                           ...controller1.cardData.asMap().entries.map((entry) {
                             final index = entry.key;
                             final item = entry.value;
                             return CustomCardWidget(
                               index: index,
-                              // 👈 pass index
                               imageUrl: item.cloudUrl ?? '',
                               title: item.title ?? '',
                               headline: item.headline ?? '',
@@ -73,9 +63,8 @@ class DiscoverPage extends StatelessWidget {
                               isOffer: false,
                               offerExpiresText: "",
                               onTapCTA: () => item.callToAction == "Call Now"
-                                  ? controller1.callNumber(
-                                      item.customUrl.toString(),
-                                    )
+                                  ? controller1
+                                      .callNumber(item.customUrl.toString())
                                   : controller1.launchURL(item.customUrl),
                               onTapLearnMore: () => Get.toNamed(
                                 RouteManager.learnMore,
@@ -87,13 +76,11 @@ class DiscoverPage extends StatelessWidget {
                               isOfferApplied: false,
                             );
                           }),
-
+                          SizedBox(height: 10.h),
                           CommonReferWidget(),
                         ],
                       ),
                     ),
-            ],
-          ),
         );
       },
     );

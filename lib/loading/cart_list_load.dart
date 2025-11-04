@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shimmer/shimmer.dart';
 
 class CartListLoad extends StatelessWidget {
+  const CartListLoad({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
@@ -151,5 +153,153 @@ class TreatementLoad extends StatelessWidget {
                 Divider()
               ],
             ));
+  }
+}
+
+class HomePageLoad extends StatelessWidget {
+  const HomePageLoad({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    var mediaQuery = MediaQuery.of(context).size;
+
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade300,
+      highlightColor: Colors.grey.shade100,
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(16.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(height: mediaQuery.height * 0.005),
+
+              /// App Bar
+              Container(
+                height: 45.h,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+              ),
+              SizedBox(height: 10.h),
+
+              /// Image Section
+              Container(
+                height: 500.h,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+              ),
+
+              SizedBox(height: 10.h),
+
+              /// Reward Button
+              Container(
+                height: 45.h,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(30.r),
+                ),
+              ),
+              SizedBox(height: 8.h),
+
+              // Container(
+              //   height: 22.h,
+              //   width: 220.w,
+              //   decoration: BoxDecoration(
+              //     color: Colors.white,
+              //     borderRadius: BorderRadius.circular(12.r),
+              //   ),
+              // ),
+              // SizedBox(height: 16.h),
+              // Container(
+              //   height: 14.h,
+              //   width: double.infinity,
+              //   decoration: BoxDecoration(
+              //     color: Colors.white,
+              //     borderRadius: BorderRadius.circular(8.r),
+              //   ),
+              // ),
+              // SizedBox(height: 8.h),
+              // Container(
+              //   height: 14.h,
+              //   width: 150.w,
+              //   decoration: BoxDecoration(
+              //     color: Colors.white,
+              //     borderRadius: BorderRadius.circular(8.r),
+              //   ),
+              // ),
+              // SizedBox(height: 20.h),
+              // /// Rewards button
+              // Container(
+              //   height: 45.h,
+              //   width: 260.w,
+              //   decoration: BoxDecoration(
+              //     color: Colors.white,
+              //     borderRadius: BorderRadius.circular(30.r),
+              //   ),
+              // ),
+              //
+              // SizedBox(height: 20.h),
+              // Container(
+              //   height: 30.h,
+              //   width: 220.w,
+              //   decoration: BoxDecoration(
+              //     color: Colors.white,
+              //     borderRadius: BorderRadius.circular(25.r),
+              //   ),
+              // ),
+              // SizedBox(height: 10.h),
+              // Container(
+              //   height: 30.h,
+              //   width: double.infinity,
+              //   decoration: BoxDecoration(
+              //     color: Colors.white,
+              //     borderRadius: BorderRadius.circular(25.r),
+              //   ),
+              // ),
+              // SizedBox(height: 8.h),
+              // Container(
+              //   height: 30.h,
+              //   width: 150.w,
+              //   decoration: BoxDecoration(
+              //     color: Colors.white,
+              //     borderRadius: BorderRadius.circular(25.r),
+              //   ),
+              // ),
+              // SizedBox(height: 20.h),
+              //
+              // /// Image Placeholder
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              //   children: [
+              //     Container(
+              //       height: 120.h,
+              //       width: 150.w,
+              //       decoration: BoxDecoration(
+              //         color: Colors.white,
+              //         borderRadius: BorderRadius.circular(8.r),
+              //       ),
+              //     ),
+              //     Container(
+              //       height: 120.h,
+              //       width: 150.w,
+              //       decoration: BoxDecoration(
+              //         color: Colors.white,
+              //         borderRadius: BorderRadius.circular(8.r),
+              //       ),
+              //     ),
+              //   ],
+              // ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

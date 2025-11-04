@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import '../../../CSS/color.dart';
-import 'order_status_badge.dart';
+import 'package:chino_hills/CSS/appTypography.dart';
+import 'package:chino_hills/CSS/color.dart';
 
 class BooksOrderSummaryCard extends StatelessWidget {
   final String orderId;
@@ -29,7 +28,7 @@ class BooksOrderSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final currency = NumberFormat.simpleCurrency().format(totalAmount);
-
+    DateTime parsedDate = DateFormat('MMMM, dd yyyy HH:mm:ss').parse(orderDate);
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -47,48 +46,45 @@ class BooksOrderSummaryCard extends StatelessWidget {
             ),
           ],
         ),
-
         child: Column(
           children: [
             Row(
               children: [
-                Icon(Icons.receipt_long, color: Colors.blueGrey, size: 22.sp),
+                Icon(Icons.receipt_long, size: 22.sp),
                 SizedBox(width: 8.w),
-                Text(
-                  "Order Summary",
-                  style: GoogleFonts.merriweather(
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
+                Text("Order Summary",
+                    style: AppTypography.galanoGrostesqueSemiBold.copyWith(
+                      fontSize: 15.sp,
+                      color: Colors.black87,
+                    )),
                 Spacer(),
                 CircleAvatar(
                   radius: 16.r,
                   backgroundColor: AppColor().background,
-                  child: Icon(
-                    Icons.arrow_forward_ios_rounded,
-                    size: 14.h,
-                    color: AppColor.dynamicColor,
-                  ),
+                  child: Icon(Icons.arrow_forward_ios_rounded,
+                      size: 14.h, color: AppColor.dynamicColor),
                 ),
               ],
             ),
             Divider(height: 20.h, thickness: 1, color: Colors.grey.shade300),
             SizedBox(height: 4.h),
-
             _buildInfoRow("Order ID", orderId),
             _buildInfoRow("Amount", currency),
-            _buildInfoRow("Date", orderDate),
+            _buildInfoRow("Date", DateFormat('dd-MMM yyyy').format(parsedDate)),
             // _buildInfoRow("Items", totalItems.toString()),
             SizedBox(height: 12.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Status", style: labelStyle),
+                Text("Status",
+                    style: AppTypography.hostGroteskSemiBold.copyWith(
+                      fontSize: 13.sp,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w500,
+                    )),
                 Text(
                   status.toUpperCase(),
-                  style: GoogleFonts.roboto(
+                  style: AppTypography.hostGroteskRegular.copyWith(
                     color: AppColor.dynamicColor,
                     fontWeight: FontWeight.w600,
                     fontSize: 12.sp,
@@ -108,42 +104,23 @@ class BooksOrderSummaryCard extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title, style: labelStyle),
+          Text(title,
+              style: AppTypography.hostGroteskSemiBold.copyWith(
+                fontSize: 13.sp,
+                color: Colors.grey,
+                fontWeight: FontWeight.w500,
+              )),
           Text(
             value,
-            style: valueStyle.copyWith(color: Colors.black87),
+            style: AppTypography.hostGroteskSemiBold.copyWith(
+              color: Colors.black87,
+              fontSize: 14.sp,
+            ),
             overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
     );
   }
-
-  // Widget _buildRow(String label, String value) {
-  //   return Row(
-  //     children: [
-  //       Expanded(flex: 2, child: Text(label, style: labelStyle)),
-  //       Expanded(
-  //         flex: 3,
-  //         child: Text(
-  //           value,
-  //           style: valueStyle,
-  //           overflow: TextOverflow.ellipsis,
-  //           maxLines: 1,
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
-
-  TextStyle get labelStyle => GoogleFonts.merriweather(
-    fontSize: 13.sp,
-    color: Colors.grey,
-    fontWeight: FontWeight.w500,
-  );
-
-  TextStyle get valueStyle =>
-      GoogleFonts.roboto(fontSize: 14.sp, fontWeight: FontWeight.w600);
 }
-
 //add shadow on all sides

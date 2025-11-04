@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:chino_hills/Screens/shop/Pages/Package%20Page/controller/package_cotroller.dart';
+
 import '../../../../../CSS/color.dart';
 import '../../../../../Model/package_details_model.dart';
 import '../../../../../util/common_page.dart';
-import '../controller/package_cotroller.dart';
 
 class PackageBottomSheet extends StatelessWidget {
   final VoidCallback onApply;
@@ -73,8 +74,8 @@ class PackageBottomSheet extends StatelessWidget {
                     var mPrice = memPrice * pkgQty;
                     return _buildServiceOption("$pkgQty package", pkgPrice,
                         controller.selectedIndex == index, () {
-                          controller.selectTreatment(index, pkgPrice, mPrice);
-                        }, mPrice);
+                      controller.selectTreatment(index, pkgPrice, mPrice);
+                    }, mPrice);
                   },
                 );
               },
@@ -110,18 +111,18 @@ class PackageBottomSheet extends StatelessWidget {
                       ),
                       child: co.isAddingCart
                           ? Center(
-                        child: CircularProgressIndicator(
-                          color: AppColor().whiteColor,
-                        ),
-                      )
+                              child: CircularProgressIndicator(
+                                color: AppColor().whiteColor,
+                              ),
+                            )
                           : Text(
-                        "Add To Cart",
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          color: AppColor().whiteColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                              "Add To Cart",
+                              style: TextStyle(
+                                fontSize: 16.sp,
+                                color: AppColor().whiteColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                     ),
                   ),
                 ),
@@ -160,7 +161,7 @@ Widget _buildServiceOption(String title, var originalPrice, bool isSelected,
           child: RichText(
             text: TextSpan(
               style:
-              GoogleFonts.merriweather(fontSize: 12.sp, color: Colors.grey),
+                  GoogleFonts.merriweather(fontSize: 12.sp, color: Colors.grey),
               children: [
                 TextSpan(
                   text: "",
@@ -175,10 +176,10 @@ Widget _buildServiceOption(String title, var originalPrice, bool isSelected,
                 memberPrice.toString() == '0'
                     ? TextSpan(text: '')
                     : TextSpan(
-                  text: "  |  ${formatCurrency(memberPrice)} Member",
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold),
-                ),
+                        text: "  |  ${formatCurrency(memberPrice)} Member",
+                        style: TextStyle(
+                            color: Colors.black, fontWeight: FontWeight.bold),
+                      ),
               ],
             ),
           ),

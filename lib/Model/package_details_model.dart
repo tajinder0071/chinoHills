@@ -26,6 +26,7 @@ class PackageDetailsModel {
 
 class Package {
   String? offeroffText;
+  String? offerName;
   var price;
   MembershipInfo? membershipInfo;
   List<dynamic>? instructions;
@@ -40,6 +41,7 @@ class Package {
 
   Package({
     this.offeroffText,
+    this.offerName,
     this.price,
     this.membershipInfo,
     this.instructions,
@@ -54,8 +56,9 @@ class Package {
   });
 
   factory Package.fromJson(Map<String, dynamic> json) => Package(
-        offeroffText: json["offeroffText"],
-        price: json["price"],
+    offeroffText: json["offeroffText"],
+    offerName: json["offerName"],
+    price: json["price"],
         membershipInfo: json["membership_info"] == null
             ? null
             : MembershipInfo.fromJson(json["membership_info"]),
@@ -83,7 +86,8 @@ class Package {
 
   Map<String, dynamic> toJson() => {
         "offeroffText": offeroffText,
-        "price": price,
+    "offerName": offerName,
+    "price": price,
         "membership_info": membershipInfo?.toJson(),
         "instructions": instructions == null
             ? []

@@ -1,13 +1,12 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:icons_plus/icons_plus.dart';
+import 'package:chino_hills/CSS/appTypography.dart';
+import 'package:chino_hills/CSS/color.dart';
+import 'package:chino_hills/common_Widgets/common_button_widget.dart';
+import 'package:chino_hills/util/route_manager.dart';
 import 'package:share_plus/share_plus.dart';
-
-import '../../../CSS/color.dart';
-import '../../../util/route_manager.dart';
 
 class ReferFriendPage extends StatefulWidget {
   var rewardPoints;
@@ -33,12 +32,14 @@ class _ReferFriendPageState extends State<ReferFriendPage> {
               SizedBox(height: 10.h),
               Text(
                 "Sharing is caring!",
-                style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.bold),
+                style: AppTypography.galanoGrostesqueSemiBold
+                    .copyWith(fontSize: 22.sp, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 10.h),
               Text(
                 "Send a friend \$${widget.rewardPoints ?? "Not available"} Towards Any Service !",
-                style: TextStyle(fontSize: 16.sp, color: Colors.grey),
+                style: AppTypography.hostGroteskSemiBold
+                    .copyWith(fontSize: 16.sp, color: Colors.grey),
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 20.h),
@@ -52,36 +53,12 @@ class _ReferFriendPageState extends State<ReferFriendPage> {
                 ),
               ),
               SizedBox(height: 60.h),
-              Container(
-                width: double.infinity,
-                height: 50.h,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10.r),
-                  color: AppColor.dynamicColor,
-                ),
-                child: ElevatedButton(
-                  onPressed: () {
-                    Get.log("Refer Pressed");
-                    onShare(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                    disabledBackgroundColor: Colors.transparent,
-                    overlayColor: Colors.transparent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.r),
-                    ),
-                  ),
-                  child: Text(
-                    "Refer a friend",
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      color: AppColor().whiteColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
+              CommonButtonWidget(
+                onTap: () {
+                  onShare(context);
+                },
+                buttonName: "Refer a friend",
+                innerColor: AppColor.dynamicColor,
               ),
               SizedBox(height: 10.h),
               TextButton(
@@ -89,7 +66,8 @@ class _ReferFriendPageState extends State<ReferFriendPage> {
                     Get.offAllNamed(RouteManager.dashBoardPage, arguments: 0),
                 child: Text(
                   "Maybe later",
-                  style: TextStyle(fontSize: 16, color: AppColor.dynamicColor),
+                  style: AppTypography.hostGroteskRegular
+                      .copyWith(fontSize: 16, color: AppColor.dynamicColor),
                 ),
               ),
             ],
@@ -102,21 +80,11 @@ class _ReferFriendPageState extends State<ReferFriendPage> {
   //? Todo ?? Here We add xLetter Nima App And His Functionalities...
   void onShare(BuildContext context) async {
     final box = context.findRenderObject() as RenderBox?;
-    await Share.shareXFiles(
-        [
-          XFile(
-            Platform.isAndroid
-                ? "https://play.google.com/store/apps"
-                : "https://apps.apple.com/us/app",
-          ),
-        ],
-        sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size
-    );
-    /* await Share.share(
-      "https://play.google.com/store/apps/details",
+    await Share.share(
+      "https://play.google.com/store/apps/details?id=com.app.nima",
       subject:
           "Send a friend \$${widget.rewardPoints ?? "Not available"}\nTowards Any Service!",
       sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
-    );*/
+    );
   }
 }

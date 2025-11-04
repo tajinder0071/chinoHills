@@ -1,6 +1,6 @@
+import 'package:chino_hills/CSS/color.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
-import '../CSS/color.dart';
 
 class OrderListLoad extends StatelessWidget {
   const OrderListLoad({super.key});

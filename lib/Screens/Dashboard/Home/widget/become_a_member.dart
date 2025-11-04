@@ -2,105 +2,110 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:chino_hills/CSS/app_strings.dart';
 import 'package:chino_hills/CSS/color.dart';
 import 'package:chino_hills/CSS/image_page.dart';
 import 'package:chino_hills/Model/home_model.dart';
+import 'package:chino_hills/common_Widgets/common_badge_container.dart';
+import '../../../../CSS/appTypography.dart';
 import '../../../../common_Widgets/common_button_widget.dart';
-import '../../../../common_Widgets/common_horizontal_list.dart';
 import '../../../../common_Widgets/common_network_image_widget.dart';
+import '../../../../common_Widgets/coomon_horizontal_list.dart';
 import '../../../../loading/become_a_member_loading.dart';
 import '../../../../util/common_page.dart';
 import '../../../../util/route_manager.dart';
 import '../../../shop/Pages/Package Page/controller/package_cotroller.dart';
+
 class BecomeAMember extends StatelessWidget {
   final VoidCallback onPressed;
   List<Membership>? data;
   List<MembershipPerk>? perks;
   var membershipPerkHeader;
   final PackageController controller = Get.put(PackageController());
+  final bool isBrowse;
 
   BecomeAMember(
       {super.key,
-        required this.onPressed,
-        this.data,
-        this.perks,
-        this.membershipPerkHeader});
+      required this.onPressed,
+      this.data,
+      this.perks,
+      this.membershipPerkHeader,
+      required this.isBrowse});
 
   @override
   Widget build(BuildContext context) {
-    print(controller.memberships.length);
     return data!.isEmpty || data == null
         ? Container(
-      padding: EdgeInsets.only(top: 5.h, left: 0.w, bottom: 10.0.h),
-      width: double.infinity,
-      decoration: BoxDecoration(color: AppColor.dynamicColor),
-      child: Column(
-        children: [
-          controller.memberships.isEmpty
-              ? SizedBox.shrink()
-              : SizedBox(height: 20.h),
-          controller.memberships.isEmpty
-              ? SizedBox.shrink()
-              : Icon(
-            Icons.verified_outlined,
-            color: AppColor().whiteColor,
-            size: isTablet(context) ? 40.h : 30.h,
-          ),
-          controller.memberships.isEmpty
-              ? SizedBox.shrink()
-              : SizedBox(height: 6.h),
-          // TODO: Make the title part reusable if used in other places
-          controller.memberships.isEmpty
-              ? SizedBox.shrink()
-              : _buildTitle(),
-          SizedBox(height: 20.h),
-          // TODO: Refactor membership list into a separate widget for reusability
-          controller.memberships.isEmpty
-              ? SizedBox.shrink()
-              : _buildMembershipList(context),
-          SizedBox(height: 20.h),
-          // TODO: Extract Membership Perks Section into a reusable widget
-          _buildMembershipPerks(),
-          SizedBox(height: 20.h),
-          // TODO: Reuse this button in other areas, as it might be a common action
-          _buildShopAllButton(),
-          SizedBox(height: 20.h),
-        ],
-      ),
-    )
+            padding: EdgeInsets.only(top: 5.h, left: 20.w, bottom: 10.h),
+            width: double.infinity,
+            decoration: BoxDecoration(color: AppColor.dynamicColor),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                controller.memberships.isEmpty
+                    ? SizedBox.shrink()
+                    : SizedBox(height: 10.h),
+                controller.memberships.isEmpty
+                    ? SizedBox.shrink()
+                    : CommonBadgeContainer(
+                        icon: Icons.check_rounded,
+                        iconSize: 15.h,
+                      ),
+                controller.memberships.isEmpty
+                    ? SizedBox.shrink()
+                    : SizedBox(height: 15.h),
+                // TODO: Make the title part reusable if used in other places
+                controller.memberships.isEmpty
+                    ? SizedBox.shrink()
+                    : _buildTitle(),
+                SizedBox(height: 10.h),
+                // TODO: Refactor membership list into a separate widget for reusability
+                controller.memberships.isEmpty
+                    ? SizedBox.shrink()
+                    : _buildMembershipList(context),
+                SizedBox(height: 20.h),
+                // TODO: Extract Membership Perks Section into a reusable widget
+                _buildMembershipPerks(),
+                SizedBox(height: 15.h),
+                // TODO: Reuse this button in other areas, as it might be a common action
+                _buildShopAllButton(),
+                SizedBox(height: 20.h),
+              ],
+            ),
+          )
         : Container(
-      padding: EdgeInsets.only(top: 5.h, left: 0.w, bottom: 10.0.h),
-      width: double.infinity,
-      decoration: BoxDecoration(color: AppColor.dynamicColor),
-      child: Column(
-        children: [
-          data!.isEmpty ? SizedBox.shrink() : SizedBox(height: 15.h),
-          data!.isEmpty
-              ? SizedBox.shrink()
-              : Icon(
-            Icons.verified_outlined,
-            color: AppColor().whiteColor,
-            size: isTablet(context) ? 40.h : 30.h,
-          ),
-          data!.isEmpty ? SizedBox.shrink() : SizedBox(height: 6.h),
-          // TODO: Make the title part reusable if used in other places
-          data!.isEmpty ? SizedBox.shrink() : _buildTitle(),
-          SizedBox(height: 20.h),
-          // TODO: Refactor membership list into a separate widget for reusability
-          data!.isEmpty
-              ? SizedBox.shrink()
-              : _buildMembershipList(context),
-          SizedBox(height: 20.h),
-          // TODO: Extract Membership Perks Section into a reusable widget
-          _buildMembershipPerks(),
-          SizedBox(height: 20.h),
-          // TODO: Reuse this button in other areas, as it might be a common action
-          _buildShopAllButton(),
-          SizedBox(height: 20.h),
-        ],
-      ),
-    );
+            padding: EdgeInsets.only(top: 35.h, left: 20.w, bottom: 10.h),
+            width: double.infinity,
+            decoration: BoxDecoration(color: AppColor().transparent),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                data!.isEmpty ? SizedBox.shrink() : SizedBox(height: 15.h),
+                data!.isEmpty
+                    ? SizedBox.shrink()
+                    : CommonBadgeContainer(
+                        icon: Icons.check_rounded,
+                        iconSize: 15.h,
+                      ),
+                data!.isEmpty ? SizedBox.shrink() : SizedBox(height: 6.h),
+                // TODO: Make the title part reusable if used in other places
+                data!.isEmpty ? SizedBox.shrink() : _buildTitle(),
+                SizedBox(height: 20.h),
+                // TODO: Refactor membership list into a separate widget for reusability
+                data!.isEmpty
+                    ? SizedBox.shrink()
+                    : _buildMembershipList(context),
+                SizedBox(height: 25.h),
+                // TODO: Extract Membership Perks Section into a reusable widget
+                _buildMembershipPerks(),
+                SizedBox(height: 60.h),
+                // TODO: Reuse this button in other areas, as it might be a common action
+                _buildShopAllButton(),
+                SizedBox(height: 20.h),
+              ],
+            ),
+          );
   }
 
   // TODO: Make this title widget reusable
@@ -108,15 +113,19 @@ class BecomeAMember extends StatelessWidget {
     return GetBuilder<PackageController>(
         init: PackageController(),
         builder: (controller) {
-          return Text(
-            textAlign: TextAlign.center,
-            controller.browseDetailModel.data == null
-                ? membershipPerkHeader
-                : controller.browseDetailModel.data!.membershipHeader,
-            style: GoogleFonts.merriweather(
-                fontSize: 25.sp,
-                fontWeight: FontWeight.bold,
-                color: AppColor().whiteColor),
+          return Padding(
+            padding: EdgeInsets.only(right: 10.w),
+            child: Text(
+                textAlign: TextAlign.start,
+                controller.browseDetailModel.data == null
+                    ? membershipPerkHeader
+                    : controller.browseDetailModel.data!.membershipHeader,
+                style: AppTypography.galanoGrostesqueSemiBold.copyWith(
+                    fontSize: 22.sp,
+                    // fontWeight: FontWeight.bold,
+                    color: AppColor().whiteColor,
+                    height: 1.h // default color
+                    )),
           );
         });
   }
@@ -128,311 +137,377 @@ class BecomeAMember extends StatelessWidget {
         builder: (controller) {
           return controller.bload
               ? SizedBox(
-              height: isTablet(context)
-                  ? MediaQuery.of(context).size.height * .35
-                  : MediaQuery.of(context).size.height < 812
-                  ? MediaQuery.of(context).size.height * .31
-                  : 230.h,
-              child: BecomeAMemberLoading())
+                  height: isBrowse
+                      ? isTablet(context)
+                          ? MediaQuery.of(context).size.height * .32
+                          : MediaQuery.of(context).size.height < 812
+                              ? MediaQuery.of(context).size.height * .29
+                              : 210.h
+                      : isTablet(context)
+                          ? MediaQuery.of(context).size.height * .39
+                          : MediaQuery.of(context).size.height < 812
+                              ? MediaQuery.of(context).size.height * .35
+                              : 250.h,
+                  child: BecomeAMemberLoading())
               : data!.isEmpty
-              ? CommonHorizontalList(
-              itemWidth: 200.w,
-              height: isTablet(context)
-                  ? MediaQuery.of(context).size.height * .35
-                  : MediaQuery.of(context).size.height < 812
-                  ? MediaQuery.of(context).size.height * .31
-                  : 235.h,
-              items: controller.memberships,
-              itemBuilder: (context, member, index) {
-                Widget imageWidget;
-                if (member.membershipImage == null ||
-                    member.membershipImage!.isEmpty) {
-                  imageWidget = Container(
-                    height: 150.h,
-                    width: double.infinity,
-                    color: AppColor.geryBackGroundColor,
-                    child: Image.asset(
-                      AppImages.noAvailableImage,
-                      color: AppColor().blackColor,
-                      fit: BoxFit.cover,
-                    ),
-                  );
-                } else {
-                  imageWidget = Stack(
-                    children: [
-                      CommonNetworkImageWidget(
-                        imageUrl: member.membershipImage.toString(),
-                        height: 150.0.h,
-                        width: double.infinity,
-                        borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(6.0.r)),
-                        fit: BoxFit.cover,
-                      ),
-                    ],
-                  );
-                }
-                return InkWell(
-                    onTap: () {
-                      Get.toNamed(
-                        RouteManager.membersShipDetailsPage,
-                        arguments: member.membershipId,
-                        parameters: {"onlyShow": "0"},
-                      );
-                    },
-                    child: Container(
-                        clipBehavior: Clip.antiAlias,
-                        width: 190.w,
-                        margin: EdgeInsets.only(left: 5.h),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5.r),
-                          color: AppColor().whiteColor,
-                        ),
-                        child: ListView(
-                          physics: NeverScrollableScrollPhysics(),
-                          children: [
-                            Center(
-                                child: Stack(
-                                  children: [
-                                    imageWidget,
-                                    member.offeroffText!.isEmpty
-                                        ? SizedBox.shrink()
-                                        : Positioned(
-                                      top: 10.h,
-                                      left: 5.w,
-                                      child: Container(
-                                        margin: EdgeInsets.zero,
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 6.w, vertical: 3.h),
-                                        decoration: BoxDecoration(
-                                          color: AppColor.dynamicColor,
-                                          borderRadius:
-                                          BorderRadius.circular(5.r),
-                                        ),
-                                        child: Text(member.offeroffText
-                                            .toString()
-                                            .toUpperCase(),
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 10.sp,
-                                          ),
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                )),
-                            SizedBox(
-                              height: 50.h,
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 8.w, vertical: 5.h),
-                                child: Text(
-                                  member.membershipTitle.toString(),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.merriweather(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.w900,
+                  ? CommonHorizontalList(
+                      itemWidth: 330.w,
+                      height: isBrowse
+                          ? isTablet(context)
+                              ? MediaQuery.of(context).size.height * .35
+                              : MediaQuery.of(context).size.height < 812
+                                  ? MediaQuery.of(context).size.height * .29
+                                  : 210.h
+                          : isTablet(context)
+                              ? MediaQuery.of(context).size.height * .39
+                              : MediaQuery.of(context).size.height < 812
+                                  ? MediaQuery.of(context).size.height * .35
+                                  : 250.h,
+                      items: controller.memberships,
+                      itemBuilder: (context, member, index) {
+                        final hasImage = member.membershipImage != null &&
+                            member.membershipImage!.isNotEmpty;
+                        final imageWidget = ClipRRect(
+                          borderRadius: BorderRadius.circular(12.r),
+                          child: hasImage
+                              ? CommonNetworkImageWidget(
+                                  imageUrl: member.membershipImage.toString(),
+                                  height: double.infinity,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                  borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(6.0.r)),
+                                )
+                              : Container(
+                                  color: AppColor.geryBackGroundColor,
+                                  child: Image.asset(
+                                    AppImages.noAvailableImage,
+                                    fit: BoxFit.cover,
+                                    color: AppColor().blackColor,
                                   ),
                                 ),
-                              ),
+                        );
+
+                        return InkWell(
+                          splashColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          hoverColor: Colors.transparent,
+                          focusColor: Colors.transparent,
+                          onTap: () {
+                            Get.toNamed(
+                              RouteManager.membersShipDetailsPage,
+                              arguments: member.membershipId,
+                              parameters: {"onlyShow": "0"},
+                            );
+                          },
+                          child: Container(
+                            width: 220.w,
+                            margin: EdgeInsets.only(left: 8.w, right: 4.w),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16.r),
+                              color: AppColor().whiteColor,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 6,
+                                  offset: Offset(0, 3),
+                                )
+                              ],
                             ),
-                            Padding(
-                              padding:
-                              EdgeInsets.symmetric(horizontal: 8.w),
-                              child: Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        "\$${member.membershipPricing}",
-                                        style: GoogleFonts.roboto(
-                                          fontSize: 17.sp,
+                            clipBehavior: Clip.antiAlias,
+                            child: Stack(
+                              children: [
+                                Positioned.fill(child: imageWidget),
+                                Positioned.fill(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                        colors: [
+                                          Colors.black.withValues(alpha: 0.15),
+                                          Colors.black.withValues(alpha: 0.65),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                if (member.offeroffText != null &&
+                                    member.offeroffText!.isNotEmpty)
+                                  Positioned(
+                                    top: 10.h,
+                                    left: 10.w,
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 10.w, vertical: 5.h),
+                                      decoration: BoxDecoration(
+                                        color: AppColor.dynamicColor,
+                                        borderRadius:
+                                            BorderRadius.circular(20.r),
+                                      ),
+                                      child: Text(
+                                        member.offeroffText
+                                            .toString()
+                                            .toUpperCase(),
+                                        style: TextStyle(
+                                          fontFamily: 'galano-grotesque-alt',
+                                          color: Colors.white,
+                                          fontSize: 10.sp,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                      Text(
-                                        "/month",
-                                        style: GoogleFonts.roboto(
-                                          fontSize: 15.sp,
+                                    ),
+                                  ),
+                                Positioned(
+                                  left: 14.w,
+                                  right: 14.w,
+                                  bottom: 12.h,
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              member.membershipTitle.toString(),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                fontFamily:
+                                                    'galano-grotesque-alt',
+                                                color: Colors.white,
+                                                fontSize: 20.sp,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            SizedBox(height: 2.h),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  "\$${member.membershipPricing}",
+                                                  style: GoogleFonts.roboto(
+                                                    color: Colors.white,
+                                                    fontSize: 14.sp,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  "/Month",
+                                                  style: TextStyle(
+                                                    fontFamily: 'host-grotesk',
+                                                    color: Colors.white
+                                                        .withValues(alpha: 0.9),
+                                                    fontSize: 13.sp,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
                                         ),
-                                      )
+                                      ),
+                                      SizedBox(width: 8.w),
+                                      _circleButton(
+                                        icon: Icons.arrow_forward_ios_rounded,
+                                        color: Colors.white,
+                                        bgColor: AppColor.dynamicColor
+                                            .withValues(alpha: 0.9),
+                                        onTap: () {
+                                          Get.toNamed(
+                                            RouteManager.membersShipDetailsPage,
+                                            arguments: member.membershipId,
+                                            parameters: {"onlyShow": "0"},
+                                          );
+                                        },
+                                      ),
                                     ],
                                   ),
-                                  InkWell(
-                                    onTap: () {
-                                      Get.toNamed(
-                                        RouteManager
-                                            .membersShipDetailsPage,
-                                        arguments: member.membershipId,
-                                        parameters: {"onlyShow": "0"},
-                                      );
-                                    },
-                                    child: Icon(
-                                      Icons.navigate_next_rounded,
-                                      color: AppColor.dynamicColor,
-                                      size: 24.h,
-                                    ),
-                                  )
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
-                        )));
-              })
-              : CommonHorizontalList(
-              height: isTablet(context)
-                  ? MediaQuery.of(context).size.height * .35
-                  : MediaQuery.of(context).size.height < 812
-                  ? MediaQuery.of(context).size.height * .31
-                  : 235.h,
-              itemWidth: 200.w,
-              items: data!,
-              itemBuilder: (context, member, index) {
-                // var member = data![index];
-                Widget imageWidget;
-                if (member.membershipImage == null ||
-                    member.membershipImage!.isEmpty) {
-                  imageWidget = Container(
-                    height: 150.h,
-                    width: double.infinity,
-                    color: AppColor.geryBackGroundColor,
-                    child: Image.asset(
-                      AppImages.noAvailableImage,
-                      color: AppColor().blackColor,
-                      fit: BoxFit.cover,
-                    ),
-                  );
-                } else {
-                  imageWidget = Stack(
-                    children: [
-                      CommonNetworkImageWidget(
-                        imageUrl: member.membershipImage.toString(),
-                        height: 150.0.h,
-                        width: double.infinity,
-                        borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(6.0.r)),
-                        fit: BoxFit.cover,
-                      ),
-                    ],
-                  );
-                }
-                return InkWell(
-                  onTap: () {
-                    Get.toNamed(
-                      RouteManager.membersShipDetailsPage,
-                      arguments: member.membershipId,
-                      parameters: {"onlyShow": "0"},
-                    );
-                  },
-                  child: Container(
-                    clipBehavior: Clip.antiAlias,
-                    width: 190.w,
-                    margin: EdgeInsets.only(
-                      left: 5.h,
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5.r),
-                      color: AppColor().whiteColor,
-                    ),
-                    child: ListView(
-                      physics: NeverScrollableScrollPhysics(),
-                      children: [
-                        Center(
+                          ),
+                        );
+                      },
+                    )
+                  : CommonHorizontalList(
+                      height: isTablet(context)
+                          ? MediaQuery.of(context).size.height * .35
+                          : MediaQuery.of(context).size.height < 812
+                              ? MediaQuery.of(context).size.height * .31
+                              : 220.h,
+                      itemWidth: 330.w,
+                      items: data!,
+                      itemBuilder: (context, member, index) {
+                        final hasImage = member.membershipImage != null &&
+                            member.membershipImage!.isNotEmpty;
+                        final imageWidget = ClipRRect(
+                          borderRadius: BorderRadius.circular(12.r),
+                          child: hasImage
+                              ? CommonNetworkImageWidget(
+                                  imageUrl: member.membershipImage.toString(),
+                                  height: double.infinity,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                  borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(6.0.r)),
+                                )
+                              : Container(
+                                  color: AppColor.geryBackGroundColor,
+                                  child: Image.asset(
+                                    AppImages.noAvailableImage,
+                                    fit: BoxFit.cover,
+                                    color: AppColor().blackColor,
+                                  ),
+                                ),
+                        );
+
+                        return InkWell(
+                          splashColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          hoverColor: Colors.transparent,
+                          focusColor: Colors.transparent,
+                          onTap: () {
+                            Get.toNamed(
+                              RouteManager.membersShipDetailsPage,
+                              arguments: member.membershipId,
+                              parameters: {"onlyShow": "0"},
+                            );
+                          },
+                          child: Container(
+                            width: 220.w,
+                            margin: EdgeInsets.only(left: 8.w, right: 4.w),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16.r),
+                              color: AppColor().whiteColor,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 6,
+                                  offset: Offset(0, 3),
+                                )
+                              ],
+                            ),
+                            clipBehavior: Clip.antiAlias,
                             child: Stack(
                               children: [
-                                imageWidget,
-                                member.offeroffText!.isEmpty
-                                    ? SizedBox.shrink()
-                                    : Positioned(
-                                  top: 10.h,
-                                  left: 5.w,
+                                Positioned.fill(child: imageWidget),
+                                Positioned.fill(
                                   child: Container(
-                                    margin: EdgeInsets.zero,
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 6.w, vertical: 3.h),
                                     decoration: BoxDecoration(
-                                      color: AppColor.dynamicColor,
-                                      borderRadius:
-                                      BorderRadius.circular(5.r),
-                                    ),
-                                    child: Text(member.offeroffText
-                                        .toString()
-                                        .toUpperCase(),
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 10.sp,
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                        colors: [
+                                          Colors.black.withValues(alpha: 0.15),
+                                          Colors.black.withValues(alpha: 0.65),
+                                        ],
                                       ),
                                     ),
-                                  ),)
-                              ],
-                            )),
-                        SizedBox(
-                          height: 50.h,
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 8.w, vertical: 5.h),
-                            child: Text(
-                              member.membershipTitle.toString(),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.merriweather(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                        // Divider(),
-                        Padding(
-                          padding:
-                          EdgeInsets.symmetric(horizontal: 8.w),
-                          child: Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    "\$${member.membershipPricing}",
-                                    style: GoogleFonts.roboto(
-                                      fontSize: 17.sp,
-                                      fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                if (member.offeroffText != null &&
+                                    member.offeroffText!.isNotEmpty)
+                                  Positioned(
+                                    top: 10.h,
+                                    left: 10.w,
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 10.w, vertical: 5.h),
+                                      decoration: BoxDecoration(
+                                        color: AppColor.dynamicColor,
+                                        borderRadius:
+                                            BorderRadius.circular(20.r),
+                                      ),
+                                      child: Text(
+                                        member.offeroffText
+                                            .toString()
+                                            .toUpperCase(),
+                                        style: TextStyle(
+                                          fontFamily: 'galano-grotesque-alt',
+                                          color: Colors.white,
+                                          fontSize: 10.sp,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                  Text(
-                                    "/month",
-                                    style: GoogleFonts.roboto(
-                                      fontSize: 15.sp,
-                                    ),
-                                  )
-                                ],
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  Get.toNamed(
-                                    RouteManager.membersShipDetailsPage,
-                                    arguments: member.membershipId,
-                                    parameters: {"onlyShow": "0"},
-                                  );
-                                },
-                                child: Icon(
-                                  Icons.navigate_next_rounded,
-                                  color: AppColor.dynamicColor,
-                                  size: 24.h,
+                                Positioned(
+                                  left: 14.w,
+                                  right: 14.w,
+                                  bottom: 12.h,
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              member.membershipTitle.toString(),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: GoogleFonts.sarabun(
+                                                color: Colors.white,
+                                                fontSize: 20.sp,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            SizedBox(height: 2.h),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  "\$${member.membershipPricing}",
+                                                  style: GoogleFonts.roboto(
+                                                    color: Colors.white,
+                                                    fontSize: 14.sp,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  "/Month",
+                                                  style: TextStyle(
+                                                    fontFamily: 'host-grotesk',
+                                                    color: Colors.white
+                                                        .withValues(alpha: 0.9),
+                                                    fontSize: 13.sp,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(width: 8.w),
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          _circleButton(
+                                            icon: Icons.keyboard_arrow_right,
+                                            color: Colors.white,
+                                            bgColor: AppColor.dynamicColor
+                                                .withValues(alpha: 0.9),
+                                            onTap: () {
+                                              Get.toNamed(
+                                                RouteManager
+                                                    .membersShipDetailsPage,
+                                                arguments: member.membershipId,
+                                                parameters: {"onlyShow": "0"},
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              )
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              });
+                        );
+                      },
+                    );
         });
   }
 
@@ -442,54 +517,50 @@ class BecomeAMember extends StatelessWidget {
       return (controller.membershipPerk.isEmpty && perks!.isEmpty)
           ? SizedBox.shrink()
           : Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            AppStrings.membershipPerks,
-            style: GoogleFonts.roboto(
-              fontWeight: FontWeight.w900,
-              fontSize: 17.sp,
-              color: Colors.white,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 30.0, top: 10),
-            child: perks!.isEmpty
-            // We are showing this list for BROWSE PAGE ONLY
-                ? ListView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: controller.membershipPerk.length,
-              itemBuilder: (context, index) => PerkRow(
-                icon: controller.membershipPerk[index].membershipIcon ==
-                    'reward'
-                    ? Icons.card_giftcard
-                    : controller.membershipPerk[index].membershipIcon ==
-                    'calendar'
-                    ? Icons.calendar_month
-                    : Icons.local_offer_outlined,
-                text: controller.membershipPerk[index].membershipPerk
-                    .toString(),
-              ),
-            )
-            // We are showing this list for HOME PAGE ONLY
-                : ListView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: perks!.length,
-              itemBuilder: (context, index) => PerkRow(
-                icon: perks![index].membershipIcon == 'reward'
-                    ? Icons.card_giftcard
-                    : perks![index].membershipIcon == 'calendar'
-                    ? Icons.calendar_month
-                    : Icons.local_offer_outlined,
-                text: perks![index].membershipPerk.toString(),
-              ),
-            ),
-          ),
-        ],
-      );
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(AppStrings.membershipPerks,
+                    style: AppTypography.galanoGrostesqueSemiBold.copyWith(
+                        fontSize: 22.sp,
+                        // fontWeight: FontWeight.bold,
+                        color: AppColor().whiteColor,
+                        height: 1.h // default color
+                        )),
+                SizedBox(
+                  height: 10.h,
+                ),
+                SizedBox(
+                  height: 50.h, // enough to fit PerkRow
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: perks!.isEmpty
+                        ? controller.membershipPerk.length
+                        : perks!.length,
+                    itemBuilder: (context, index) => PerkRow(
+                      icon: perks!.isEmpty
+                          ? (controller.membershipPerk[index].membershipIcon ==
+                                  'reward'
+                              ? Icons.card_giftcard
+                              : controller.membershipPerk[index]
+                                          .membershipIcon ==
+                                      'calendar'
+                                  ? Iconsax.calendar
+                                  : Iconsax.tag)
+                          : (perks![index].membershipIcon == 'reward'
+                              ? Iconsax.gift
+                              : perks![index].membershipIcon == 'calendar'
+                                  ? Iconsax.calendar
+                                  : Iconsax.tag),
+                      text: perks!.isEmpty
+                          ? controller.membershipPerk[index].membershipPerk
+                              .toString()
+                          : perks![index].membershipPerk.toString(),
+                    ),
+                  ),
+                ),
+              ],
+            );
     });
   }
 
@@ -498,13 +569,35 @@ class BecomeAMember extends StatelessWidget {
       return Padding(
         padding: EdgeInsets.symmetric(horizontal: 20.0.w),
         child: CommonButtonWidget(
+          innerColor: AppColor.dynamicColor,
           onTap: () => onPressed(),
           isOutlineButton: true,
           buttonName:
-          'Shop all ${data!.isEmpty ? controller.memberShip.length : data!.length} memberships',
+              'Shop All ${data!.isEmpty ? controller.memberShip.length : data!.length} Memberships',
         ),
       );
     });
+  }
+
+  Widget _circleButton({
+    required IconData icon,
+    required Color color,
+    required Color bgColor,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(30.r),
+      child: Container(
+        height: 38.w,
+        width: 38.w,
+        decoration: BoxDecoration(
+          color: bgColor,
+          shape: BoxShape.circle,
+        ),
+        child: Icon(icon, color: color, size: 15.sp),
+      ),
+    );
   } //add elevation on press
 }
 
@@ -518,23 +611,36 @@ class PerkRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(3.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Icon(icon, color: Colors.white, size: 20.h),
-          SizedBox(width: 8.w),
-          Expanded(
-            child: Text(
-              text,
-              style: GoogleFonts.poppins(
-                  fontSize: 17.sp,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500),
+        padding: EdgeInsets.only(
+          bottom: 3.0.h,
+          right: 10.w,
+        ),
+        child: Container(
+          width: 230.w,
+          decoration: BoxDecoration(
+              shape: BoxShape.rectangle,
+              color: AppColor().whiteColor.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(30.r),
+              border: BoxBorder.fromBorderSide(
+                  BorderSide(width: 0.5, color: AppColor().whiteColor))),
+          child: Padding(
+            padding: EdgeInsets.all(8.w),
+            child: Row(
+              children: [
+                Icon(icon, color: Colors.white, size: 20.h),
+                SizedBox(width: 8.w),
+                Expanded(
+                  child: Text(
+                    text,
+                    style: AppTypography.hostGroteskSemiBold.copyWith(
+                      fontSize: 12.sp,
+                      color: Colors.white,
+                    ),
+                  ),
+                )
+              ],
             ),
           ),
-        ],
-      ),
-    );
+        ));
   }
 }

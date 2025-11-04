@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-
+import 'package:chino_hills/common_Widgets/common_app_bar.dart';
+import 'package:chino_hills/common_Widgets/no_record.dart';
 import '../../../common_Widgets/common_network_image_widget.dart';
-import '../../../common_Widgets/no_record.dart';
 import '../../../loading/order_list_load.dart';
 import '../../../util/common_page.dart';
-import '../../../../../util/local_store_data.dart';
 import '../../../util/route_manager.dart';
 import '../controller/search_location_controller.dart';
 
@@ -23,17 +22,12 @@ class SearchByClient extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: commonAppBar(
-        isLeading: false,
-        title: "Select Client",
-        action: [],
-      ),
-      // 13412091143
+      appBar: CommonAppBar(title: "Select Client"),
       body: GetBuilder<SearchLocationController>(
         builder: (controller) => controller.load
             ? OrderListLoad()
             : controller.searchList.isEmpty
-                ? NoRecord("No Record Found", Icon(Icons.search), "")
+                ? NoRecord("No Record Found",iconData: Icons.search_rounded, Icon(Icons.search), "")
                 : ListView.builder(
                     itemCount: controller.searchList.length,
                     itemBuilder: (context, index) {
@@ -41,9 +35,7 @@ class SearchByClient extends StatelessWidget {
                           controller.searchList[index].image.toString());
                       return InkWell(
                         onTap: () {
-                          LocalStorage localStorage = LocalStorage();
-                          var clientId = localStorage.getCId();
-                          print(clientId);
+
                           fromSomeFlow.toString() == "false"
                               ?
                               //call dashboard page

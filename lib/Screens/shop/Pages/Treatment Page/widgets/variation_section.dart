@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../../../../../CSS/app_strings.dart';
+import 'package:chino_hills/CSS/app_strings.dart';
+import 'package:chino_hills/util/common_page.dart';
+import '../../../../../CSS/appTypography.dart';
 import '../../../../../CSS/color.dart';
 import '../../../../../Model/treatment_details_model.dart';
-import '../../../../../util/common_page.dart';
 import '../controller/treatment_details_controller.dart';
 
 class VariationSelectorBottomSheet extends StatelessWidget {
   final TreatmentDetailsController controller;
   final Function(Variation selectedVariation) onSelect;
 
-  const VariationSelectorBottomSheet({
+  VariationSelectorBottomSheet({
     super.key,
     required this.onSelect,
     required this.controller,
@@ -41,8 +41,8 @@ class VariationSelectorBottomSheet extends StatelessWidget {
                     child: Icon(Icons.clear)),
                 Text(
                   AppStrings.selectAVariation,
-                  style:
-                  TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+                  style: AppTypography.hostGroteskSemiBold
+                      .copyWith(fontSize: 18.sp, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(
                   width: 20,
@@ -65,7 +65,7 @@ class VariationSelectorBottomSheet extends StatelessWidget {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border:
-                      Border.all(color: AppColor.dynamicColor, width: 2),
+                          Border.all(color: AppColor.dynamicColor, width: 2),
                       color: isActive ? AppColor.dynamicColor : Colors.white,
                     ),
                     child: isActive
@@ -74,33 +74,32 @@ class VariationSelectorBottomSheet extends StatelessWidget {
                   ),
                   title: Text(
                     variation.variationName ?? '',
-                    style: GoogleFonts.poppins(
+                    style: AppTypography.hostGroteskSemiBold.copyWith(
                       fontSize: 16.sp,
-                      fontWeight: FontWeight.w600,
                       // semi-bold to highlight title
                       color: AppColor().blackColor,
                     ),
                   ),
-                  subtitle: variation.prices![0].membershipInfo!.membershipOfferPrice==0
+                  subtitle: variation.prices![0].membershipInfo!
+                              .membershipOfferPrice ==
+                          0
                       ? Text(
-                    "${AppStrings.from}${formatCurrency(variation.prices![0].price)} "
-                        '',
-                    style: GoogleFonts.roboto(
-                      fontSize: 13.sp,
-                      fontWeight: FontWeight.w400,
-                      color: AppColor().blackColor.withOpacity(0.6),
-                    ),
-                  )
-                      :Text(
-                    "${AppStrings.from}${formatCurrency(variation.prices![0].price)} | "
-                        "${formatCurrency(variation.prices![0].membershipInfo!.membershipOfferPrice)} ${AppStrings.member}"
-                        '',
-                    style: GoogleFonts.roboto(
-                      fontSize: 13.sp,
-                      fontWeight: FontWeight.w400,
-                      color: AppColor().blackColor.withOpacity(0.6),
-                    ),
-                  ),
+                          "${AppStrings.from}${formatCurrency(variation.prices![0].price)} "
+                          '',
+                          style: AppTypography.hostGroteskSemiBold.copyWith(
+                            fontSize: 13.sp,
+                            color: AppColor().blackColor.withOpacity(0.6),
+                          ),
+                        )
+                      : Text(
+                          "${AppStrings.from}${formatCurrency(variation.prices![0].price)} | "
+                          "${formatCurrency(variation.prices![0].membershipInfo!.membershipOfferPrice)} ${AppStrings.member}"
+                          '',
+                          style: AppTypography.hostGroteskSemiBold.copyWith(
+                            fontSize: 13.sp,
+                            color: AppColor().blackColor.withOpacity(0.6),
+                          ),
+                        ),
                   onTap: () {
                     controller.selectedIndex = index;
                     if (variation.prices != null &&
@@ -112,10 +111,12 @@ class VariationSelectorBottomSheet extends StatelessWidget {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         controller.updateValidQuantity(
                           qtyLabel: variation.variationName ?? "",
-                          price: (firstPrice.price ?? 0).toDouble(),
-                          membershipPrice: (firstPrice.membershipInfo?.membershipOfferPrice ?? 0).toDouble(),
+                          price: (firstPrice.price ?? 0),
+                          membershipPrice: (firstPrice
+                                  .membershipInfo?.membershipOfferPrice ??
+                              0),
                           unitType: controller
-                              .treatmentDetailsModel.treatment?.unitType ??
+                                  .treatmentDetailsModel.treatment?.unitType ??
                               "",
                           qty: firstPrice.qty.toString().replaceAll(".0", ""),
                         );
@@ -130,7 +131,7 @@ class VariationSelectorBottomSheet extends StatelessWidget {
                       controller.selectedtype = {
                         "qty": firstPrice.qty ?? "",
                         "unit_type": controller
-                            .treatmentDetailsModel.treatment?.unitType ??
+                                .treatmentDetailsModel.treatment?.unitType ??
                             "",
                       };
 

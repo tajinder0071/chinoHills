@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:chino_hills/util/base_services.dart';
+
 import '../../../../Model/search_model.dart';
-import '../../../../util/base_services.dart';
 import '../../../../util/common_page.dart';
 
 class SearchGlobalController extends GetxController {
   RxBool isLoading = false.obs;
-  RxList<dynamic> treatmentList = [].obs;
-  RxList<Package> packageList = <Package>[].obs;
+  RxList<SearchDatum> treatmentList = <SearchDatum>[].obs;
+  RxList<SearchDatum> packageList = <SearchDatum>[].obs;
   RxString searchText = ''.obs;
   final focusNode = FocusNode();
   final isFocused = false.obs;
   Debouncer debouncer = Debouncer();
-
 
   final TextEditingController searchController = TextEditingController();
 
@@ -41,36 +41,29 @@ class SearchGlobalController extends GetxController {
     isLoading.value = true;
     try {
       final response = await hitManageTrackingSearch(value);
-      if (response['success'] == true) {
-        Get.log("Ok :${response['success']}");
+      if (response['success'] == true && response['data'] != null) {
         treatmentList.clear();
         packageList.clear();
-
-        if (response['treatments'] != null &&
-            response['treatments']!.isNotEmpty) {
-          treatmentList.addAll(response['treatments']!);
+        List<SearchDatum> results = List<SearchDatum>.from(
+          response['data'].map((x) => SearchDatum.fromJson(x)),
+        );
+        // Separate treatments and packages
+        for (var item in results) {
+          if (item.serviceType == "Treatment") {
+            treatmentList.add(item);
+          } else if (item.serviceType == "Package") {
+            packageList.add(item);
+          }
         }
-        if (response['packages'] != null && response['packages']!.isNotEmpty) {
-          final List<Package> packages = List<Package>.from(
-            response['packages']!.map((x) => Package.fromJson(x)),
-          );
-          packageList.addAll(packages);
-        }
-        isLoading.value = false;
 
-        Get.log("Package:$packageList");
-        Get.log("Treat: $treatmentList");
       } else {
-        print("No search results found");
         treatmentList.clear();
         packageList.clear();
-        isLoading.value = false;
       }
     } catch (e) {
       print("Search error: $e");
       treatmentList.clear();
       packageList.clear();
-      isLoading.value = false;
     } finally {
       isLoading.value = false;
     }

@@ -1,10 +1,11 @@
 import 'package:get/get.dart';
+import 'package:chino_hills/Screens/Dashboard/Home/controller/membership_detail_controller.dart';
+import 'package:chino_hills/Screens/cartList/Controller/cart_controller.dart';
+
 import '../Screens/Account/controller/account_detail_controller.dart';
 import '../Screens/Complete Profile/controller/complete_profile_controller.dart';
-import '../Screens/Dashboard/Home/controller/membership_detail_controller.dart';
 import '../Screens/Otp Page/controller/otp_verification_controller.dart';
 import '../Screens/Register/controller/register_controller.dart';
-import '../Screens/cartList/Controller/cart_controller.dart';
 import '../Screens/cartList/Controller/shopping_cart_controller.dart';
 import '../Screens/shop/Pages/Package Page/controller/package_cotroller.dart';
 import '../Screens/shop/Pages/Treatment Page/controller/treatment_details_controller.dart';

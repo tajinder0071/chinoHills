@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import '../../../common_Widgets/common_network_image_widget.dart';
+import 'package:chino_hills/common_Widgets/common_app_bar.dart';
+import 'package:chino_hills/common_Widgets/common_network_image_widget.dart';
+import 'package:chino_hills/util/common_page.dart';
 import '../../../common_Widgets/no_record.dart';
 import '../../../loading/cart_list_load.dart';
-import '../../../util/common_page.dart';
 import '../../../util/route_manager.dart';
 import '../controller/search_by_location_controller.dart';
 
@@ -17,11 +18,7 @@ class SearchByLocation extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: commonAppBar(
-        isLeading: true,
-        title: 'Search by location',
-        action: [],
-      ),
+      appBar: CommonAppBar(title: "Search by location"),
       body: GetBuilder<SearchbyController>(
         builder: (controller) => Column(
           children: [

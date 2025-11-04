@@ -1,21 +1,20 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:chino_hills/CSS/color.dart';
 
-import '../CSS/color.dart';
-import '../CSS/image_page.dart';
 import '../util/common_page.dart';
 
 class ConstantNetworkImage extends StatelessWidget {
   ConstantNetworkImage(
       {super.key,
-        this.imageUrl,
-        this.height,
-        this.width,
-        this.errorWidget,
-        this.boxFit = BoxFit.fill,
-        this.alignment = Alignment.center,
-        required this.isLoad});
+      this.imageUrl,
+      this.height,
+      this.width,
+      this.errorWidget,
+      this.boxFit = BoxFit.fill,
+      this.alignment = Alignment.center,
+      required this.isLoad});
 
   final Widget? errorWidget;
   var imageUrl;
@@ -61,12 +60,12 @@ class ConstantNetworkImage extends StatelessWidget {
           child: errorWidget ??
               Center(
                   child: Image.asset(
-                    "assets/images/Image_not_available.png",
-                    color: AppColor().blackColor,
-                    // width: 150.w,
-                    // height: 150.h,
-                    fit: BoxFit.cover,
-                  )),
+                "assets/images/Image_not_available.png",
+                color: AppColor().blackColor,
+                // width: 150.w,
+                // height: 150.h,
+                fit: BoxFit.cover,
+              )),
         );
       },
     );

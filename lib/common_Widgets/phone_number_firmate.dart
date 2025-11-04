@@ -26,3 +26,37 @@ class PhoneNumberFormatter extends TextInputFormatter {
     );
   }
 }
+class AllowAllCharactersFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue,
+      TextEditingValue newValue,
+      ) {
+    // Allow all characters, just trim extra spaces
+    final trimmed = newValue.text.trim();
+    return TextEditingValue(
+      text: trimmed,
+      selection: TextSelection.collapsed(offset: trimmed.length),
+    );
+  }
+}
+
+class EmailInputFormatter extends TextInputFormatter {
+  static final _validEmailChars = RegExp(r'[a-zA-Z0-9@._\-+]');
+
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue,
+      TextEditingValue newValue,
+      ) {
+    final filtered = newValue.text
+        .split('')
+        .where((char) => _validEmailChars.hasMatch(char))
+        .join();
+
+    return TextEditingValue(
+      text: filtered,
+      selection: TextSelection.collapsed(offset: filtered.length),
+    );
+  }
+}

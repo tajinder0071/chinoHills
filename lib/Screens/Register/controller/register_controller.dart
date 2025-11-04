@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:chino_hills/binding/cart_billing.dart';
+import 'package:chino_hills/Screens/Otp%20Page/otp_verification_page.dart';
+import 'package:chino_hills/util/base_services.dart';
+import 'package:chino_hills/util/services.dart';
 import 'package:intl/intl.dart';
-
-import '../../../binding/otp_binding.dart';
-import '../../../util/base_services.dart';
-import '../../../util/services.dart';
-import '../../Otp Page/otp_verification_page.dart';
 
 class RegisterController extends GetxController {
   final TextEditingController phoneController = TextEditingController();
@@ -32,7 +31,7 @@ class RegisterController extends GetxController {
       var response = await hiRegisterAPI(map);
       if (response['success'] == true) {
         Get.to(OtpVerificationPage(phoneNumber: phoneController.text),
-            binding: OTPBindings(),
+            binding: CommonBinding(),
             duration: Duration(milliseconds: 500),
             transition: Transition.zoom);
         isLoading.value = false;

@@ -8,33 +8,51 @@ import '../CSS/color.dart';
 import 'common_agreement_page.dart';
 
 class CommonTermsConditionWidget extends StatelessWidget {
-  const CommonTermsConditionWidget({super.key});
+  var isActivated;
+  var isneed;
+  final ValueChanged<bool?>? onChange;
+
+  CommonTermsConditionWidget(
+      {super.key, this.isActivated, this.onChange, this.isneed});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-          horizontal: 15.0.w, vertical: 5.0.h),
-      child: Text.rich(
-        TextSpan(
-            text:
-            "View Terms and Conditions and Patient Membership Agreement here"
-                .toString(),
-            style: GoogleFonts.roboto(
-                color: Colors.grey,
-                fontSize: 11.0.sp,
-                fontWeight: FontWeight.w500,
-                decoration: TextDecoration.underline,
-                decorationColor: AppColor().greyColor),
-            mouseCursor: SystemMouseCursors.click,
-            recognizer: TapGestureRecognizer()
-              ..onTap = () async {
-                Get.bottomSheet(
-                  CommonAgreementPage(),
-                  isScrollControlled: true,
-                );
-              }),
-      ),
+    return Row(
+      children: [
+        isneed!
+            ? Checkbox(
+                value: isActivated,
+                activeColor: AppColor.dynamicColor,
+                onChanged: onChange,
+              )
+            : SizedBox.shrink(),
+        Expanded(
+          child: Padding(
+            padding: isneed ? EdgeInsets.zero : EdgeInsets.all(15.h),
+            child: Text.rich(
+              textAlign: TextAlign.start,
+              TextSpan(
+                  text:
+                      "View Terms and Conditions and Patient Membership Agreement here"
+                          .toString(),
+                  style: GoogleFonts.sarabun(
+                      color: Colors.grey,
+                      fontSize: 11.0.sp,
+                      fontWeight: FontWeight.w500,
+                      decoration: TextDecoration.underline,
+                      decorationColor: AppColor().greyColor),
+                  mouseCursor: SystemMouseCursors.click,
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () async {
+                      Get.bottomSheet(
+                        CommonAgreementPage(),
+                        isScrollControlled: true,
+                      );
+                    }),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

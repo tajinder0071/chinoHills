@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../CSS/color.dart';
-import '../../../../../CSS/image_page.dart';
 import '../../../../../common_Widgets/common_network_image_widget.dart';
 import '../../../../../common_Widgets/price_section_widget.dart';
 import '../../../../../util/common_page.dart';
@@ -32,6 +31,7 @@ class RelatedPackageCard extends StatelessWidget {
   //TODO: Widgets begins here
   @override
   Widget build(BuildContext context) {
+    print("====>${originalPrice},${memberPrice}");
     return InkWell(
       overlayColor: WidgetStatePropertyAll(AppColor().transparent),
       onTap: onTap,
@@ -43,20 +43,22 @@ class RelatedPackageCard extends StatelessWidget {
               BoxShadow(
                   color: Colors.black12, offset: Offset(2, 2), blurRadius: 5.r),
             ]),
-        width: 220.w,
+        width: 200.w,
         margin: EdgeInsets.only(right: 10.h),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // TODO: Image loading and error handling can be moved to a separate widget
             _buildImageSection(),
-            SizedBox(height: 2.h),
             // TODO: Discount and Category badge can be a separate reusable widget
-            _buildDiscountAndCategoryBadge(),
+            Padding(
+              padding: EdgeInsets.all(5.h),
+              child: _buildDiscountAndCategoryBadge(),
+            ),
             // TODO: Title could be a common widget if used elsewhere in the app
             _buildTitleSection(),
             // TODO: Price display and arrow can be moved to a separate widget
-            _buildPriceAndArrowSection(),
+            _buildPriceAndArrowSection(originalPrice, memberPrice),
           ],
         ),
       ),
@@ -69,7 +71,7 @@ class RelatedPackageCard extends StatelessWidget {
   Widget _buildImageSection() {
     return CommonNetworkImageWidget(
       imageUrl: "${imageUrl.toString()}",
-      height: 150.0.h,
+      height: 138.4.h,
       width: double.infinity,
       borderRadius: BorderRadius.vertical(top: Radius.circular(6.0.r)),
       fit: BoxFit.cover,
@@ -80,14 +82,14 @@ class RelatedPackageCard extends StatelessWidget {
   Widget _buildImageError() {
     return Container(
       clipBehavior: Clip.antiAlias,
-      height: 140.h,
+      height: 150.h,
       decoration: BoxDecoration(
         color: AppColor.geryBackGroundColor,
         borderRadius: BorderRadius.vertical(top: Radius.circular(8.0.r)),
       ),
       child: Center(
           child: Image.asset(
-            AppImages.noAvailableImage,
+        "assets/images/Image_not_available.png",
         color: AppColor().blackColor,
         fit: BoxFit.cover,
       )),
@@ -96,15 +98,12 @@ class RelatedPackageCard extends StatelessWidget {
 
   // TODO: Extract this to a separate badge widget for discount and category
   Widget _buildDiscountAndCategoryBadge() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.w),
-      child: Row(
-        children: [
-          if (discount.toString() != "null") _buildDiscountBadge(),
-          SizedBox(width: 8.w),
-          _buildCategoryBadge(),
-        ],
-      ),
+    return Row(
+      children: [
+        if (discount.isNotEmpty && discount != "0") _buildDiscountBadge(),
+        if (discount.isNotEmpty && discount != "0") SizedBox(width: 8.w),
+        _buildCategoryBadge(),
+      ],
     );
   }
 
@@ -150,16 +149,21 @@ class RelatedPackageCard extends StatelessWidget {
         title,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+        style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.bold),
       ),
     );
   }
 
   // TODO: Price and Arrow Section - Move price and arrow into a separate reusable widget
-  Widget _buildPriceAndArrowSection() {
+  Widget _buildPriceAndArrowSection(
+    originalPrice,
+    memberPrice,
+  ) {
+    print("object=>${originalPrice}${memberPrice}");
     return PriceSection(
       originalPrice: originalPrice,
       memberPrice: memberPrice,
+      onPressed: onTap,
     );
   }
 }

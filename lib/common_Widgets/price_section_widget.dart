@@ -33,29 +33,29 @@ class PriceSection extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            formatCurrency(originalPrice),
+            originalPrice,
             style: TextStyle(
               color: AppColor().blackColor,
               fontWeight: FontWeight.w500,
-              fontSize: 12.sp,
+              fontSize: 10.sp,
             ),
           ),
           SizedBox(width: 8.w),
           Container(height: 27.h, width: 1, color: AppColor().blackColor),
           SizedBox(width: 8.w),
-          Column(
+          Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                formatCurrency(memberPrice),
+                memberPrice,
                 style: TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
-                  fontSize: 12.sp,
+                  fontSize: 10.sp,
                 ),
               ),
               Text(
-                'Member',
+                ' Member',
                 style: TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,

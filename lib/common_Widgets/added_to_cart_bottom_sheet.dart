@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:chino_hills/util/route_manager.dart';
+
 import '../CSS/color.dart';
-import '../util/route_manager.dart';
 
 class AddedToCartBottomSheet extends StatelessWidget {
   final String titleName;
@@ -13,16 +14,15 @@ class AddedToCartBottomSheet extends StatelessWidget {
   String membeTitleName;
   var memberPrice;
 
-  AddedToCartBottomSheet({
-    super.key,
-    required this.titleName,
-    required this.quantity,
-    required this.quantityName,
-    required this.membeTitleName,
-    required this.memberPrice,
-    this.isChecked = false,
-    required this.price,
-  });
+  AddedToCartBottomSheet(
+      {super.key,
+      required this.titleName,
+      required this.quantity,
+      required this.quantityName,
+      required this.membeTitleName,
+      required this.memberPrice,
+      this.isChecked = false,
+      required this.price});
 
   @override
   Widget build(BuildContext context) {
@@ -63,67 +63,72 @@ class AddedToCartBottomSheet extends StatelessWidget {
                     Text(
                       titleName.toString(),
                       style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w500,
-                      ),
+                          fontSize: 16.sp, fontWeight: FontWeight.w500),
                     ),
                     SizedBox(height: 4.h),
                     quantity != null && quantity != 0
                         ? Text(
-                            "$quantity $quantityName",
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 14.sp,
-                            ),
+                            "$quantity ",
+                            style:
+                                TextStyle(color: Colors.grey, fontSize: 14.sp),
                           )
                         : SizedBox.shrink(),
                   ],
                 ),
               ),
               SizedBox(width: 12),
-              Text(
-                "\$$price",
-                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
-              ),
+              price.toString() == "0"
+                  ? Text(
+                      "\$${memberPrice.toString().replaceAll(".0", "")}",
+                      style: TextStyle(
+                          fontSize: 16.sp, fontWeight: FontWeight.w600),
+                    )
+                  : Text(
+                      "\$${price.toString().replaceAll(".0", "")}",
+                      style: TextStyle(
+                          fontSize: 16.sp, fontWeight: FontWeight.w600),
+                    ),
             ],
           ),
-          isChecked ? Divider(thickness: 1) : SizedBox.shrink(),
+          isChecked
+              ? membeTitleName.toString() != ""
+                  ? Divider(
+                      thickness: 1,
+                    )
+                  : SizedBox.shrink()
+              : SizedBox.shrink(),
           // Todo >>  this is the members id checked...
           isChecked
-              ? membeTitleName == ""
-                    ? SizedBox.shrink()
-                    : Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  membeTitleName.toString(),
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                SizedBox(height: 4.h),
-                                Text(
-                                  "Membership",
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                              ],
-                            ),
+              ? membeTitleName.toString() != ""
+                  ? Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                membeTitleName.toString(),
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w500),
+                              ),
+                              SizedBox(height: 4.h),
+                              Text(
+                                "Membership",
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                            ],
                           ),
-                          SizedBox(width: 12),
-                          Text(
-                            "\$$memberPrice",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      )
+                        ),
+                        SizedBox(width: 12),
+                        Text(
+                          "\$$memberPrice",
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w600),
+                        ),
+                      ],
+                    )
+                  : SizedBox.shrink()
               : SizedBox.shrink(),
           SizedBox(height: 25.h),
           SafeArea(

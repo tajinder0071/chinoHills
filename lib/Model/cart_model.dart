@@ -1,7 +1,7 @@
 class CartModel1 {
   String? message;
   bool? success;
-  Data? data;
+  OfferData? data;
   AvailableReward? reward;
   PromoCode? promoCode;
 
@@ -14,29 +14,30 @@ class CartModel1 {
   });
 
   factory CartModel1.fromJson(Map<String, dynamic> json) => CartModel1(
-    message: json["message"],
-    success: json["success"],
-    data: json["data"] == null ? null : Data.fromJson(json["data"]),
-    promoCode: json["promocode"] == null
-        ? null
-        : PromoCode.fromJson(json["promocode"]),
-    reward: json["reward"] == null
-        ? null
-        : AvailableReward.fromJson(json["reward"]),
-  );
+        message: json["message"],
+        success: json["success"],
+        data: json["data"] == null ? null : OfferData.fromJson(json["data"]),
+        promoCode: json["promocode"] == null
+            ? null
+            : PromoCode.fromJson(json["promocode"]),
+        reward: json["reward"] == null
+            ? null
+            : AvailableReward.fromJson(json["reward"]),
+      );
 
   Map<String, dynamic> toJson() => {
-    "message": message,
-    "success": success,
-    "data": data?.toJson(),
-    "promocode": promoCode?.toJson(),
-    "reward": reward?.toJson(),
-  };
+        "message": message,
+        "success": success,
+        "data": data?.toJson(),
+        "promocode": promoCode?.toJson(),
+        "reward": reward?.toJson(),
+      };
 }
 
-class Data {
+class OfferData {
   var itemsCount;
   var subTotal;
+  var nimaCashBalance;
   var finalCost;
   var discountPrice;
   var price;
@@ -44,47 +45,53 @@ class Data {
   List<Item>? items;
   var cartId;
   var offerName;
+  var nimaCashApplied;
   var offerType;
 
-  Data({
-    this.itemsCount,
-    this.subTotal,
-    this.finalCost,
-    this.discountPrice,
-    this.convenienceFee,
-    this.items,
-    this.cartId,
-    this.offerName,
-    this.offerType
-  });
+  OfferData(
+      {this.itemsCount,
+      this.subTotal,
+      this.finalCost,
+      this.discountPrice,
+      this.nimaCashBalance,
+      this.convenienceFee,
+      this.items,
+      this.nimaCashApplied,
+      this.cartId,
+      this.offerName,
+      this.offerType});
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
-    itemsCount: json["items_count"],
-    offerType: json["offer_type"],
-    subTotal: json["sub_total"],
-    finalCost: json["final_cost"]?.toDouble(),
-    discountPrice: json["discount_price"],
-    convenienceFee: json["convenience_fee"]?.toDouble(),
-    items: json["items"] == null
-        ? []
-        : List<Item>.from(json["items"]!.map((x) => Item.fromJson(x))),
-    cartId: json["cart_id"],
-    offerName: json["offer_name"],
-  );
+  factory OfferData.fromJson(Map<String, dynamic> json) => OfferData(
+        itemsCount: json["items_count"],
+        offerType: json["offer_type"],
+        nimaCashBalance: json['nima_cash_balance'],
+        nimaCashApplied: json['nima_cash_applied'],
+        subTotal: json["sub_total"],
+        finalCost: json["final_cost"],
+        discountPrice: json["discount_price"],
+        convenienceFee: json["convenience_fee"],
+        items: json["items"] == null
+            ? []
+            : List<Item>.from(json["items"]!.map((x) => Item.fromJson(x))),
+        cartId: json["cart_id"],
+        offerName: json["offer_name"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "items_count": itemsCount,
-    "sub_total": subTotal,
-    "offer_type": offerType,
-    "final_cost": finalCost,
-    "discount_price": discountPrice,
-    "convenience_fee": convenienceFee,
-    "items": items == null
-        ? []
-        : List<dynamic>.from(items!.map((x) => x.toJson())),
-    "cart_id": cartId,
-    "offer_name": offerName,
-  };
+        "items_count": itemsCount,
+        "sub_total": subTotal,
+        "nima_cash_balance": nimaCashBalance,
+        "offer_type": offerType,
+        "final_cost": finalCost,
+        "nima_cash_applied": nimaCashApplied,
+        "discount_price": discountPrice,
+        "convenience_fee": convenienceFee,
+        "items": items == null
+            ? []
+            : List<dynamic>.from(items!.map((x) => x.toJson())),
+        "cart_id": cartId,
+        "offer_name": offerName,
+      };
 }
 
 class Item {
@@ -115,34 +122,34 @@ class Item {
   });
 
   factory Item.fromJson(Map<String, dynamic> json) => Item(
-    cartItemId: json["cart_item_id"],
-    price: json["price"],
-    createdAt: json["created_at"] == null
-        ? null
-        : DateTime.parse(json["created_at"]),
-    quantity: json["quantity"],
-    discountPrice: json["discount_price"],
-    itemVariantId: json["item_variant_id"],
-    itemId: json["item_id"],
-    itemType: json["item_type"],
-    variationName: json["variation_name"],
-    name: json["name"],
-    imageUrl: json["image_url"],
-  );
+        cartItemId: json["cart_item_id"],
+        price: json["price"],
+        createdAt: json["created_at"] == null
+            ? null
+            : DateTime.parse(json["created_at"]),
+        quantity: json["quantity"],
+        discountPrice: json["discount_price"],
+        itemVariantId: json["item_variant_id"],
+        itemId: json["item_id"],
+        itemType: json["item_type"],
+        variationName: json["variation_name"],
+        name: json["name"],
+        imageUrl: json["image_url"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "cart_item_id": cartItemId,
-    "price": price,
-    "created_at": createdAt?.toIso8601String(),
-    "quantity": quantity,
-    "discount_price": discountPrice,
-    "item_variant_id": itemVariantId,
-    "item_id": itemId,
-    "item_type": itemType,
-    "variation_name": variationName,
-    "name": name,
-    "image_url": imageUrl,
-  };
+        "cart_item_id": cartItemId,
+        "price": price,
+        "created_at": createdAt?.toIso8601String(),
+        "quantity": quantity,
+        "discount_price": discountPrice,
+        "item_variant_id": itemVariantId,
+        "item_id": itemId,
+        "item_type": itemType,
+        "variation_name": variationName,
+        "name": name,
+        "image_url": imageUrl,
+      };
 }
 
 class PromoCode {
@@ -159,18 +166,18 @@ class PromoCode {
   });
 
   factory PromoCode.fromJson(Map<String, dynamic> json) => PromoCode(
-    discountValue: json["discount_value"],
-    id: json["promo_code_id"],
-    discountType: json["discount_type"],
-    name: json["name"],
-  );
+        discountValue: json["discount_value"],
+        id: json["promo_code_id"],
+        discountType: json["discount_type"],
+        name: json["name"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "discount_value": discountValue,
-    "promo_code_id": id,
-    "discount_type": discountType,
-    "name": name,
-  };
+        "discount_value": discountValue,
+        "promo_code_id": id,
+        "discount_type": discountType,
+        "name": name,
+      };
 }
 
 class AvailableReward {
@@ -195,9 +202,9 @@ class AvailableReward {
       );
 
   Map<String, dynamic> toJson() => {
-    "discount_value": discountValue,
-    "id": id,
-    "discount_type": discountType,
-    "name": name,
-  };
+        "discount_value": discountValue,
+        "id": id,
+        "discount_type": discountType,
+        "name": name,
+      };
 }

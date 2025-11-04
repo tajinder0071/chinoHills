@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:chino_hills/CSS/app_strings.dart';
+import 'package:chino_hills/Screens/shop/Pages/Treatment%20Page/controller/treatment_details_controller.dart';
+
 import '../../../../../CSS/color.dart';
 import '../../../../../common_Widgets/no_record.dart';
 import '../../../../../util/common_page.dart';
-import '../controller/treatment_details_controller.dart';
 
 class TreatmentBottomSheet extends StatelessWidget {
   final VoidCallback onApply;
@@ -44,7 +46,7 @@ class TreatmentBottomSheet extends StatelessWidget {
                 Expanded(
                   child: Center(
                     child: Text(
-                      "SELECT YOUR SERVICE".toUpperCase(),
+                      AppStrings.selectYourService.toUpperCase(),
                       style: TextStyle(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.bold,
@@ -62,7 +64,7 @@ class TreatmentBottomSheet extends StatelessWidget {
             Expanded(
               child: Center(
                   child: NoRecord(
-                      "No Service Found ", Icon(Icons.search_off), "")),
+                      AppStrings.noServiceFound, Icon(Icons.search_off), "")),
             )
           else
             Expanded(
@@ -119,7 +121,7 @@ class TreatmentBottomSheet extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        "NEXT",
+                        AppStrings.next,
                         style: TextStyle(
                           fontSize: 16.sp,
                           color: AppColor().whiteColor,
@@ -194,7 +196,7 @@ Widget _buildServiceOption(String title, var originalPrice, var memberPrice,
                   GoogleFonts.merriweather(fontSize: 12.sp, color: Colors.grey),
               children: [
                 TextSpan(
-                  text: "From ",
+                  text: AppStrings.from,
                 ),
                 TextSpan(
                   text: formatCurrency(originalPrice),

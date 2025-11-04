@@ -1,14 +1,16 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:chino_hills/CSS/color.dart';
+import 'package:chino_hills/CSS/image_page.dart';
+import 'package:chino_hills/common_Widgets/load_nfc.dart';
+import 'package:chino_hills/util/services.dart';
 import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
-import '../../../../CSS/color.dart';
-import '../../../../CSS/image_page.dart';
-import '../../../../common_Widgets/load_nfc.dart';
+
 import '../../../../util/base_services.dart';
-import '../../../../util/common_page.dart';
-import '../../../../util/services.dart';
 
 class QRCodeScannerPage extends StatefulWidget {
   const QRCodeScannerPage({super.key});
@@ -28,63 +30,65 @@ class _QRCodeScannerPageState extends State<QRCodeScannerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColor().background,
-      appBar:
-      commonAppBar(isLeading: true, title: "QR Code Scanner", action: []),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Column(
-              children: [
-                Expanded(
-                  flex: 8,
-                  child: QRView(
-                    key: qrKey,
-                    onQRViewCreated: _onQRViewCreated,
-                    overlay: QrScannerOverlayShape(
-                      borderColor: Colors.blue,
-                      borderRadius: 10.r,
-                      borderLength: 30.h,
-                      borderWidth: 10.w,
-                      cutOutSize: 250.h,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Center(
-                    child: Obx(
-                          () => Text(
-                        result.isNotEmpty
-                            ? 'Scanned: ${result.value}'
-                            : 'Scan a QR code',
-                        style: const TextStyle(fontSize: 18),
+      // appBar:CommonAppBar(title: "QR Code Scanner"),
+      body: Stack(
+        children: [
+          QRView(
+            key: qrKey,
+            onQRViewCreated: _onQRViewCreated,
+            overlay: QrScannerOverlayShape(
+              borderColor: Colors.blue,
+              borderRadius: 10.r,
+              borderLength: 30.h,
+              borderWidth: 10.w,
+              cutOutSize: 250.h,
+            ),
+          ),
+          Obx(() => isLoading.value
+              ? Positioned.fill(child: _buildLoadingScreen())
+              : const SizedBox.shrink()),
+          Positioned(
+            child: SafeArea(
+              child: Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        Get.back();
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppColor.dynamicColor,
+                        ),
+                        height: 40,
+                        width: 40,
+                        child: Icon(
+                          Icons.arrow_back,
+                          color: AppColor().whiteColor,
+                        ),
                       ),
                     ),
-                  ),
-                ),
-              ],
-            ),
-            Obx(() => isLoading.value
-                ? Positioned.fill(child: _buildLoadingScreen())
-                : const SizedBox.shrink()),
-            Positioned(
-              top: 40,
-              right: 20,
-              child: Obx(
-                    () => GestureDetector(
-                  onTap: _toggleFlash,
-                  child: CircleAvatar(
-                    backgroundColor: Colors.black54,
-                    child: Icon(
-                      isFlashOn.value ? Icons.flash_on : Icons.flash_off,
-                      color: Colors.white,
+                    Obx(
+                      () => GestureDetector(
+                        onTap: _toggleFlash,
+                        child: CircleAvatar(
+                          backgroundColor: Colors.black54,
+                          child: Icon(
+                            isFlashOn.value ? Icons.flash_on : Icons.flash_off,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -121,7 +125,7 @@ class _QRCodeScannerPageState extends State<QRCodeScannerPage> {
         Navigator.pop(context);
         showMessage(response['message'], context);
       }
-      print("Welcome!!");
+      log("Welcome!!");
 
       setState(() {});
     } on Exception catch (e) {
@@ -137,7 +141,7 @@ class _QRCodeScannerPageState extends State<QRCodeScannerPage> {
 
   Widget _buildLoadingScreen() {
     return Center(
-      child: Container(
+      child: SizedBox(
         width: double.infinity,
         child: NfcLoadingScreen(),
       ),

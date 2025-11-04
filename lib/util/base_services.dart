@@ -1,51 +1,50 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:chino_hills/util/services.dart';
 import 'package:get/get.dart';
+import 'package:chino_hills/Model/availRewardModel.dart';
+import 'package:chino_hills/Model/best_selling_model.dart';
+import 'package:chino_hills/Model/brows_detail_model.dart';
+import 'package:chino_hills/Model/discover_model.dart';
+import 'package:chino_hills/Model/member_ship_details_model.dart';
+import 'package:chino_hills/Model/member_ship_model.dart';
+import 'package:chino_hills/Model/order_detail_model.dart';
+import 'package:chino_hills/Model/package_details_model.dart';
+import 'package:chino_hills/Model/signup_reward_model.dart';
+import 'package:chino_hills/Model/treatment_details_model.dart';
+import 'package:chino_hills/Model/treatment_list_model.dart';
+import 'package:chino_hills/Model/wallet_membership_active_model.dart';
+import 'package:chino_hills/util/services.dart';
 import '../Model/RewardDetailsModel.dart';
-import '../Model/availRewardModel.dart';
-import '../Model/best_selling_model.dart';
 import '../Model/body_Area.dart';
-import '../Model/brows_detail_model.dart';
 import '../Model/browse_Model.dart';
 import '../Model/card_detail_model.dart';
 import '../Model/choose_client_model.dart';
 import '../Model/client_list_model.dart';
 import '../Model/detail_browse_model.dart';
-import '../Model/discover_model.dart';
 import '../Model/dynamic_tab_model.dart';
 import '../Model/fetch_memberShip_perks.dart';
 import '../Model/home_model.dart';
-import '../Model/member_ship_details_model.dart';
-import '../Model/member_ship_model.dart';
 import '../Model/new_browse_model.dart';
 import '../Model/offer_detail_model.dart';
 import '../Model/offer_list_model.dart';
-import '../Model/order_detail_model.dart';
 import '../Model/orer_list_model.dart';
 import '../Model/packageModel.dart';
-import '../Model/package_details_model.dart';
 import '../Model/promode_reward_model.dart';
 import '../Model/search_client_model.dart';
-import '../Model/signup_reward_model.dart';
 import '../Model/special_offers_model.dart';
 import '../Model/tab_list_model.dart';
 import '../Model/term_condition_model.dart';
-import '../Model/treatment_details_model.dart';
-import '../Model/treatment_list_model.dart';
 import '../Model/view_client_model.dart';
+import '../Model/wallet_Nima_Cash_Model.dart';
+import '../Model/wallet_treatement_list_model.dart';
 import 'common_page.dart';
 import 'local_stoage.dart';
-import 'local_store_data.dart';
 
 //Todo this page contains all base the base API'S for NIMA app.
 LocalStorage localStorage = LocalStorage();
 
-Future hitAllPackageAPI(
-  List<String> selectedOptions,
-  List<String> selectedArea,
-  String selectFilter,
-) async {
+Future hitAllPackageAPI(List<String> selectedOptions, List<String> selectedArea,
+    String selectFilter) async {
   String concernId = selectedOptions
       .toString()
       .replaceAll("[", "")
@@ -77,14 +76,9 @@ Future hitAllPackageAPI(
 
 //Todo Hit the Treatment API
 Future hitAllTreatmentAPI(
-  var selectedOptions,
-  selectedArea,
-  selectFilter,
-) async {
-  String concernId = selectedOptions
-      .toString()
-      .replaceAll("[", "")
-      .replaceAll("]", "");
+    var selectedOptions, selectedArea, selectFilter) async {
+  String concernId =
+      selectedOptions.toString().replaceAll("[", "").replaceAll("]", "");
   String bId = selectedArea.toString().replaceAll("[", "").replaceAll("]", "");
   //get client id from local storage
   var clientId = await localStorage.getCId();
@@ -129,7 +123,9 @@ Future hitAllTreatmentDetailsAPI(var id) async {
   } on SocketException {
     throw Exception('No Internet Connection');
   }
-}// Hit the PackagesDetails API
+}
+
+// Hit the PackagesDetails API
 Future hitPackagesDetailsAPI(var id) async {
   var clientId = await localStorage.getCId();
   var userId = await localStorage.getUId();
@@ -390,7 +386,7 @@ Future hitAlBrowsBConcernAPI(String id, sortBy, selectFilter) async {
   //get client id from local storage
   var clientId = await localStorage.getCId();
   var userId = await localStorage.getUId();
-  /*&sort_by=${sortBy}&filter_by=$selectFilter&*/
+/*&sort_by=${sortBy}&filter_by=$selectFilter&*/
   var api =
       "${CommonPage().api1}/browseByConcernList&client_id=$clientId&user_id=$userId&concern_id=$id";
   Get.log("brows API : $api");
@@ -476,7 +472,10 @@ Future hitscanRewardAPI(clinic_id) async {
   //user id call
   var userId = await localStorage.getUId();
   var api = "${CommonPage().api1}/scanRewards";
-  Map<String, dynamic> map = {"client_id": clinic_id, "user_id": userId};
+  Map<String, dynamic> map = {
+    "client_id": clinic_id,
+    "user_id": userId,
+  };
   print(api);
   print(map);
   //todo user id call
@@ -520,8 +519,9 @@ Future hitDiscoverAPI() async {
 Future hitSearchLocationAPI() async {
   try {
     var clientId = await localStorage.getCId();
-    var api = "${CommonPage().api}/clientListing&client_id=$clientId";
+    var api = "${CommonPage().api}/clientListing&client_id=${clientId}";
     var response = await baseServiceGet(api, {}, "");
+    print("Client Listing:$api");
     Get.log("Discover Response :: ${response.body}");
     if (response.statusCode == 200) {
       var decodedData = json.decode(response.body);
@@ -540,7 +540,7 @@ Future hitViewClient() async {
   try {
     var userId = await localStorage.getUId();
     var api = "${CommonPage().api}/clientsForUsers&user_id=${userId}";
-    print(api);
+    print("Client View API :$api");
     var response = await baseServiceGet(api, {}, "");
     Get.log("Discover Response :: ${response.body}");
     if (response.statusCode == 200) {
@@ -645,7 +645,6 @@ Future<dynamic> hitCartListApi() async {
           }
         }
 
-
         Get.log("Extracted Cart Item IDs: $cartItemIds");
 
         await localStorage.saveData("cart_item_ids", jsonEncode(cartItemIds));
@@ -693,7 +692,7 @@ Future<dynamic> hitLearnDetail(id) async {
 hitOrderListApi() async {
   var clientId = await localStorage.getCId();
   var userId = await localStorage.getUId();
-  var api = "${CommonPage().api1}/orders&user_id=$userId&client_id=${clientId}";
+  var api = "${CommonPage().api1}/orders&user_id=$userId&client_id=$clientId";
   Get.log("OrderList :$api");
   try {
     var response = await baseServiceGet(api, {}, "");
@@ -753,7 +752,28 @@ hitDeleteCartApi(cardID) async {
     var response = await baseServiceDelete(api, {}, "");
     print("Delete items from cart  :: ${response.body}");
     if (response.statusCode == 200) {
+      var decodedData = json.decode(response.body);
+      if (decodedData['success'] == true) {
+        return decodedData;
+      } else {
+        throw Exception(decodedData['message'] ?? 'Unknown error');
+      }
+    }
+  } on SocketException {
+    throw Exception('No Internet Connection');
+  }
+}
 
+hitRemoveNimaCash(cardID) async {
+  var clientId = await localStorage.getCId();
+  var userId = await localStorage.getUId();
+  var api =
+      "${CommonPage().api1}/removeNimaCash&client_id=$clientId&user_id=$userId&cart_id=$cardID";
+  print("Delete Cart Item :$api");
+  try {
+    var response = await baseServiceDelete(api, {}, "");
+    print("Delete items from cart  :: ${response.body}");
+    if (response.statusCode == 200) {
       var decodedData = json.decode(response.body);
       if (decodedData['success'] == true) {
         return decodedData;
@@ -777,8 +797,10 @@ Future hitCartDetailAPI(id) async {
     if (response.statusCode == 200) {
       var decodedData = json.decode(response.body);
       if (decodedData['success'] == true) {
+        // print("Decoded data :=> ${decodedData['data']}");
         return CardDetailModel.fromJson(decodedData);
       } else {
+        // return decodedData['message'];
         throw Exception(decodedData['message'] ?? 'Unknown error');
       }
     }
@@ -950,7 +972,7 @@ Future hitAllRewardDetailsAPI(var id) async {
   var clientId = await localStorage.getCId();
   var userId = await localStorage.getUId();
   var api =
-      "${CommonPage().api}/signup_treatments&reward_id=$id&client_id=${clientId}";
+      "${CommonPage().api1}/rewardDetails&client_id=$clientId&user_id=$userId&reward_id=$id";
   Get.log("Reward Details API  : $api");
   try {
     var response = await baseServiceGet(api, {}, "");
@@ -962,6 +984,21 @@ Future hitAllRewardDetailsAPI(var id) async {
       } else {
         throw Exception(decodedData['message'] ?? 'Unknown error');
       }
+    }
+  } on SocketException {
+    throw Exception('No Internet Connection');
+  }
+}
+
+Future hitRewardConvertNimaCash(Map<String, dynamic> map) async {
+  var api = "${CommonPage().api1}/RewardConvertNimaCash";
+  Get.log("Update CartList API : $api");
+  try {
+    var response = await baseServicePost(api, map, "");
+    Get.log("Update CartList API Response :: ${response.body}");
+    if (response.statusCode == 200) {
+      var decodedData = json.decode(response.body);
+      return decodedData;
     }
   } on SocketException {
     throw Exception('No Internet Connection');
@@ -1050,6 +1087,7 @@ Future hitCreateOrder(Map<String, dynamic> map) async {
 Future hitClearTheCart(Map<String, dynamic> map) async {
   var api = "${CommonPage().api1}/payment";
   Get.log("Clear CartList API : $api");
+  Get.log("Clear CartList Map : $map");
   try {
     var response = await baseServicePost(api, map, "");
     Get.log("Clear CartList API Response :: ${response.body}");
@@ -1066,8 +1104,10 @@ Future hitClearTheCart(Map<String, dynamic> map) async {
 Future hitManageTrackingSearch(searchText) async {
   try {
     var clientId = await localStorage.getCId();
+    var userId = await localStorage.getUId();
+
     var api =
-        "${CommonPage().api}/search&searching_for=$searchText&client_id=${clientId}";
+        "${CommonPage().api1}/search&client_id=$clientId&user_id=$userId&search_term=$searchText";
     Get.log("Search API : $api");
     var response = await baseServiceGet(api, {}, "");
     Get.log("Search response :: ${response.body}");
@@ -1078,6 +1118,56 @@ Future hitManageTrackingSearch(searchText) async {
       } else {
         throw Exception(parseData['message']);
       }
+    }
+  } on SocketException {
+    throw Exception('No Internet Connection');
+  }
+}
+
+Future<WalletNimaCashModel> walletNimaCash() async {
+  try {
+    var clientId = await localStorage.getCId();
+    var userId = await localStorage.getUId();
+
+    var api =
+        "${CommonPage().api1}/walletNimaCash&client_id=$clientId&user_id=$userId";
+    Get.log("Wallet API : $api");
+
+    var response = await baseServiceGet(api, {}, "");
+    Get.log("Wallet response :: ${response.body}");
+
+    if (response.statusCode == 200) {
+      var parseData = jsonDecode(response.body);
+      WalletNimaCashModel walletData = WalletNimaCashModel.fromJson(parseData);
+
+      if (walletData.success == true) {
+        return walletData;
+      } else {
+        throw Exception('Failed to fetch wallet data');
+      }
+    } else {
+      throw Exception('API Error: ${response.statusCode}');
+    }
+  } on SocketException {
+    throw Exception('No Internet Connection');
+  } catch (e) {
+    throw Exception('Error: $e');
+  }
+}
+
+Future walletMembershipActive() async {
+  var clientId = await localStorage.getCId();
+  var userId = await localStorage.getUId();
+
+  var api =
+      "${CommonPage().api1}/walletMembershipActive&client_id=$clientId&user_id=$userId";
+  Get.log("WalletMembership API : $api");
+  try {
+    var response = await baseServiceGet(api, {}, "");
+    Get.log("WalletMembership Response :: ${response.body}");
+    if (response.statusCode == 200) {
+      var parseData = jsonDecode(response.body);
+      return WalletMembershipActiveModel.fromJson(parseData);
     }
   } on SocketException {
     throw Exception('No Internet Connection');
@@ -1101,6 +1191,7 @@ Future hiApplyCouponCodeAPI(Map<String, dynamic> map) async {
 }
 
 //todo Apply the Available reward code ...
+
 Future hiApplyAvailableAPI(Map<String, dynamic> map) async {
   var api = "${CommonPage().api1}/applyReward";
   Get.log("Apply Available Code API : $api");
@@ -1149,6 +1240,25 @@ Future hiRemoveCouponCodeAPI(rewardId, cartID) async {
     throw Exception('No Internet Connection');
   }
 }
+
+Future hitWalletTreatmentList() async {
+  var clientId = await localStorage.getCId();
+  var userId = await localStorage.getUId();
+  var api =
+      "${CommonPage().api1}/walletTreatmentlist&user_id=$userId&client_id=${clientId}";
+  Get.log("Treatement API : $api");
+  try {
+    var response = await baseServiceGet(api, {}, "");
+    Get.log("Treatment API Response :: ${response.body}");
+    if (response.statusCode == 200) {
+      var decodedData = json.decode(response.body);
+      return WalletTreatmentListModel.fromJson(decodedData);
+      // return decodedData;
+    }
+  } on SocketException {
+    throw Exception('No Internet Connection');
+  }
+}
 // 4086343220
 
 //? Remove PromoCOde
@@ -1181,6 +1291,64 @@ Future hitPromoRewardAPI(t_id, p_id, m_id) async {
   Get.log("PromoCode Reward Get APi :$api");
   try {
     var response = await baseServiceGet(api, {}, "");
+    print("PromoCode available : ${response.body}");
+    if (response.statusCode == 200) {
+      var decodedData = json.decode(response.body);
+      if (decodedData['success'] == true) {
+        return PromoRewardModel.fromJson(decodedData);
+      } else {
+        throw Exception(decodedData['message'] ?? 'Unknown error');
+      }
+    }
+  } on SocketException {
+    throw Exception('No Internet Connection');
+  }
+}
+
+Future hitApplyCash(nimaCashBalance, subTotal) async {
+  // Construct the proper URL
+  var clientId = await localStorage.getCId();
+  var userId = await localStorage.getUId();
+  double nimaCash = double.tryParse(nimaCashBalance.toString()) ?? 0.0;
+  double subtotal = double.tryParse(subTotal.toString()) ?? 0.0;
+  Map<String, dynamic> map = {
+    "user_id": userId,
+    "client_id": clientId,
+    "nima_cash_to_apply": nimaCash >= subtotal ? subtotal : nimaCash,
+  };
+  print(map);
+  var api = "${CommonPage().api1}/applyNimaCash";
+  Get.log("PromoCode Reward Get APi :$api");
+  try {
+    var response = await baseServicePost(api, map, "");
+    print("PromoCode available : ${response.body}");
+    if (response.statusCode == 200) {
+      var decodedData = json.decode(response.body);
+      if (decodedData['success'] == true) {
+        return PromoRewardModel.fromJson(decodedData);
+      } else {
+        throw Exception(decodedData['message'] ?? 'Unknown error');
+      }
+    }
+  } on SocketException {
+    throw Exception('No Internet Connection');
+  }
+}
+
+Future hitApplyEditedCash(editedAmount) async {
+  // Construct the proper URL
+  var clientId = await localStorage.getCId();
+  var userId = await localStorage.getUId();
+  Map<String, dynamic> map = {
+    "user_id": userId,
+    "client_id": clientId,
+    "nima_cash_to_apply": editedAmount
+  };
+  print(map);
+  var api = "${CommonPage().api1}/applyNimaCash";
+  Get.log("PromoCode Reward Get APi :$api");
+  try {
+    var response = await baseServicePost(api, map, "");
     print("PromoCode available : ${response.body}");
     if (response.statusCode == 200) {
       var decodedData = json.decode(response.body);

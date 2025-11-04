@@ -1,263 +1,465 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 import 'package:chino_hills/CSS/color.dart';
 import 'package:chino_hills/Model/cart_model.dart';
+import 'package:chino_hills/Screens/Account/controller/account_detail_controller.dart';
+import 'package:chino_hills/util/local_stoage.dart';
+import '../../CSS/appTypography.dart';
+import '../../common_Widgets/common_terms_condition_widget.dart';
+import '../../common_Widgets/common_text_field.dart';
+import '../../common_Widgets/common_webViewUrl.dart';
+import '../../common_Widgets/phone_number_firmate.dart';
 import '../../util/common_page.dart';
+import '../../util/services.dart';
 import 'controller/checkout_controller.dart';
 import 'package:flutter/services.dart';
 
 class CheckoutPage extends StatelessWidget {
   final CheckoutController controller = Get.put(CheckoutController());
   RxList<Item> cartData;
-  var discountName, totalCost, discountFee, convenceFee, finalCost;
+  var discountName,
+      totalCost,
+      discountFee,
+      convenceFee,
+      finalCost,
+      sendCartID,
+      finalTotalCost,
+      nimaCash;
 
-  CheckoutPage(this.cartData, this.discountName, this.totalCost,
-      this.discountFee, this.convenceFee, this.finalCost);
+  CheckoutPage(
+      this.cartData,
+      this.discountName,
+      this.totalCost,
+      this.discountFee,
+      this.convenceFee,
+      this.finalCost,
+      this.sendCartID,
+      this.finalTotalCost,
+      this.nimaCash);
+
+  AccountDetailController accountController =
+      Get.put(AccountDetailController());
 
   @override
   Widget build(BuildContext context) {
+    controller.requestPermission();
+    accountController.getDetail();
     return Scaffold(
       backgroundColor: AppColor().whiteColor,
       appBar: AppBar(
-          surfaceTintColor: Colors.transparent,
-          leading: IconButton(
+        surfaceTintColor: Colors.transparent,
+        leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Get.back(),
         ),
-        title: Text("CHECKOUT", style: TextStyle(color: Colors.black)),
-        centerTitle: true,
-        backgroundColor: Colors.white,
+        title: Text("CHECKOUT",
+            style: AppTypography.galanoGrostesqueSemiBold.copyWith(
+              color: Colors.black,
+              fontSize: 15.sp,
+            )),
+        backgroundColor: AppColor().whiteColor,
         elevation: 0,
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Contact Details
-            Text("Contact details",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            SizedBox(height: 8),
-            Text("Confirm your details to receive your sales receipt"),
-            SizedBox(height: 10),
-            TextField(
-              controller: controller.emailController,
-              decoration: InputDecoration(
-                labelText: "Email",
-                border: OutlineInputBorder(),
-              ),
-            ),
-            Obx(() => Row(
-                  children: [
-                    Checkbox(
-                      checkColor: AppColor().whiteColor,
-                      activeColor: AppColor().blueColor,
-                      value: controller.saveAddress.value,
-                      onChanged: (val) =>
-                          controller.saveAddress.value = val ?? false,
-                    ),
-                    Text("Save address to your account"),
-                  ],
-                )),
-            SizedBox(height: 20),
-
-            // Payment Method
-            Text("Payment method",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            SizedBox(height: 10),
-            Obx(() => Row(
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => controller.selectedPaymentMethod.value = 0,
-                        child: Container(
-                          padding: EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                                color:
-                                    controller.selectedPaymentMethod.value == 0
-                                        ? Colors.blue
-                                        : Colors.grey,
-                                width: 2),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(Icons.credit_card,
-                                  color:
-                                      controller.selectedPaymentMethod.value ==
-                                              0
-                                          ? AppColor().blueColor
-                                          : AppColor().greyColor),
-                              SizedBox(width: 8),
-                              Text(
-                                "Card",
-                                style: TextStyle(
+      body: Form(
+        key: controller.formKey,
+        child: Padding(
+          padding: EdgeInsets.all(8.h),
+          child: SingleChildScrollView(
+            physics: BouncingScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Contact Details
+                Text("Contact details",
+                    style: AppTypography.galanoGrostesqueSemiBold.copyWith(
+                      fontSize: 16.sp,
+                    )),
+                SizedBox(height: 8.h),
+                Text(
+                  "Confirm your details to receive your sales receipt",
+                  style: AppTypography.hostGroteskRegular
+                      .copyWith(fontSize: 12.sp),
+                ),
+                SizedBox(height: 10.h),
+                CommonTextField(
+                  controller: controller.emailController,
+                  formate: [EmailInputFormatter()],
+                  text: "Email",
+                  autofillHints: [AutofillHints.email],
+                  validator: (val) {
+                    if (val == null || val.isEmpty) {
+                      return 'Please enter a valid email';
+                    }
+                    return null;
+                  },
+                  keyboardType: TextInputType.text,
+                  isDateField: false,
+                ),
+                SizedBox(
+                  height: 10.h,
+                ),
+                Obx(() => Row(
+                      children: [
+                        Checkbox(
+                          checkColor: AppColor().whiteColor,
+                          activeColor: AppColor.dynamicColor,
+                          value: controller.saveAddress.value,
+                          onChanged: (val) =>
+                              controller.saveAddress.value = val ?? false,
+                        ),
+                        Text(
+                          "Save address to your account",
+                          style: AppTypography.hostGroteskRegular
+                              .copyWith(fontSize: 12.sp),
+                        ),
+                      ],
+                    )),
+                SizedBox(height: 10.h),
+                Divider(
+                  height: 2.h,
+                ),
+                SizedBox(height: 10.h),
+                SizedBox(height: 10.h),
+                // Payment Method
+                Text("Payment method",
+                    style: AppTypography.hostGroteskSemiBold.copyWith(
+                      fontSize: 16.sp,
+                    )),
+                SizedBox(
+                  height: 10.h,
+                ),
+                Obx(() => Row(
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () =>
+                                controller.selectedPaymentMethod.value = 0,
+                            child: Container(
+                              padding: EdgeInsets.all(12.h),
+                              decoration: BoxDecoration(
+                                border: Border.all(
                                     color: controller
                                                 .selectedPaymentMethod.value ==
                                             0
-                                        ? AppColor().blueColor
-                                        : AppColor().greyColor,
-                                    fontWeight: FontWeight.bold),
+                                        ? AppColor.dynamicColor
+                                        : Colors.grey,
+                                    width: 2.w),
+                                borderRadius: BorderRadius.circular(8),
                               ),
-                            ],
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Icon(Icons.credit_card,
+                                      color: controller.selectedPaymentMethod
+                                                  .value ==
+                                              0
+                                          ? AppColor.dynamicColor
+                                          : AppColor().greyColor),
+                                  SizedBox(width: 8.w),
+                                  Text(
+                                    "Card",
+                                    style: AppTypography.hostGroteskSemiBold
+                                        .copyWith(
+                                            color: controller
+                                                        .selectedPaymentMethod
+                                                        .value ==
+                                                    0
+                                                ? AppColor.dynamicColor
+                                                : AppColor().greyColor,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 12.sp),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => controller.selectedPaymentMethod.value = 1,
-                        child: Container(
-                          padding: EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                                color:
-                                    controller.selectedPaymentMethod.value == 1
-                                        ? Colors.blue
-                                        : Colors.grey),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(Icons.account_balance_wallet,
-                                  color:
-                                      controller.selectedPaymentMethod.value ==
+                        SizedBox(width: 10.w),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () =>
+                                controller.selectedPaymentMethod.value = 1,
+                            child: Container(
+                              padding: EdgeInsets.all(12.h),
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: controller
+                                                .selectedPaymentMethod.value ==
+                                            1
+                                        ? AppColor.dynamicColor
+                                        : AppColor().greyColor),
+                                borderRadius: BorderRadius.circular(8.r),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Icon(Icons.account_balance_wallet,
+                                      color: controller.selectedPaymentMethod
+                                                  .value ==
                                               1
-                                          ? Colors.blue
-                                          : Colors.grey),
-                              SizedBox(width: 8),
-                              Text("Affirm"),
-                            ],
+                                          ? AppColor.dynamicColor
+                                          : AppColor().greyColor),
+                                  SizedBox(width: 8.w),
+                                  Text(
+                                    "Affirm",
+                                    style: AppTypography.hostGroteskSemiBold
+                                        .copyWith(
+                                            fontSize: 12.sp,
+                                            color: controller
+                                                        .selectedPaymentMethod
+                                                        .value ==
+                                                    1
+                                                ? AppColor.dynamicColor
+                                                : AppColor().greyColor),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                  ],
-                )),
-            SizedBox(height: 15),
-
-            // Card Details
-            Obx(() => controller.selectedPaymentMethod.value == 0
-                ? Column(
-                    children: [
-                      TextField(
-                        controller: controller.cardNumberController,
-                        decoration: InputDecoration(
-                          labelText: "Card number",
-                          border: OutlineInputBorder(),
+                      ],
+                    )),
+                SizedBox(height: 15.h),
+                Obx(() => controller.selectedPaymentMethod.value == 0
+                    ? CardFormField(
+                        key: ValueKey(Theme.of(context).primaryColor),
+                        style: CardFormStyle(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.onPrimary,
+                          borderColor: Colors.grey.shade400,
+                          borderRadius: 10,
+                          borderWidth: 1,
+                          cursorColor: AppColor().blackColor,
+                          textColor: AppColor().blackColor,
+                          placeholderColor: AppColor().blackColor,
+                          fontSize: 16,
                         ),
-                        keyboardType: TextInputType.number,
-                      ),
-                      SizedBox(height: 10),
-                      Row(
+                        onCardChanged: (card) {
+                          controller.cardComplete = card?.complete ?? false;
+                        },
+                        controller: controller.cardFormEditController,
+                      )
+                    : Row(
                         children: [
-                          Expanded(
-                            child: TextField(
-                              controller: controller.expDateController,
-                              decoration: InputDecoration(
-                                labelText: "Expiration date (MM/YY)",
-                                border: OutlineInputBorder(),
-                              ),
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [
-                                ExpiryDateFormatter(),
-                              ],
-                            ),
+                          Image.network(
+                            "https://cdn-icons-png.flaticon.com/512/4341/4341764.png",
+                            height: 40.h,
+                            color: AppColor().mediumGreyColor,
                           ),
-                          SizedBox(width: 10),
-                          Expanded(
-                            child: TextField(
-                              controller: controller.cvcController,
-                              decoration: InputDecoration(
-                                labelText: "Security code (CVC)",
-                                border: OutlineInputBorder(),
-                              ),
-                              keyboardType: TextInputType.number,
-                            ),
+                          SizedBox(
+                            width: 10.w,
                           ),
+                          Expanded(
+                            child: Text(
+                              "After submission, you will be redirected to securely complete next steps.",
+                              style: AppTypography.hostGroteskSemiBold.copyWith(
+                                  fontSize: 14.sp,
+                                  color: AppColor().mediumGreyColor),
+                            ),
+                          )
                         ],
-                      ),
-                      SizedBox(height: 10),
-                      Obx(() => DropdownButtonFormField<String>(
-                            value: controller.selectedCountry.value,
-                            decoration: InputDecoration(
-                              labelText: "Country",
-                              border: OutlineInputBorder(),
+                      )),
+                SizedBox(
+                  height: 15.h,
+                ),
+                Divider(
+                  height: 2.h,
+                ),
+                SizedBox(
+                  height: 15.h,
+                ),
+                // Order Summary
+                Text("Order Summary (${cartData.length})",
+                    style: AppTypography.galanoGrostesqueSemiBold.copyWith(
+                      fontSize: 15.sp,
+                    )),
+                SizedBox(height: 10.h),
+                Column(
+                  children: cartData
+                      .map((item) => ListTile(
+                            title: Text(
+                              item.name.toString(),
+                              style: AppTypography.hostGroteskRegular
+                                  .copyWith(fontSize: 12.sp),
                             ),
-                            items: ["India", "USA", "UK", "Canada"]
-                                .map((country) => DropdownMenuItem(
-                                      child: Text(country),
-                                      value: country,
-                                    ))
-                                .toList(),
-                            onChanged: (value) =>
-                                controller.selectedCountry.value = value!,
-                          )),
-                    ],
-                  )
-                : SizedBox.shrink()),
-
-            SizedBox(height: 20),
-
-            // Order Summary
-            Text("Order Summary (${cartData.length})",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            SizedBox(height: 10),
-            Column(
-              children: cartData
-                  .map((item) => ListTile(
-                        title: Text(item.name.toString()),
-                        trailing: Text("\$${item.price}"),
-                      ))
-                  .toList(),
-            ),
-            Divider(),
-            ListTile(
-              title: Text("Subtotal"),
-              trailing: Text(formatCurrency(totalCost)),
-            ),
-            ListTile(
-              title: Text(discountName.toString()),
-              trailing: Text(
-                "-${discountFee}",
-                style: TextStyle(color: Colors.green),
-              ),
-            ),
-            ListTile(
-              title: Text("Convenience Fee"),
-              trailing: Text(convenceFee),
-            ),
-            Divider(),
-            ListTile(
-              title: Text("Order Total",
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-              trailing: Text(finalCost.toString(),
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-            ),
-            SizedBox(height: 20),
-
-            // Place Order Button
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  controller.placeOrder(cartData);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColor.dynamicColor,
-                  padding: EdgeInsets.symmetric(vertical: 16),
+                            trailing: Text(
+                              "\$${item.price.toString().replaceAll(".0", "")}",
+                              style: AppTypography.hostGroteskRegular
+                                  .copyWith(fontSize: 13.sp),
+                            ),
+                          ))
+                      .toList(),
                 ),
-                child: Text(
-                  "Place order",
-                  style: TextStyle(fontSize: 16, color: Colors.white),
+                Divider(),
+                ListTile(
+                  title: Text(
+                    "Subtotal",
+                    style: AppTypography.hostGroteskSemiBold
+                        .copyWith(fontSize: 12.sp),
+                  ),
+                  trailing: Text(
+                    formatCurrency(totalCost),
+                    style: AppTypography.hostGroteskRegular
+                        .copyWith(fontSize: 13.sp),
+                  ),
                 ),
-              ),
+                discountFee == "-\$0.00" || discountFee == "-\$0"
+                    ? SizedBox.shrink()
+                    : ListTile(
+                        title: Text(
+                          discountName.toString(),
+                          style: AppTypography.hostGroteskSemiBold
+                              .copyWith(fontSize: 12.sp),
+                        ),
+                        trailing: Text(
+                          "${discountFee}",
+                          style: AppTypography.hostGroteskSemiBold
+                              .copyWith(color: Colors.green, fontSize: 13.sp),
+                        ),
+                      ),
+                convenceFee.toString() == "\$0"
+                    ? SizedBox.shrink()
+                    : ListTile(
+                        title: Text(
+                          "Convenience Fee",
+                          style: AppTypography.hostGroteskSemiBold
+                              .copyWith(fontSize: 12.sp),
+                        ),
+                        trailing: Text(
+                          convenceFee,
+                          style: AppTypography.hostGroteskRegular
+                              .copyWith(fontSize: 13.sp),
+                        ),
+                      ),
+                nimaCash.toString() == "0.0"
+                    ? SizedBox.shrink()
+                    : ListTile(
+                        title: Text(
+                          "Nima Cash",
+                          style: AppTypography.hostGroteskSemiBold
+                              .copyWith(fontSize: 12.sp),
+                        ),
+                        trailing: Text(
+                          nimaCash.toString().replaceAll(".0", ""),
+                          style: AppTypography.hostGroteskRegular
+                              .copyWith(fontSize: 13.sp),
+                        ),
+                      ),
+                finalCost.toString().startsWith("-") ||
+                        finalCost.toString() == "\$0"
+                    ? SizedBox.shrink()
+                    : Divider(),
+                finalCost.toString().startsWith("-") ||
+                        finalCost.toString() == "\$0"
+                    ? SizedBox.shrink()
+                    : ListTile(
+                        title: Text("Order Total",
+                            style: AppTypography.hostGroteskSemiBold.copyWith(
+                                fontWeight: FontWeight.bold, fontSize: 12.sp)),
+                        trailing: Text(finalCost.toString(),
+                            style: AppTypography.hostGroteskSemiBold.copyWith(
+                                fontWeight: FontWeight.bold, fontSize: 14.sp)),
+                      ),
+                SizedBox(height: 20.h),
+
+                // Place Order Button
+
+                GetBuilder<CheckoutController>(builder: (controller) {
+                  return CommonTermsConditionWidget(
+                    isneed: true,
+                    isActivated: controller.isAccepted,
+                    onChange: (val) {
+                      controller.isAccepted = val ?? false;
+                      controller.update();
+                    },
+                  );
+                }),
+              ],
             ),
-          ],
+          ),
         ),
       ),
+      persistentFooterButtons: [
+        GetBuilder<CheckoutController>(
+          builder: (controller) => Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8.h),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: controller.isAccepted
+                    ? () async {
+                        LocalStorage localStorage = LocalStorage();
+                        var userId = await localStorage.getUId();
+                        var clientId = await localStorage.getCId();
+                        var orderId = await localStorage.getOId();
+                        print("Hello");
+                        // controller.placeOrder(cartData);
+                        if (controller.formKey.currentState!.validate()) {
+                          print("Hello");
+                          if (controller.selectedPaymentMethod.value == 1) {
+                            if (controller.currentLocation != null) {
+                              /*   var url = controller.currentLocation!.country
+                                          .toString() ==
+                                      "US"
+                                  ? "https://devnima.scanacart.com/affirm/affirmCheckout.cfm?phone=${accountController.phoneController.text.trim()}&email=${controller.emailController.text.trim()}&firstname=${accountController.firstNameController.text.toString().trim()}&lastname=${accountController.lastNameController.text.toString().trim()}&dob=${accountController.dobController.text.toString().trim()}&address=${controller.currentLocation?.street!.trim()}&city=${controller.currentLocation?.locality!.toString().trim()}&state=${controller.currentLocation?.administrativeArea!.trim()}&zipcode=${controller.currentLocation?.postalCode!.trim()}&country=${controller.currentLocation!.country.toString()}&client_id=$clientId&user_id=$userId&order_id=$orderId&total_amount=${finalCost.toString().replaceAll('\$', '')}"
+                                  : "https://devnima.scanacart.com/affirm/affirmCheckout.cfm?phone=${accountController.phoneController.text.trim()}&email=${controller.emailController.text.trim()}&firstname=${accountController.firstNameController.text.toString().trim()}&lastname=${accountController.lastNameController.text.toString().trim()}&dob=${accountController.dobController.text.toString().trim()}&address=123%20Main%20St&city=San%20Francisco&state=CA&zipcode=94111&country=USA&client_id=$clientId&user_id=$userId&order_id=$orderId&total_amount=${finalCost.toString().replaceAll('\$', '')}";*/
+                              var url = controller.currentLocation!.country
+                                          .toString() ==
+                                      "US"
+                                  ? "https://nimawellness.com/affirm/affirmCheckout.cfm?phone=${accountController.phoneController.text.trim()}&email=${controller.emailController.text.trim()}&firstname=${accountController.firstNameController.text.toString().trim()}&lastname=${accountController.lastNameController.text.toString().trim()}&dob=${accountController.dobController.text.toString().trim()}&address=${controller.currentLocation?.street!.trim()}&city=${controller.currentLocation?.locality!.toString().trim()}&state=${controller.currentLocation?.administrativeArea!.trim()}&zipcode=${controller.currentLocation?.postalCode!.trim()}&country=${controller.currentLocation!.country.toString()}&client_id=$clientId&user_id=$userId&order_id=$orderId&total_amount=${finalCost.toString().replaceAll('\$', '')}"
+                                  : "https://nimawellness.com/affirm/affirmCheckout.cfm?phone=${accountController.phoneController.text.trim()}&email=${controller.emailController.text.trim()}&firstname=${accountController.firstNameController.text.toString().trim()}&lastname=${accountController.lastNameController.text.toString().trim()}&dob=${accountController.dobController.text.toString().trim()}&address=123%20Main%20St&city=San%20Francisco&state=CA&zipcode=94111&country=USA&client_id=$clientId&user_id=$userId&order_id=$orderId&total_amount=${finalCost.toString().replaceAll('\$', '')}";
+                              Get.to(WebViewPage(
+                                url: url,
+                                title: "Payment",
+                              ));
+                            } else {
+                              controller.requestPermission();
+                            }
+                          } else if (controller.selectedPaymentMethod.value ==
+                              0) {
+                            if (controller.cardComplete == true) {
+                              print("final cost:$finalTotalCost");
+                              controller.makePayment(
+                                  orderId, sendCartID, finalTotalCost);
+                            } else {
+                              showMessage("Please enter complete card details",
+                                  context);
+                            }
+                          }
+                        }
+                      }
+                    : () {},
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: controller.isAccepted
+                        ? AppColor.dynamicColor
+                        : AppColor().mediumGreyColor,
+                    disabledBackgroundColor: AppColor.disableButtonColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                    elevation: 0,
+                    shadowColor: AppColor.dynamicColor,
+                    padding: EdgeInsets.all(13.h)),
+                child: controller.isCartClearLoading.value
+                    ? Center(
+                        child: CircularProgressIndicator(
+                          color: AppColor().whiteColor,
+                        ),
+                      )
+                    : Text(
+                        "Place order",
+                        style: AppTypography.hostGroteskSemiBold.copyWith(
+                          fontSize: 16.sp,
+                          color: Colors.white,
+                        ),
+                      ),
+              ),
+            ),
+          ),
+        )
+      ],
     );
   }
 }

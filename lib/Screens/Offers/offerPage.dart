@@ -1,15 +1,14 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import 'package:chino_hills/Screens/Offers/controler/offer_controller.dart';
+import 'package:chino_hills/common_Widgets/common_app_bar.dart';
+import 'package:chino_hills/util/route_manager.dart';
 import '../../CSS/color.dart';
 import '../../common_Widgets/cacheNetworkImage.dart';
 import '../../common_Widgets/no_record.dart';
 import '../../util/common_page.dart';
-import '../../util/route_manager.dart';
-import 'controler/offer_controller.dart';
 
 class OffersPage extends StatelessWidget {
   const OffersPage({super.key});
@@ -21,7 +20,7 @@ class OffersPage extends StatelessWidget {
       init: OfferController(),
       builder: (controller) => Scaffold(
           backgroundColor: AppColor().background,
-          appBar: commonAppBar(isLeading: true, title: 'Offers', action: []),
+          appBar: CommonAppBar(title: "Offers"),
           body: controller.load
               ? Center(child: commonLoader(color: AppColor.dynamicColor))
               : controller.offerData.isEmpty
@@ -55,10 +54,6 @@ class OffersPage extends StatelessWidget {
                                   clipBehavior: Clip.antiAlias,
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(10.r),
-                                      // border: Border.all(
-                                      //   color: AppColor().blueColor.withOpacity(0.5),
-                                      //   width: 1.w,
-                                      // ),
                                       color: Colors.white),
                                   margin: EdgeInsets.all(8.w),
                                   child: ConstantNetworkImage(

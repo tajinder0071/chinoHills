@@ -154,7 +154,7 @@ import 'package:sms_autofill/sms_autofill.dart';
 import 'package:dio/dio.dart';
 
 import '../../../util/base_services.dart';
-import '../../../../../util/local_store_data.dart';
+import '../../../util/local_stoage.dart';
 import '../../../util/route_manager.dart';
 import '../../../util/services.dart'; // ✅ For backend API call
 
@@ -186,7 +186,7 @@ class OTPController extends GetxController with CodeAutoFill {
       decoration: BoxDecoration(
         color: Colors.black12,
         borderRadius: BorderRadius.circular(5),
-        border: Border.all(color: Colors.blue.withOpacity(0.2)),
+        border: Border.all(color: Colors.blue.withValues(alpha: 0.2)),
       ),
     );
   }
@@ -268,10 +268,10 @@ class OTPController extends GetxController with CodeAutoFill {
           nLocalStorage.saveData("email", response['data']['email'].toString());
           update();
           // Go to dashboard and pass initial tab index
-          Otp == "123456"
-              ? Get.offAllNamed(RouteManager.selectClinic, arguments: "false")
-              : Get.offAllNamed(RouteManager.dashBoardPage, arguments: 0);
-          //Get.offAllNamed(RouteManager.dashBoardPage, arguments: 0);
+          // Otp == "123456"
+          //     ? Get.offAllNamed(RouteManager.selectClinic, arguments: "false")
+          //     : Get.offAllNamed(RouteManager.dashBoardPage, arguments: 0);
+          Get.offAllNamed(RouteManager.dashBoardPage, arguments: 0);
         }
       } else {
         // Show error if OTP is invalid
@@ -294,3 +294,4 @@ class OTPController extends GetxController with CodeAutoFill {
     super.dispose();
   }
 }
+ 

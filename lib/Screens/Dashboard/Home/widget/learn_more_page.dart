@@ -1,8 +1,11 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:chino_hills/CSS/appTypography.dart';
 import 'package:chino_hills/CSS/app_strings.dart';
+import 'package:chino_hills/common_Widgets/common_app_bar.dart';
 import 'package:chino_hills/util/route_manager.dart';
 import '../../../../CSS/color.dart';
 import '../../../../Model/discover_model.dart';
@@ -11,7 +14,6 @@ import '../../../../binding/cart_billing.dart';
 import '../../../../common_Widgets/cacheNetworkImage.dart';
 import '../../../../common_Widgets/common_button_widget.dart';
 import '../../../../loading/become_a_member_loading.dart';
-import '../../../../util/common_page.dart';
 import '../../../Discover/controller/discover_controller.dart';
 import '../../../cartList/Controller/cart_controller.dart';
 import '../../../shop/Pages/Package Page/Widgets/package_detail_page.dart';
@@ -48,53 +50,59 @@ class _DiscoverSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColor().background,
-      appBar: commonAppBar(isLeading: true, title: "Learn More", action: []),
+      appBar: CommonAppBar(title: "Learn More"),
       body: ListView(
         children: [
+          // Top image with icons and profile
           ConstantNetworkImage(
             isLoad: true,
             imageUrl: cardData.cloudUrl.toString(),
             width: double.infinity,
-            height: 200.h,
+            height: 400.h,
             boxFit: BoxFit.cover,
           ),
-          Padding(
-            padding: EdgeInsets.all(12.w),
+
+          // Content Section
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+            decoration: BoxDecoration(
+              color: AppColor().whiteColor,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  cardData.title?.capitalizeFirst ?? '',
-                  style: GoogleFonts.merriweather(
-                    fontSize: 28.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  cardData.title?.capitalize ?? '',
+                  style: AppTypography.galanoGrostesqueSemiBold.copyWith(
+                      fontSize: 29.sp,
+                      color: AppColor().lightBlackColor,
+                      height: 1),
                 ),
-                SizedBox(height: 10.h),
-                Text(
-                  cardData.description ?? '',
-                  style: GoogleFonts.roboto(
-                    fontSize: 15.sp,
-                    color: Colors.black87,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                SizedBox(height: 14.sp),
+                Text(cardData.description ?? '',
+                    style: AppTypography.galanoGrostesqueRegular.copyWith(
+                      fontSize: 15.sp,
+                      color: AppColor().lightBlackColor,
+                    )),
               ],
             ),
           ),
+          SafeArea(
+            minimum: EdgeInsets.only(bottom: 8.h),
+            child: GetBuilder<DiscoverController>(builder: (controller) {
+              return Padding(
+                padding: EdgeInsets.symmetric(horizontal: 70.w),
+                child: _BottomButton(
+                  label: cardData.callToAction ?? "Learn More",
+                  onTap: () => cardData.callToAction == "Call Now"
+                      ? controller.callNumber(cardData.customUrl.toString())
+                      : controller.launchURL(cardData.customUrl!),
+                  isLoading: false,
+                ),
+              );
+            }),
+          ),
         ],
-      ),
-      bottomNavigationBar: SafeArea(
-        minimum: EdgeInsets.only(bottom: 8.h),
-        child: GetBuilder<DiscoverController>(builder: (controller) {
-          return _BottomButton(
-            label: cardData.callToAction ?? "Learn More",
-            onTap: () => cardData.callToAction == "Call Now"
-                ? controller.callNumber(cardData.customUrl.toString())
-                : controller.launchURL(cardData.customUrl!),
-            isLoading: false,
-          );
-        }),
       ),
     );
   }
@@ -123,8 +131,7 @@ class _OfferDetailSection extends StatelessWidget {
         final offer = controller.offerDetailModel.data!;
         return Scaffold(
           backgroundColor: AppColor().background,
-          appBar:
-          commonAppBar(isLeading: true, title: "Learn More", action: []),
+          appBar: CommonAppBar(title: "Learn More"),
           body: ListView(
             padding: EdgeInsets.all(12.w),
             children: [
@@ -149,24 +156,24 @@ class _OfferDetailSection extends StatelessWidget {
               offer.description == ""
                   ? SizedBox.shrink()
                   : Text(
-                offer.description.toString(),
-                style: GoogleFonts.merriweather(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+                      offer.description.toString(),
+                      style: GoogleFonts.merriweather(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
               offer.description == ""
                   ? SizedBox.shrink()
                   : SizedBox(height: 10.h),
               offer.discountType == ""
                   ? SizedBox.shrink()
                   : Text(
-                offer.discountType.toString(),
-                style: GoogleFonts.merriweather(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+                      offer.discountType.toString(),
+                      style: GoogleFonts.merriweather(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
               SizedBox(height: 16.h),
               if ((offer.treatments?.isNotEmpty ?? false) ||
                   (offer.packages?.isNotEmpty ?? false) ||
@@ -174,7 +181,7 @@ class _OfferDetailSection extends StatelessWidget {
                 Container(
                   padding: EdgeInsets.all(12.w),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
+                    color: AppColor().greyColor.withValues(alpha: .1),
                     borderRadius: BorderRadius.circular(12.r),
                   ),
                   child: Column(
@@ -195,23 +202,27 @@ class _OfferDetailSection extends StatelessWidget {
                     ],
                   ),
                 ),
+              SafeArea(
+                minimum: EdgeInsets.only(bottom: 8.h),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 40.w),
+                  child: _BottomButton(
+                      label: "Apply offer to cart",
+                      onTap: () => controller.selectPromoCode(
+                            offer.promoCode,
+                            0,
+                            offer.id,
+                            controller,
+                            controller.cartModel1.value.data?.cartId ?? "",
+                            onSuccess: () =>
+                                _showSuccessBottomSheet(context, offer),
+                          ),
+                      isLoading: controller.isLoadingPromo),
+                ),
+              ),
             ],
           ),
           // bottomNavigationBar: controller.cartModel1.value.data == null || controller.cartModel1.value.data!.items!.isEmpty || controller.cartModel1.value.data!.cartId.toString() == "0" // ? SizedBox.shrink() :
-          bottomNavigationBar: SafeArea(
-            minimum: EdgeInsets.only(bottom: 8.h),
-            child: _BottomButton(
-                label: "Apply offer to cart",
-                onTap: () => controller.selectPromoCode(
-                  offer.promoCode,
-                  0,
-                  offer.id,
-                  controller,
-                  controller.cartModel1.value.data?.cartId ?? "",
-                  onSuccess: () => _showSuccessBottomSheet(context, offer),
-                ),
-                isLoading: controller.isLoadingPromo),
-          ),
         );
       },
     );
@@ -221,12 +232,12 @@ class _OfferDetailSection extends StatelessWidget {
 void _showSuccessBottomSheet(BuildContext context, offer) {
   showModalBottomSheet(
     context: context,
-    backgroundColor: Colors.transparent,
+    backgroundColor: AppColor().transparent,
     isScrollControlled: true,
     builder: (context) => Container(
       padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColor().whiteColor,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20.r),
           topRight: Radius.circular(20.r),
@@ -241,7 +252,7 @@ void _showSuccessBottomSheet(BuildContext context, offer) {
             height: 4.h,
             margin: EdgeInsets.only(bottom: 20.h),
             decoration: BoxDecoration(
-              color: Colors.grey.shade300,
+              color: AppColor().greyColor.withValues(alpha: .3),
               borderRadius: BorderRadius.circular(2.r),
             ),
           ),
@@ -249,7 +260,7 @@ void _showSuccessBottomSheet(BuildContext context, offer) {
           // Success Icon with Animation
           Icon(
             Icons.local_offer_outlined,
-            color: Colors.black,
+            color: AppColor().blackColor,
             size: 35.sp,
           ),
           SizedBox(height: 16.h),
@@ -260,7 +271,7 @@ void _showSuccessBottomSheet(BuildContext context, offer) {
             style: GoogleFonts.merriweather(
               fontSize: 22.sp,
               fontWeight: FontWeight.bold,
-              color: Colors.black,
+              color: AppColor().blackColor,
             ),
           ),
           SizedBox(height: 20.h),
@@ -271,13 +282,13 @@ void _showSuccessBottomSheet(BuildContext context, offer) {
             padding: EdgeInsets.all(16.w),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(6.r),
-              border: Border.all(color: Colors.grey.shade300),
+              border: Border.all(color: AppColor().greyColor.withValues(alpha: .3)),
             ),
             child: Row(
               children: [
                 Icon(
                   Icons.check,
-                  color: Colors.green.shade700,
+                  color: AppColor().greenColor.withValues(alpha: .7),
                   size: 24.sp,
                 ),
                 SizedBox(width: 12.w),
@@ -305,7 +316,7 @@ void _showSuccessBottomSheet(BuildContext context, offer) {
                 ),
                 Icon(
                   Icons.verified,
-                  color: Colors.green.shade700,
+                  color: AppColor().greenColor.withValues(alpha: .7),
                   size: 20.sp,
                 ),
               ],
@@ -317,6 +328,7 @@ void _showSuccessBottomSheet(BuildContext context, offer) {
           Column(
             children: [
               CommonButtonWidget(
+                innerColor: AppColor.dynamicColor,
                 onTap: () {
                   Get.offAndToNamed(RouteManager.cartList);
                 },
@@ -364,26 +376,27 @@ class _BottomButton extends StatelessWidget {
       child: Container(
         margin: EdgeInsets.all(8.h),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10.r),
+          borderRadius: BorderRadius.circular(30.r),
           color: AppColor.dynamicColor,
         ),
-        height: 55.h,
+        height: 60.h,
+        width: 100.w,
         alignment: Alignment.center,
         child: isLoading
             ? Center(
-            child: CircularProgressIndicator(
-              color: AppColor().whiteColor,
-            ))
+                child: CircularProgressIndicator(
+                color: AppColor().whiteColor,
+              ))
             : Text(
-          label,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18.h,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: AppColor().whiteColor,
+                  fontSize: 18.h,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
       ),
     );
   }
@@ -421,19 +434,19 @@ class _TreatmentList extends StatelessWidget {
         return _ListItem(
           title: treatment.treatmentName ?? '',
           onTap: () => Get.to(
-                () => TreatmentDetailsPage(),
+            () => TreatmentDetailsPage(),
             arguments: treatment.treatmentId,
             binding: CommonBinding(),
             transition: Transition.fadeIn,
             duration: const Duration(milliseconds: 500),
           ),
           children: treatment.variations?.map((v) {
-            return Padding(
-              padding: EdgeInsets.only(left: 16.w, top: 4.h),
-              child: Text("• ${v.variationName}",
-                  style: GoogleFonts.roboto(fontSize: 14.sp)),
-            );
-          }).toList() ??
+                return Padding(
+                  padding: EdgeInsets.only(left: 16.w, top: 4.h),
+                  child: Text("• ${v.variationName}",
+                      style: GoogleFonts.roboto(fontSize: 14.sp)),
+                );
+              }).toList() ??
               [],
         );
       }).toList(),
@@ -453,7 +466,7 @@ class _PackageList extends StatelessWidget {
         return _ListItem(
           title: package.packageName ?? '',
           onTap: () => Get.to(
-                () => PackageDetailPage(),
+            () => PackageDetailPage(),
             arguments: package.packageId,
             binding: CommonBinding(),
             transition: Transition.fadeIn,
@@ -477,7 +490,7 @@ class _MembershipList extends StatelessWidget {
         return _ListItem(
           title: membership.membershipName ?? '',
           onTap: () => Get.to(
-                () => MembersShipDetailsPage(onlyShow: false),
+            () => MembersShipDetailsPage(onlyShow: false),
             arguments: membership.membershipId,
             binding: CommonBinding(),
             transition: Transition.fadeIn,
@@ -511,7 +524,7 @@ class _ListItem extends StatelessWidget {
             children: [
               Expanded(
                   child:
-                  Text(title, style: GoogleFonts.roboto(fontSize: 15.sp))),
+                      Text(title, style: GoogleFonts.roboto(fontSize: 15.sp))),
               IconButton(
                 icon: Icon(Icons.arrow_forward_ios,
                     size: 16.sp, color: AppColor().blueColor),
@@ -532,12 +545,12 @@ class _EmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColor().background,
-      appBar: commonAppBar(isLeading: true, title: "Learn More", action: []),
+      appBar: CommonAppBar(title: "Learn More"),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.search, size: 40.sp, color: Colors.grey),
+            Icon(Icons.search, size: 40.sp, color: AppColor().greyColor),
             SizedBox(height: 12.h),
             Text(AppStrings.noDetail, style: TextStyle(fontSize: 18.sp)),
           ],
@@ -552,7 +565,7 @@ class _LoadingState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColor().background,
-      appBar: commonAppBar(isLeading: true, title: "Learn More", action: []),
+      appBar: CommonAppBar(title: "Learn More"),
       body: MemberLoadDetail(),
     );
   }

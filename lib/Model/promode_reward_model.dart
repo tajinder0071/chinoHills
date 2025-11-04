@@ -1,15 +1,3 @@
-// To parse this JSON data, do
-//
-//     final promoRewardModel = promoRewardModelFromJson(jsonString);
-
-import 'dart:convert';
-
-PromoRewardModel promoRewardModelFromJson(String str) =>
-    PromoRewardModel.fromJson(json.decode(str));
-
-String promoRewardModelToJson(PromoRewardModel data) =>
-    json.encode(data.toJson());
-
 class PromoRewardModel {
   Membership? membership;
   String? message;

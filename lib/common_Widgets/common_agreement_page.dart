@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
+import 'package:chino_hills/Screens/Dashboard/Home/controller/membership_detail_controller.dart';
+import 'package:chino_hills/util/common_page.dart';
 import '../CSS/color.dart';
-import '../Screens/Dashboard/Home/controller/membership_detail_controller.dart';
-import '../util/common_page.dart';
 
 class CommonAgreementPage extends StatelessWidget {
   CommonAgreementPage({super.key});
@@ -33,13 +32,13 @@ class CommonAgreementPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     IconButton(
-                      icon: Icon(Icons.close),
+                      icon: const Icon(Icons.close),
                       onPressed: () => Get.back(),
                     ),
                     Expanded(
                       child: Center(
                         child: Text(
-                          "PATIENT MEMBERSHIP AGREEMENT",
+                          "PATIENT MEMBERSHIP AGREEMENT".toUpperCase(),
                           style: TextStyle(
                             fontSize: 15.sp,
                             fontWeight: FontWeight.bold,
@@ -51,17 +50,19 @@ class CommonAgreementPage extends StatelessWidget {
                   ],
                 ),
               ),
-              Divider(),
+              const Divider(),
               Expanded(
                 child: memController.isLoading
                     ? Center(child: commonLoader())
                     : memController.response != null
                     ? SingleChildScrollView(
-                        child: SafeArea(
-                          child: Html(data: memController.response.content),
-                        ),
-                      )
-                    : SizedBox.shrink(),
+                  child: SafeArea(
+                    child: Html(
+                      data: memController.response?.content ?? '',
+                    ),
+                  ),
+                )
+                    : const SizedBox.shrink(),
               ),
             ],
           ),

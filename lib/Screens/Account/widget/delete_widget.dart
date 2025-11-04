@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import '../../../CSS/color.dart';
+import 'package:chino_hills/CSS/color.dart';
+import 'package:chino_hills/util/local_stoage.dart';
+import 'package:chino_hills/util/route_manager.dart';
+import 'package:chino_hills/util/services.dart';
+
+import '../../../CSS/appTypography.dart';
 import '../../../util/common_page.dart';
-import '../../../../../util/local_store_data.dart';
-import '../../../util/route_manager.dart';
-import '../../../util/services.dart';
 
 class DeleteWidget extends StatefulWidget {
   const DeleteWidget({super.key});
@@ -20,11 +22,9 @@ class _DeleteWidgetState extends State<DeleteWidget> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColor().whiteColor,
         borderRadius: BorderRadius.vertical(
-          top: Radius.circular(20.r),
-          bottom: Radius.circular(20.r),
-        ),
+            top: Radius.circular(20.r), bottom: Radius.circular(20.r)),
       ),
       padding: EdgeInsets.all(20.h),
       margin: EdgeInsets.only(left: 10.h, right: 10.0.h, bottom: 5.0.h),
@@ -32,71 +32,68 @@ class _DeleteWidgetState extends State<DeleteWidget> {
         mainAxisSize: MainAxisSize.min,
         children: [
           CircleAvatar(
-            backgroundColor: AppColor.dynamicColor.withOpacity(0.2),
-            radius: 40.r,
-            child: Icon(
-              Iconsax.profile_delete,
-              size: 30.h,
-              color: AppColor.dynamicColor,
+              backgroundColor: AppColor().redColor.withValues(alpha: 0.2),
+              radius: 40.r,
+              child: Icon(
+                Iconsax.profile_delete,
+                size: 30.h,
+                color: AppColor().redColor,
+              )),
+          SizedBox(height: 10.h),
+          Text(
+            "Delete Account from Nima",
+            style: AppTypography.galanoGrostesqueSemiBold.copyWith(
+              fontSize: 18.sp,
             ),
           ),
           SizedBox(height: 10.h),
           Text(
-            "Delete Account from Chino Hills",
-            style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+            "Are you sure you would like to delete of your nima account?",
+            textAlign: TextAlign.center,
+            style: AppTypography.hostGroteskSemiBold
+                .copyWith(fontSize: 14.sp, color: Colors.black54),
+          ),
+          SizedBox(
+            height: 15.h,
+          ),
+          SizedBox(
+            height: 45.h,
+            width: 260.w,
+            child: ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColor().whiteColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Text("Cancel",
+                  style: AppTypography.hostGroteskSemiBold
+                      .copyWith(color: AppColor().blackColor, fontSize: 14.sp)),
+            ),
           ),
           SizedBox(height: 10.h),
-          Text(
-            "Are you sure you would like to delete of your Chino Hills account?",
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 14.sp, color: Colors.black54),
-          ),
-          SizedBox(height: 15.h),
-          Row(
-            children: [
-              Expanded(
-                child: SizedBox(
-                  height: 45.h,
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColor.dynamicColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: Text(
-                      "Cancel",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
+          SizedBox(
+            height: 45.h,
+            width: 260.w,
+            child: ElevatedButton(
+              onPressed: () {
+                deleteAccount();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColor().redColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.r),
                 ),
               ),
-              SizedBox(width: 10.w),
-              Expanded(
-                child: SizedBox(
-                  height: 45.h,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      deleteAccount();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColor().lightGrey,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.r),
-                      ),
-                    ),
-                    child: load
-                        ? Center(
-                            child: CircularProgressIndicator(
-                              color: AppColor.dynamicColor,
-                            ),
-                          )
-                        : Text("Delete", style: TextStyle(color: Colors.black)),
-                  ),
-                ),
-              ),
-            ],
+              child: load
+                  ? Center(
+                      child:
+                          CircularProgressIndicator(color: AppColor().redColor))
+                  : Text("Delete",
+                      style: AppTypography.hostGroteskSemiBold.copyWith(
+                          color: AppColor().whiteColor, fontSize: 14.sp)),
+            ),
           ),
         ],
       ),
@@ -111,18 +108,15 @@ class _DeleteWidgetState extends State<DeleteWidget> {
     setState(() {});
     LocalStorage local = LocalStorage();
     //user id
-    var userId =await local.getUId();
+    var userId = await local.getUId();
     print("${CommonPage().api}/deleteUser&user_id=${userId}");
     final response = await baseServiceDelete(
-      "${CommonPage().api}/deleteUser&user_id=${userId}",
-      {},
-      "",
-    );
+        "${CommonPage().api}/deleteUser&user_id=${userId}", {}, "");
     print(response.body);
     if (response.statusCode == 200) {
       // Account deleted successfully
 
-     await local.clearAllData();
+      local.clearAllData();
       Get.offAllNamed(RouteManager.loginPage);
       load = false;
       setState(() {});
@@ -134,5 +128,4 @@ class _DeleteWidgetState extends State<DeleteWidget> {
     }
   }
 }
-
 //364926490

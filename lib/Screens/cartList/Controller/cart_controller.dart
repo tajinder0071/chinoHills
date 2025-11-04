@@ -11,7 +11,8 @@ import '../../../Model/offer_detail_model.dart';
 import '../../../util/base_services.dart';
 import '../../../Model/promode_reward_model.dart' hide Membership;
 import '../../../util/common_page.dart';
-import '../../../util/local_store_data.dart';
+import '../../../util/local_stoage.dart';
+import '../../checkout_page/checkoutPage.dart';
 import '../widgets/cart_item_widget.dart';
 import '../widgets/success_paymnet_widget.dart';
 
@@ -24,6 +25,8 @@ class CartController extends GetxController {
   String appliedName = '';
   RxBool isUpdateSomething = false.obs;
   RxBool isDelete = false.obs;
+  RxBool isNimaCashRemove = false.obs;
+
   RxList<Item> cartData = <Item>[].obs;
   var cartModel1 = CartModel1().obs;
   bool isUpdate = false;
@@ -37,6 +40,7 @@ class CartController extends GetxController {
 
   List cartIdList = [];
   var sendCartID;
+  var appliedoffer;
 
   var selectedId = Rx<String?>(null); //todo You can also use int if needed
   var offerselectedId = Rx<String?>(null); //todo You can also use int if needed
@@ -66,6 +70,25 @@ class CartController extends GetxController {
   Placemark? currentLocation;
   var currentLat = 0.0.obs;
   var currentLng = 0.0.obs;
+  //  Todo ?? available reward...
+  bool isRewardLoading = false;
+  List<Offer> couponAvailableData = [];
+  List<Reward> availableData = [];
+
+  var tId = [];
+  var pId = [];
+  var mId = [];
+
+  var memId = '';
+  var memDiscount = '';
+  String? promoname = '';
+  var applyPromo;
+  var promoId = '';
+  var rewardId = '';
+  var rewardName = '';
+  var applyReward;
+  var isAccepted = false;
+
 
   @override
   void onInit() {
@@ -91,7 +114,6 @@ class CartController extends GetxController {
       if (response['success'] == true) {
         var items = response['data']?['items'];
         sendCartID = response['data']?['cart_id'];
-        print("cartModel1.value.data?.cartId${sendCartID}");
         if (items is List) {
           cartData.assignAll(
             items.map((e) => Item.fromJson(e as Map<String, dynamic>)).toList(),
@@ -107,6 +129,7 @@ class CartController extends GetxController {
         finalTotalCost =
             double.tryParse(response['data']['final_cost'].toString()) ?? 0.0;
         totalConvenienceFee = response['data']['convenience_fee'] ?? 0;
+        offerType = response['data']['offer_type'] ?? 0;
 
         cartIdList.clear();
         isMemberAvailable = false;
@@ -211,43 +234,20 @@ class CartController extends GetxController {
     }
   } //fix this
 
-  // Future deleteCart(id, index) async {
-  //   // set flag via .value
-  //   isDelete.value = true;
-  //   update();
-  //   try {
-  //     var response = await hitDeleteCartApi(id);
-  //     // on success, re-fetch or manually remove item
-  //     // If the API returns the updated cart, prefer using cartList()
-  //     if (response != null && response['success'] == true) {
-  //       // Option A (recommended): re-fetch server cart
-  //       await cartList(); // this will set sendCartID according to server response
-  //
-  //       // Option B: if you prefer local remove without network:
-  //       // cartData.removeAt(index);
-  //       // cartitemList.removeWhere((elem) => elem == id);
-  //       // if (cartData.isEmpty) clearCartState();
-  //
-  //       // If server indicates cart is empty, ensure sendCartID is cleared
-  //       final serverCartId = response['data']?['cart_id'];
-  //       if (serverCartId == null || serverCartId.toString() == "null" || (response['data']?['items'] is List && (response['data']?['items'] as List).isEmpty)) {
-  //         sendCartID = null;
-  //         cartModel1.value = CartModel1();
-  //         cartData.clear();
-  //       }
-  //     } else {
-  //       // handle failure if needed
-  //     }
-  //     isDelete.value = false;
-  //     couponAvailableRewards(); // refresh offers
-  //     update();
-  //   } catch (e) {
-  //     // error branch
-  //     isDelete.value = false;
-  //     update();
-  //   }
-  // }
-
+  Future removeNimaCash(id) async {
+    isNimaCashRemove = true.obs;
+    update();
+    try {
+      var response = await hitRemoveNimaCash(id);
+      isNimaCashRemove = false.obs;
+      cartList();
+      couponAvailableRewards();
+      print("Delete : $id");
+      update();
+    } on Exception catch (e) {
+      update();
+    }
+  }
 
   // TODO >>. Request the Location permission...
   Future<void> requestPermission() async {
@@ -358,10 +358,10 @@ class CartController extends GetxController {
 
 //TODO >> Update the Product Items..
   Future<void> updateProduct(
-      variationId,
-      cartID,
-      int cartitemID,
-      ) async {
+    variationId,
+    cartID,
+    int cartitemID,
+  ) async {
     isUpdate = true;
     var clientId = await localStorage.getCId();
     var userId = await localStorage.getUId();
@@ -393,7 +393,7 @@ class CartController extends GetxController {
     }
   }
 
-  Future<void> createOrder(id, promo_id, orderid) async {
+  Future<void> createOrder(id, promo_id, orderid, totalDiscount,nimaCash) async {
     isUpdate = true;
     var clientId = await localStorage.getCId();
     var userId = await localStorage.getUId();
@@ -413,8 +413,30 @@ class CartController extends GetxController {
         orderID = response['order_id'];
         //localy store the order id
         localStorage.saveData("order_id", response['order_id'].toString());
-        print("Order ID: ${response['order_id']}");
-        makePayment(orderID);
+        if (finalTotalCost.toString() == "0.0" ||
+            finalTotalCost.toString() == "0") {
+          await clearTheCartAPI(
+            orderId: orderid.toString() == "null" ? orderID : orderid,
+          );
+        } else {
+          Get.to(
+              CheckoutPage(
+                  cartData,
+                  cartModel1.value.data!.offerType.toString() == "Promo Code"
+                      ? 'Discount (Promotion)'
+                      : cartModel1.value.data!.offerType.toString() ==
+                              'Membership'
+                          ? 'Membership Discount'
+                          : 'Discount (Reward)',
+                  CartController.cart.totalCost,
+                  formatCurrency('-${totalDiscount}'),
+                  formatCurrency(totalConvenienceFee),
+                  formatCurrency(finalTotalCost),
+                  sendCartID,
+                  finalTotalCost,nimaCash),
+              transition: Transition.downToUp,
+              duration: Duration(milliseconds: 200));
+        }
         update();
       } else {
         isUpdate = false;
@@ -435,9 +457,9 @@ class CartController extends GetxController {
 
       await Stripe.instance.initPaymentSheet(
           paymentSheetParameters: SetupPaymentSheetParameters(
-            paymentIntentClientSecret: paymentIntentClientSecret,
-            merchantDisplayName: 'NIMA',
-          ));
+        paymentIntentClientSecret: paymentIntentClientSecret,
+        merchantDisplayName: 'NIMA',
+      ));
       await _processPayment(paymentIntentClientSecret, orderId);
     } catch (e) {
       print(e);
@@ -508,16 +530,11 @@ class CartController extends GetxController {
     }
   }
 
-  // TODO ??  Make here the payment api to make the cart empty..
+  // TODO ??  Make here the payment a_processPaymentpi to make the cart empty..
   bool isCartClearLoading = false;
 
   Future<void> clearTheCartAPI({
-    required String transactionId,
-    required String paymentStatus,
-    required String paymentMethod,
-    required String paymentNotes,
     required var orderId,
-    required int paymentAmount, // ✅ New parameter added
   }) async {
     isCartClearLoading = true;
     var clientId = await localStorage.getCId();
@@ -526,11 +543,6 @@ class CartController extends GetxController {
     Map<String, dynamic> sendMap = {
       "cart_id": sendCartID,
       "user_id": userId,
-      "payment_amount": paymentAmount, // ✅ Add payment amount here
-      "transaction_id": transactionId,
-      "payment_status": paymentStatus,
-      "payment_method": paymentMethod,
-      "payment_notes": paymentNotes,
       "order_id": orderId,
       "client_id": "$clientId",
     };
@@ -547,8 +559,8 @@ class CartController extends GetxController {
           context: Get.context!,
           barrierDismissible: false,
           builder: (context) => PaymentSuccessPopup(
-            transactionId: transactionId.toString(),
-            transactionType: paymentMethod.toString(),
+            transactionId: "",
+            transactionType: "",
           ),
         );
 
@@ -608,15 +620,15 @@ class CartController extends GetxController {
 
         final int paymentAmount = paymentIntentData['amount'] ?? 0;
 
-        await clearTheCartAPI(
+        /* await clearTheCartAPI(
           transactionId: paymentIntentData['id'],
           paymentStatus: paymentIntentData['status'],
           paymentMethod:
-          paymentIntentData['payment_method_types']?[0] ?? 'card',
+              paymentIntentData['payment_method_types']?[0] ?? 'card',
           paymentNotes: 'Stripe Payment',
           orderId: orderId,
           paymentAmount: paymentAmount, // ✅ Added this
-        );
+        );*/
       } else {
         print(
             "❌ Failed to retrieve payment intent. Status code: ${response.statusCode}");
@@ -668,15 +680,13 @@ class CartController extends GetxController {
         "promo_code": code,
         "cart_id": sendCartID,
         "user_id": userId,
-        "client_id": "${clientId}"
+        "client_id": "$clientId"
       };
       Get.log("apply Cart list :$map");
       var response = await hiApplyCouponCodeAPI(map);
       if (response['success'] == true) {
         //todo promo code applied == True,
         appliedCouponCode.value = code;
-        // appledCouponID = response['updated_items'][0]['promo_code_id'];
-        // appledAmount = response['updated_items'][0]['total_discount'];
         totalAmount.value -= couponDiscount.value;
         isApplyLoading = false;
         promoTextController.clear();
@@ -726,117 +736,12 @@ class CartController extends GetxController {
     }
   }
 
-  // selectPromoCode(code, index, offerId, isSelected, cartId) async {
-  //   isApplyLoading = true;
-  //   update();
-  //   try {
-  //     print("Apply offer to cart1 $cartId");
-  //     promoErrorText = ''; //todo Reset error
-  //     var clientId = await localStorage.getCId();
-  //     var userId = await localStorage.getUId();
-  //
-  //     Map<String, dynamic> map = {
-  //       "promo_code": code,
-  //       "cart_id": cartId.toString(),
-  //       "user_id": userId.toString(),
-  //       "client_id": clientId.toString(),
-  //     };
-  //     print("Apply offer to cart1");
-  //     Get.log("apply Cart list :$map");
-  //     var response = await hiApplyCouponCodeAPI(map);
-  //     if (response['success'] == true) {
-  //       selectedPromoIndex.value = index;
-  //       offerselectedId.value = isSelected.toString();
-  //       isApplyLoading = false;
-  //       isUpdateSomething.value = true;
-  //       promoErrorText = ''; // Reset error
-  //       appliedName = couponAvailableData[index].title ?? '';
-  //       applyPromo = true;
-  //       applyReward = false;
-  //       rewardId = '';
-  //       rewardName = '';
-  //       update();
-  //       cartList();
-  //       Get.back();
-  //     } else {
-  //       isUpdateSomething.value = false;
-  //       // promoErrorText = "Invalid code. Please enter a valid promo code.";
-  //       print("object: ${promoErrorText}");
-  //       isApplyLoading = false;
-  //       update();
-  //     }
-  //   } on Exception catch (e) {
-  //     isUpdateSomething.value = false;
-  //     isApplyLoading = false;
-  //     update();
-  //   }
-  // }
   var isLoadingPromo = false;
 
-// Improved selectPromoCode method
-//   Future<void> selectPromoCode(code, index, offerId, isSelected, cartId) async {
-//     if (isLoadingPromo) return;
-//     isLoadingPromo = true;
-//     update();
-//     try {
-//       print("Apply offer to cart1 $cartId");
-//       promoErrorText = '';
-//       var clientId = await localStorage.getCId();
-//       var userId = await localStorage.getUId();
-//       Map<String, dynamic> map = {
-//         "promo_code": code,
-//         "cart_id": cartId.toString(),
-//         "user_id": userId.toString(),
-//         "client_id": clientId.toString(),
-//       };
-//       Get.log("apply Cart list :$map");
-//       var response = await hiApplyCouponCodeAPI(map);
-//
-//       if (response['success'] == true) {
-//         selectedPromoIndex.value = index;
-//         offerselectedId.value = isSelected.toString();
-//         isUpdateSomething.value = true;
-//         promoErrorText = '';
-//         appliedName = couponAvailableData[index].title ?? '';
-//         applyPromo = true;
-//         applyReward = false;
-//         isLoadingPromo = false;
-//         rewardId = '';
-//         rewardName = '';
-//         await cartList();
-//         update();
-//         Get.back();
-//       } else {
-//         isUpdateSomething.value = false;
-//         Get.snackbar(
-//           "Invalid Promo Code",
-//           "Please enter a valid promo code.",
-//           snackPosition: SnackPosition.BOTTOM,
-//           backgroundColor: Colors.red.shade400,
-//           colorText: Colors.white,
-//           margin: const EdgeInsets.all(12),
-//           duration: const Duration(seconds: 3),
-//         );
-//       }
-//     } catch (e) {
-//       print("Error selecting promo code: $e");
-//       isUpdateSomething.value = false;
-//       Get.snackbar(
-//         "Error",
-//         "Something went wrong. Please try again.",
-//         snackPosition: SnackPosition.BOTTOM,
-//         backgroundColor: Colors.red.shade400,
-//         colorText: Colors.white,
-//         margin: const EdgeInsets.all(12),
-//         duration: const Duration(seconds: 3),
-//       );
-//     } finally {
-//       isLoadingPromo = false;
-//       update();
-//     }
-//   }
+  var offerType="";
 
-  Future<void> selectPromoCode(code, index, offerId, isSelected, cartId, {VoidCallback? onSuccess}) async {
+  Future<void> selectPromoCode(code, index, offerId, isSelected, cartId,
+      {VoidCallback? onSuccess}) async {
     if (isLoadingPromo) return;
     isLoadingPromo = true;
     update();
@@ -862,7 +767,7 @@ class CartController extends GetxController {
       var response = await hiApplyCouponCodeAPI(map);
       print("Response:: $response");
       if (response['success'] == true) {
-        if(onSuccess!=null){
+        if (onSuccess != null) {
           onSuccess();
         }
         await cartList();
@@ -1015,7 +920,7 @@ class CartController extends GetxController {
     update();
     try {
       var respons =
-      await hiRemoveCouponCodeAPI(rewardid, cartModel1.value.data!.cartId);
+          await hiRemoveCouponCodeAPI(rewardid, cartModel1.value.data!.cartId);
       print(respons['success']);
       if (respons['success'] == true) {
         isUpdateSomething.value = true;
@@ -1051,7 +956,7 @@ class CartController extends GetxController {
     update();
     try {
       var respons =
-      await hitRemoveAddedCouponAPI(promoID, cartModel1.value.data!.cartId);
+          await hitRemoveAddedCouponAPI(promoID, cartModel1.value.data!.cartId);
       if (respons['success'] == true) {
         isUpdateSomething.value = true;
         memberTitle = response.membership!.membershipTitle;
@@ -1075,68 +980,28 @@ class CartController extends GetxController {
     }
   }
 
-  //  Todo ?? available reward...
-  bool isRewardLoading = false;
-  List<Offer> couponAvailableData = [];
-  List<Reward> availableData = [];
 
-  var tId = [];
-  var pId = [];
-  var mId = [];
+  Future<void> applyWalletCash(nimaCashBalance, subTotal) async {
+    isRewardLoading = true;
+    update();
+    try {
+      response = await hitApplyCash(nimaCashBalance, subTotal);
+      isRewardLoading = false;
+      //update();
+    } catch (e) {
+      //rethrow;
+      isRewardLoading = false;
+      update();
+    }
+  }
 
-  var memId = '';
-
-  var memDiscount = '';
-
-  String? promoname = '';
-
-  var applyPromo;
-
-  var promoId = '';
-
-  var rewardId = '';
-
-  var rewardName = '';
-
-  var applyReward;
-
-  // Future<void> couponAvailableRewards() async {
-  //   isRewardLoading = true;
-  //   try {
-  //     couponAvailableData.clear();
-  //     availableData.clear();
-  //
-  //     addToIdList();
-  //
-  //     response = await hitPromoRewardAPI(
-  //       tId,
-  //       pId,
-  //       mId,
-  //     );
-  //
-  //     isRewardLoading = false;
-  //     couponAvailableData.addAll(response.offers ?? []);
-  //     availableData.addAll(response.rewards ?? []);
-  //
-  //     Get.log("Available reward list => ${response.toJson()}");
-  //     update();
-  //   } catch (e) {
-  //     isRewardLoading = false;
-  //     update();
-  //   }
-  // }
   // Improved couponAvailableRewards with debounce
   Future<void> couponAvailableRewards() async {
-    // Prevent multiple simultaneous API calls
     if (_isApiCallInProgress) {
       print("API call already in progress, skipping...");
       return;
     }
-
-    // Cancel any pending debounced calls
     _debounceTimer?.cancel();
-
-    // Debounce the API call
     _debounceTimer = Timer(Duration(milliseconds: 300), () async {
       await _performCouponAvailableRewardsAPI();
     });
@@ -1147,7 +1012,7 @@ class CartController extends GetxController {
 
     _isApiCallInProgress = true;
     isRewardLoading = true;
-
+     update();
     try {
       couponAvailableData.clear();
       availableData.clear();

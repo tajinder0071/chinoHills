@@ -1,10 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../../../Model/order_detail_model.dart';
 import '../../../Model/orer_list_model.dart';
 import '../../../util/base_services.dart';
-import '../../../util/local_store_data.dart';
+import '../../../util/local_stoage.dart';
 
 class OrderController extends GetxController {
   static OrderController get instance => Get.find();
@@ -42,7 +42,7 @@ class OrderController extends GetxController {
   }
 
   // Todo >>  order list api implement
-  Future<void> orderDetailApi(String orderId) async {
+  orderDetailApi(String orderId) async {
     loading = true;
     try {
       detailModel = await hitOrderDetailApi(orderId);

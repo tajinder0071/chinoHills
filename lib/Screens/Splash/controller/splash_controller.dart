@@ -1,9 +1,8 @@
-// controllers/splash_controller.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../CSS/color.dart';
 import '../../../util/base_services.dart';
-import '../../../util/local_store_data.dart';
+import '../../../util/local_stoage.dart';
 import '../../../util/route_manager.dart';
 
 class SplashController extends GetxController
@@ -13,16 +12,16 @@ class SplashController extends GetxController
   final LocalStorage localStorage = LocalStorage();
 
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
     animationController = AnimationController(
-      duration: const Duration(seconds: 1),
+      duration: const Duration(milliseconds: 3000),
       vsync: this,
     );
     animation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: animationController,
-        curve: const Interval(0.10, 0.50, curve: Curves.fastOutSlowIn),
+        curve: const Interval(0.10, 0.25, curve: Curves.fastOutSlowIn),
       ),
     );
     animationController.forward();
@@ -30,9 +29,13 @@ class SplashController extends GetxController
   }
 
   void navigateNext() async {
+    await Future.delayed(const Duration(seconds: 1));
+
     final isUser = await localStorage.getUId();
     if (isUser == null || isUser == "null") {
       Get.offNamed(RouteManager.loginPage);
+      /*Get.off(CompleteProfile(userId: "", otp: "", id: ""),
+          binding: CommonBinding());*/
     } else {
       Get.offAllNamed(RouteManager.dashBoardPage, arguments: 0);
     }
@@ -50,9 +53,9 @@ class SplashController extends GetxController
           localStorage.saveData(
               "client_id", response['data'][0]['client_id'].toString());
           String hex = response['data'][0]['themeColor'].toString().replaceAll(
-            '#',
-            '',
-          );
+                '#',
+                '',
+              );
           isLoading.value = false;
           if (hex.length == 6) hex = 'FF$hex';
           Color dynamicColor = Color(int.parse(hex, radix: 16));

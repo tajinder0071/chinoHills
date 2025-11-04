@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:chino_hills/common_Widgets/common_app_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-import '../../../util/common_page.dart';
-import '../../Account/widget/Search_by_location.dart';
+import '../../Account/widget/search_by_location.dart';
 
 class FindYourLocation extends StatelessWidget {
   const FindYourLocation({super.key});
@@ -13,11 +12,7 @@ class FindYourLocation extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.white,
-        appBar: commonAppBar(
-          isLeading: true,
-          title: "",
-          action: [],
-        ),
+        appBar: CommonAppBar(title: ""),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Center(

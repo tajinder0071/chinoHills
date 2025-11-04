@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:chino_hills/CSS/app_strings.dart';
+import 'package:chino_hills/CSS/color.dart';
+import 'package:chino_hills/util/common_page.dart';
+import 'package:chino_hills/util/route_manager.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../../../CSS/app_strings.dart';
-import '../../../../CSS/color.dart';
-import '../../../../common_Widgets/cacheNetworkImage.dart';
+import '../../../../CSS/appTypography.dart';
+import '../../../../common_Widgets/common_badge_container.dart';
+import '../../../../common_Widgets/common_network_image_widget.dart';
 import '../../../../common_Widgets/no_record.dart';
 import '../../../../loading/discover_loading_page.dart';
-import '../../../../util/common_page.dart';
-import '../../../../util/route_manager.dart';
 import '../Package Page/controller/package_cotroller.dart';
 
 class MembershipPage extends StatelessWidget {
@@ -25,8 +26,8 @@ class MembershipPage extends StatelessWidget {
       builder: (control) {
         if (control.bload) {
           return Shimmer.fromColors(
-            baseColor: Colors.grey[300]!,
-            highlightColor: Colors.grey[100]!,
+            baseColor: AppColor().greyColor.withOpacity(.3),
+            highlightColor: AppColor().greyColor.withOpacity(.1),
             child: Column(
               children: [
                 Container(
@@ -70,44 +71,110 @@ class MembershipPage extends StatelessWidget {
   }
 
   Widget _buildHeaderSection(PackageController control) {
-    return Container(
-      width: double.infinity,
-      height: 180.h,
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image:
-          NetworkImage(control.response.headerDetails!.headerimage ?? ''),
-          fit: BoxFit.cover,
-          colorFilter: ColorFilter.mode(
-            Colors.black.withOpacity(0.5),
-            BlendMode.darken,
-          ),
+    return
+      Container(
+        clipBehavior: Clip.antiAlias,
+        margin: EdgeInsets.symmetric(horizontal: 15.w, vertical: 10.h),
+        width: double.infinity,
+        height: 220.h,
+        decoration: BoxDecoration(
+          color: AppColor.dynamicColor.withOpacity(.96),
+          borderRadius: BorderRadiusGeometry.circular(20),
         ),
-      ),
-      padding: EdgeInsets.symmetric(horizontal: 10.h),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            control.response.headerDetails!.headerTitle ?? '',
-            style: GoogleFonts.merriweather(
-              color: Colors.white,
-              fontSize: 25.sp,
-              fontWeight: FontWeight.bold,
+        child: Stack(
+          clipBehavior: Clip.antiAlias,
+          children: [
+            Positioned(
+              right: -120,
+              top: -100,
+              bottom: -100,
+              child: Image.asset(
+                "assets/new_images/nima_logo.png",
+                color: AppColor.dynamicColor,
+              ),
             ),
-          ),
-          SizedBox(height: 5.h),
-          Text(
-            control.response.headerDetails!.headerDescription ?? '',
-            style: GoogleFonts.actor(
-              color: Colors.white,
-              fontSize: 13.sp,
+            Positioned(
+              right: 0,
+              top: 0,
+              bottom: 0.h,
+              child: CommonNetworkImageWidget(
+                  imageUrl:
+                  control.response.headerDetails!.headerimage.toString(),
+                  height: 300.h,
+                  width: 250.w,
+                  borderRadius: BorderRadius.only(),
+                  fit: BoxFit.contain),
             ),
-          ),
-        ],
-      ),
-    );
+            Positioned(
+              left: 0,
+              top: 0,
+              right: 0,
+              bottom: -200.h,
+              child: Container(
+                height: 300.h,
+                width: 330.w,
+                decoration: BoxDecoration(
+                  gradient: RadialGradient(
+                    colors: [
+                      AppColor().transparent,
+                      AppColor.dynamicColor,
+                    ],
+                    center: Alignment.topCenter,
+                    radius: 0.7,
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+                top: 20.h,
+                left: 20.w,
+                child: CommonBadgeContainer(
+                  outerSize: 50,
+                  icon: Icons.check_rounded,
+                  iconSize: 14,
+                )),
+            Positioned(
+              bottom: 20.h,
+              child: SizedBox(
+                width: 200.w,
+                child: Padding(
+                  padding: EdgeInsets.only(left: 20.w),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        control.response.headerDetails == null
+                            ? ""
+                            : control.response.headerDetails!.headerTitle
+                            .toString(),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.galanoGrostesqueSemiBold.copyWith(
+                            color: AppColor().whiteColor,
+                            fontSize: 22.sp,
+                            height: 0.9.h),
+                      ),
+                      SizedBox(height: 5.h),
+                      Text(
+                        control.response.headerDetails == null
+                            ? ""
+                            : control.response.headerDetails!.headerDescription
+                            .toString(),
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.hostGroteskRegular.copyWith(
+                          color: AppColor().whiteColor,
+                          fontSize: 14.sp,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
   }
 
   Widget _buildMembershipList(PackageController control) {
@@ -141,157 +208,156 @@ class MembershipPage extends StatelessWidget {
           arguments: control.memberShip[index].membershipId,
           parameters: {"onlyShow": "0"},
         ),
-        child: Card(
-          color: AppColor().whiteColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5.r),
-          ),
-          elevation: 2,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Image Section
-              Stack(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5.r),
-                      color: Colors.white,
-                    ),
-                    child: AspectRatio(
-                      aspectRatio: 16 / 9,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(5.r),
-                          topLeft: Radius.circular(5.r),
-                        ),
-                        child: ConstantNetworkImage(
-                          isLoad: true,
-                          imageUrl: member.membershipImage.toString(),
-                          width: double.infinity,
-                          height: 170.h,
-                          boxFit: BoxFit.cover,
-                          alignment: Alignment.topCenter,
-                        ),
-                      ),
-                    ),
-                  ),
-                  member.offeroffText == ""
-                      ? SizedBox.shrink()
-                      : Positioned(
-                    top: 10.h,
-                    left: 5.w,
-                    child: Center(
-                      child: Container(
-                        margin: EdgeInsets.zero,
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 6.w, vertical: 3.h),
-                        decoration: BoxDecoration(
-                          color: AppColor.dynamicColor,
-                          borderRadius:
-                          BorderRadius.circular(5.r),
-                        ),
-                        child: Text(member.offeroffText
-                            .toString()
-                            .toUpperCase(),
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 10.sp,
-                          ),
-                        ),
-                      ),
-
-                    ),
-                  )
-                ],
+        child: Container(
+          width: double.infinity,
+          height: 320.h,
+          margin: EdgeInsets.symmetric(horizontal: 5.w, vertical: 10.h),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20.r),
+            image: DecorationImage(
+              image: NetworkImage(
+                member.membershipImage.toString(),
               ),
-              // Content Section
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          member.membershipTitle.toString(),
-                          style: GoogleFonts.merriweather(
-                              fontSize: 25.sp, fontWeight: FontWeight.bold),
-                        ),
-                        descriptionList.isEmpty
-                            ? SizedBox.shrink()
-                            : Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            "• ${descriptionList.join('\n• ')}",
-                            style: TextStyle(
-                              fontSize: 14.sp,
-                              //fontWeight: FontWeight.w500,
-                              color: AppColor().black80,
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 12),
-                      ],
+              fit: BoxFit.cover,
+              onError: (exception, stackTrace) {
+                Container(
+                  clipBehavior: Clip.antiAlias,
+                  height: 90.h,
+                  width: 110.w,
+                  decoration: BoxDecoration(
+                      color: AppColor.geryBackGroundColor,
+                      borderRadius: BorderRadius.circular(10.r)),
+                  child: Center(
+                    child: Image.asset(
+                      "assets/images/Image_not_available.png",
+                      color: AppColor().blackColor,
+                      fit: BoxFit.cover,
                     ),
                   ),
-                  Container(
-                    height: 50.h,
-                    padding: EdgeInsets.all(10.0.h),
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color:Colors.grey.withOpacity(0.05),
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(5.r),
-                        bottomRight: Radius.circular(5.r),
+                );
+              },
+            ),
+          ),
+          child: Stack(
+            children: [
+              // Gradient Overlay
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20.r),
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      AppColor().blackColor.withOpacity(0.05),
+                      AppColor().blackColor.withOpacity(0.7),
+                    ],
+                  ),
+                ),
+              ),
+              // Top buttons
+              Padding(
+                padding: EdgeInsets.all(16.w),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    member.offeroffText == ""
+                        ? SizedBox.shrink()
+                        : _buildTopTag(
+                        member.offeroffText.toString().toUpperCase()),
+                    Container(
+                      height: 40.w,
+                      width: 40.w,
+                      decoration: BoxDecoration(
+                        color: AppColor.dynamicColor,
+                        shape: BoxShape.circle,
                       ),
-                    ),
-                    child: Row(
-                      children: [
-                        RichText(
-                          text: TextSpan(
-                            children: [
+                      child: Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        size: 16.sp,
+                        color: AppColor().whiteColor,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              //Bottom details
+              Positioned(
+                left: 14.w,
+                right: 14.w,
+                bottom: 10.h,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          RichText(
+                            text: TextSpan(children: [
                               TextSpan(
                                 text: '\$${member.membershipPricing}',
-                                style: TextStyle(
-                                  fontSize: 16.sp,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
+                                style: AppTypography.hostGroteskRegular.copyWith(
+                                  fontSize: 18.sp,
+                                  color: AppColor().whiteColor,
                                   decoration: TextDecoration.none,
                                 ),
                               ),
                               TextSpan(
                                 text: '/month',
-                                style: TextStyle(
-                                  fontSize: 16.sp,
-                                  color: Colors.black, // Or any other color for "month"
+                                style: AppTypography.hostGroteskRegular.copyWith(
+                                  fontSize: 18.sp,
+                                  color: AppColor().whiteColor,
                                   decoration: TextDecoration.none,
                                 ),
                               ),
-                            ],
+                            ]),
                           ),
-                        ),
-                        SizedBox(width: 10),
-                        Spacer(),
-                        Text(
-                          AppStrings.seeAllBenefits,
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.bold,
-                            color: AppColor.dynamicColor,
+                          SizedBox(height: 20.h),
+                          Text(
+                            member.membershipTitle.toString(),
+                            style: AppTypography.galanoGrostesqueSemiBold.copyWith(
+                                color: AppColor().whiteColor,
+                                fontSize: 25.sp,
+                                height: 1.h),
                           ),
-                        ),
-                        Icon(Icons.navigate_next_rounded,
-                            color: AppColor.dynamicColor, size: 20.h),
-                      ],
+                          descriptionList.isEmpty
+                              ? SizedBox.shrink()
+                              : Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              "• ${descriptionList.join('\n• ')}",
+                              style: AppTypography.hostGroteskRegular.copyWith(
+                                fontSize: 14.sp,
+                                color: AppColor().whiteColor,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTopTag(String title) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+      decoration: BoxDecoration(
+        color: AppColor.dynamicColor,
+        borderRadius: BorderRadius.circular(8.r),
+      ),
+      child: Text(
+        title,
+        style: AppTypography.hostGroteskRegular.copyWith(
+          color: AppColor().whiteColor,
+          fontSize: 13.sp,
         ),
       ),
     );

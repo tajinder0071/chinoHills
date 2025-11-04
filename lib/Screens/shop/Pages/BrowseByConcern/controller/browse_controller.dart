@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
+import 'package:chino_hills/Model/brows_detail_model.dart';
 
-import '../../../../../Model/brows_detail_model.dart';
 import '../../../../../util/base_services.dart';
 
 class BrowseController extends GetxController {
@@ -20,7 +20,7 @@ class BrowseController extends GetxController {
   List<String> selectedOptions = [];
   List<String> selectedArea = [];
   List filter = [
-    /* {"title": "Featured"},
+   /* {"title": "Featured"},
     {"title": "Best sellers"},
     {"title": "On Sale"},*/
     {"title": "Price: Low to High"},
@@ -37,7 +37,7 @@ class BrowseController extends GetxController {
   ];
 
   List filterBack = [
-    /* {"title": "Featured"},
+   /* {"title": "Featured"},
     {"title": "Best_sellers"},
     {"title": "On_sale"},*/
     {"title": "Low_to_high"},

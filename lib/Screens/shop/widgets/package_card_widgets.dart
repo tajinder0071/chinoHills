@@ -1,12 +1,10 @@
-import 'package:chino_hills/CSS/image_page.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'dart:io' show Platform;
-
-import '../../../CSS/color.dart';
-import '../../../util/common_page.dart';
+import 'package:get/get.dart';
+import 'package:chino_hills/CSS/color.dart';
+import 'package:chino_hills/CSS/image_page.dart';
+import 'package:chino_hills/util/common_page.dart';
+import '../../../CSS/appTypography.dart';
 
 class PackageCard extends StatelessWidget {
   final String title, unitType;
@@ -58,7 +56,7 @@ class PackageCard extends StatelessWidget {
 
           // Split into prefix + number + suffix
           final prefix =
-          offerText.substring(0, match.start).trim(); // before number
+              offerText.substring(0, match.start).trim(); // before number
           var suffix = offerText.substring(match.end).trim(); // after number
 
           // Only add space after number if prefix contains a dollar sign
@@ -73,10 +71,12 @@ class PackageCard extends StatelessWidget {
 
       return offerText;
     }
+
     return InkWell(
       overlayColor: WidgetStatePropertyAll(AppColor().transparent),
       onTap: onPressed,
-      child: Container(
+      child:
+          /*Container(
         margin: EdgeInsets.symmetric(horizontal: 5.w, vertical: 10.h),
         decoration: BoxDecoration(
           color: AppColor().whiteColor,
@@ -111,48 +111,48 @@ class PackageCard extends StatelessWidget {
                                 discount == "" || discount.toString() == "0"
                                     ? SizedBox.shrink()
                                     : Container(
-                                  margin: EdgeInsets.zero,
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 6.w, vertical: 3.h),
-                                  decoration: BoxDecoration(
-                                    color: AppColor.dynamicColor,
-                                    borderRadius:
-                                    BorderRadius.circular(5.r),
-                                  ),
-                                  child: Text(
-                                    formatDiscount(discount
-                                        .toString()
-                                        .toUpperCase()),
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 10.sp,
-                                    ),
-                                  ),
-                                ),
+                                        margin: EdgeInsets.zero,
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 6.w, vertical: 3.h),
+                                        decoration: BoxDecoration(
+                                          color: AppColor.dynamicColor,
+                                          borderRadius:
+                                              BorderRadius.circular(5.r),
+                                        ),
+                                        child: Text(
+                                          formatDiscount(discount
+                                              .toString()
+                                              .toUpperCase()),
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 10.sp,
+                                          ),
+                                        ),
+                                      ),
                                 SizedBox(
                                   width: 5.w,
                                 ),
                                 unitType == ""
                                     ? SizedBox.shrink()
                                     : Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 6.w, vertical: 3.h),
-                                  decoration: BoxDecoration(
-                                    color: AppColor.dynamicColor
-                                        .withOpacity(.1),
-                                    borderRadius:
-                                    BorderRadius.circular(5.r),
-                                  ),
-                                  child: Text(
-                                    unitType.toUpperCase(),
-                                    style: GoogleFonts.roboto(
-                                      color: AppColor.dynamicColor,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 10.sp,
-                                    ),
-                                  ),
-                                ),
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 6.w, vertical: 3.h),
+                                        decoration: BoxDecoration(
+                                          color: AppColor.dynamicColor
+                                              .withOpacity(.1),
+                                          borderRadius:
+                                              BorderRadius.circular(5.r),
+                                        ),
+                                        child: Text(
+                                          unitType.toUpperCase(),
+                                          style: GoogleFonts.roboto(
+                                            color: AppColor.dynamicColor,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 10.sp,
+                                          ),
+                                        ),
+                                      ),
                               ],
                             ),
                             SizedBox(height: 10.h),
@@ -208,10 +208,10 @@ class PackageCard extends StatelessWidget {
                                 child: Center(
                                   child: Platform.isAndroid
                                       ? commonLoader(
-                                      color: AppColor.dynamicColor)
+                                          color: AppColor.dynamicColor)
                                       : CupertinoActivityIndicator(
-                                    color: AppColor.dynamicColor,
-                                  ),
+                                          color: AppColor.dynamicColor,
+                                        ),
                                 ),
                               );
                             },
@@ -226,7 +226,7 @@ class PackageCard extends StatelessWidget {
                   Text(
                     description.toString(),
                     style: TextStyle(
-                      //fontSize: 14.sp,
+                      fontSize: 14.sp,
                       fontWeight: FontWeight.w500,
                       color: AppColor().black80,
                     ),
@@ -279,36 +279,184 @@ class PackageCard extends StatelessWidget {
             ),
           ],
         ),
+      ),*/
+          Container(
+        width: double.infinity,
+        height: 320.h,
+        margin: EdgeInsets.symmetric(horizontal: 5.w, vertical: 10.h),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20.r),
+          image: DecorationImage(
+            image: NetworkImage(
+              imageUrl.toString(),
+            ),
+            fit: BoxFit.cover,
+            onError: (exception, stackTrace) {
+              Container(
+                clipBehavior: Clip.antiAlias,
+                height: 90.h,
+                width: 110.w,
+                decoration: BoxDecoration(
+                    color: AppColor.geryBackGroundColor,
+                    borderRadius: BorderRadius.circular(10.r)),
+                child: Center(
+                  child: Image.asset(
+                    AppImages.noAvailableImage,
+                    color: AppColor().blackColor,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+        child: Stack(
+          children: [
+            // Gradient Overlay
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20.r),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withValues(alpha: 0.05),
+                    Colors.black.withValues(alpha: 0.7),
+                  ],
+                ),
+              ),
+            ),
+
+            // Top buttons
+            Padding(
+              padding: EdgeInsets.all(13.w),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      unitType.isEmpty
+                          ? SizedBox.shrink()
+                          : _buildTopTag(unitType.toUpperCase()),
+                      SizedBox(width: 6.w),
+                      discount == "" || discount.toString() == "0"
+                          ? SizedBox.shrink()
+                          : _buildTopTag(
+                              formatDiscount(discount.toString().toUpperCase()),
+                            ),
+                    ],
+                  ),
+                  Container(
+                    height: 35.w,
+                    width: 35.w,
+                    decoration: BoxDecoration(
+                      color: AppColor.dynamicColor,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      size: 16.sp,
+                      color: AppColor().whiteColor,
+                    ),
+                  )
+                ],
+              ),
+            ),
+            Positioned(
+              left: 14.w,
+              right: 14.w,
+              top: 60.h,
+              child: buildPriceTextSpanColumn(
+                originalPrice: originalPrice,
+                memberPrice: memberPrice,
+                unit: unitType,
+              ),
+            ),
+
+            // Bottom details
+            Positioned(
+              left: 14.w,
+              right: 14.w,
+              bottom: 12.h,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 40.h),
+                  Text(
+                    title.toString(),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.galanoGrostesqueSemiBold.copyWith(
+                      fontSize: 23.sp,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Text(
+                    description.toString(),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.hostGroteskRegular.copyWith(
+                      fontSize: 14.sp,
+                      color: AppColor().whiteColor,
+                    ),
+                  ),
+                  SizedBox(height: 12.h),
+                  Wrap(
+                    spacing: 4,
+                    runSpacing: -10,
+                    children: [
+                      // ...tags.map((tagData) => _tagChip(tagData)),
+                      ...tags.take(2).map((tagData) => _tagChip(tagData)),
+                      if (tags.length > 2) _extraChip("+${tags.length - 2}"),
+                    ],
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  // Widget _extraChip(String label) {
-  //   return Chip(
-  //     label: Text(label,
-  //         style: TextStyle(fontSize: 12.sp, color: AppColor.dynamicColor)),
-  //     backgroundColor: Colors.white,
-  //   );
-  // }
+  Widget _buildTopTag(String title) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+      decoration: BoxDecoration(
+        color: AppColor.dynamicColor,
+        borderRadius: BorderRadius.circular(8.r),
+      ),
+      child: Text(
+        title.capitalize.toString(),
+        style: AppTypography.galanoGrostesqueSemiBold.copyWith(
+          color: Colors.white,
+          fontSize: 13.sp,
+        ),
+      ),
+    );
+  }
 
-  // void _showRemainingTags(BuildContext context, List<String> remainingTags) {
-  //   showModalBottomSheet(
-  //     context: context,
-  //     builder: (context) {
-  //       return Padding(
-  //         padding: const EdgeInsets.all(16.0),
-  //         child: Wrap(
-  //           spacing: 8,
-  //           runSpacing: 8,
-  //           children: remainingTags.map((tag) => _tagChip(tag)).toList(),
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
+  Widget _buildBottomTag(String title) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 6.h),
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.4),
+        borderRadius: BorderRadius.circular(8.r),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.5)),
+      ),
+      child: Text(
+        title,
+        style: AppTypography.galanoGrostesqueSemiBold.copyWith(
+          color: Colors.white,
+          fontSize: 14.sp,
+        ),
+      ),
+    );
+  }
 
   Widget _tagChip(String label) {
-    return Chip(
+    return _buildBottomTag(
+            label) /*Chip(
       padding: EdgeInsets.zero,
       label: Text(label,
           style: TextStyle(fontSize: 12.sp, color: AppColor.dynamicColor)),
@@ -319,6 +467,11 @@ class PackageCard extends StatelessWidget {
           color: Color(0XFFEEEEEE),
         ),
       ),
-    );
+    )*/
+        ;
+  }
+
+  Widget _extraChip(String label) {
+    return _buildBottomTag(label);
   }
 }

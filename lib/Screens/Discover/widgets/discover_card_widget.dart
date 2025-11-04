@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
-
+import 'package:iconsax/iconsax.dart';
+import 'package:chino_hills/CSS/appTypography.dart';
+import 'package:chino_hills/common_Widgets/common_back_and_forward_button.dart';
+import 'package:chino_hills/common_Widgets/common_network_image_widget.dart';
 import '../../../CSS/color.dart';
-import '../../../common_Widgets/cacheNetworkImage.dart';
-import '../../../common_Widgets/common_button_widget.dart';
-import '../../../common_Widgets/common_network_image_widget.dart';
 import '../../../util/common_page.dart';
 import '../../shop/controller/shop_controller.dart';
 
-class CustomCardWidget extends StatelessWidget {
+class CustomCardWidget extends StatefulWidget {
   final String imageUrl;
   final String title;
   final String headline;
@@ -39,159 +38,203 @@ class CustomCardWidget extends StatelessWidget {
   });
 
   @override
+  State<CustomCardWidget> createState() => _CustomCardWidgetState();
+}
+
+class _CustomCardWidgetState extends State<CustomCardWidget>
+    with SingleTickerProviderStateMixin {
+  late AnimationController acontroller;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Create an animation controller
+    acontroller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..repeat(reverse: true); // 🔁 repeat to create blinking effect
+  }
+
+  @override
+  void dispose() {
+    acontroller.dispose();
+    super.dispose();
+  }
+
+  IconData? getCTAIcon(String text) {
+    switch (text.toLowerCase()) {
+      case "call now":
+        return Iconsax.call;
+      case "leave a review":
+        return Icons.rate_review_outlined;
+      case "book now":
+        return Iconsax.calendar;
+      case "Learn More":
+        return Iconsax.link;
+      default:
+        return null;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final ShopController controller = Get.find();
     //print("offerExpiresText:$offerExpiresText");
     return Container(
-      clipBehavior: Clip.antiAlias,
-      // margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
-      padding: EdgeInsets.only(
-        top: 30.h,
-        bottom: 20.h,
-        left: 10.w,
-        right: 10.w,
-      ),
+      margin: EdgeInsets.all(16.h),
       decoration: BoxDecoration(
-        color: index.isEven ? AppColor().whiteColor : AppColor().lightGrey,
-        //borderRadius: BorderRadius.circular(10.r),
-        // boxShadow: [
-        //   BoxShadow(
-        //     color: Colors.black12,
-        //     offset: Offset(2, 2),
-        //     blurRadius: 5.r,
-        //   ),
-        // ],
+        color: AppColor().whiteColor,
+        borderRadius: BorderRadius.circular(16.r),
+        boxShadow: [
+          BoxShadow(
+            color: AppColor().blackColor.withValues(alpha: .2),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          isOffer
-              ? SizedBox(
-                  height: 220.h,
-                  child: Stack(
-                    clipBehavior: Clip.none,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16.r),
+        child: Stack(
+          children: [
+            // 🔹 Image
+            CommonNetworkImageWidget(
+              imageUrl: widget.imageUrl,
+              height: 220.h,
+              width: double.infinity,
+              borderRadius: BorderRadius.circular(0),
+              fit: BoxFit.cover,
+            ),
+
+            // 🔹 Gradient Overlay
+            Container(
+              width: double.infinity,
+              height: 220.h,
+              decoration: BoxDecoration(
+                color: AppColor().blackColor.withValues(alpha: 0.35),
+              ),
+            ),
+
+            // 🔹 Offer Expiration Tag
+            if (widget.offerExpiresText != null && widget.isOffer)
+              Positioned(
+                top: 12.h,
+                left: 12.w,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 6.h),
+                  decoration: BoxDecoration(
+                    color: AppColor().blackColor.withValues(alpha: 0.7),
+                    borderRadius: BorderRadius.circular(20.r),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      CommonNetworkImageWidget(
-                        imageUrl: imageUrl,
-                        height: 250.h,
-                        width: double.infinity,
-                        borderRadius: BorderRadius.circular(10.r),
-                        fit: BoxFit.fill,
-                      ),
-                      if (offerExpiresText != null)
-                        Positioned(
-                          top: 10.h,
-                          left: 15.w,
+                      FadeTransition(
+                        opacity: acontroller.drive(
+                          Tween(begin: 1.0, end: 0.0)
+                              .chain(CurveTween(curve: Curves.easeInOut)),
+                        ),
+                        child: ScaleTransition(
+                          scale: acontroller.drive(
+                            Tween(begin: 1.0, end: 0.8)
+                                .chain(CurveTween(curve: Curves.easeInOut)),
+                          ),
                           child: Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 8.w,
-                              vertical: 6.h,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.black,
-                              borderRadius: BorderRadius.circular(20.r),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                FadeTransition(
-                                  opacity: controller.blinkAnimation,
-                                  child: ScaleTransition(
-                                    scale: controller.scaleAnimation,
-                                    child: Container(
-                                      width: 8.w,
-                                      height: 8.w,
-                                      decoration: const BoxDecoration(
-                                        color: Colors.red,
-                                        shape: BoxShape.circle,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(width: 8.w),
-                                Text(
-                                  "Expire in ${getTimeDifference(offerExpiresText!)}",
-                                  style: GoogleFonts.roboto(
-                                    color: Colors.white,
-                                    fontSize: 12.sp,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
+                            width: 8.w,
+                            height: 8.w,
+                            decoration:  BoxDecoration(
+                              color: AppColor().redColor,
+                              shape: BoxShape.circle,
                             ),
                           ),
                         ),
+                      ),
+                      SizedBox(width: 8.w),
+                      Text(
+                        "Expire in ${getTimeDifference(widget.offerExpiresText!)}",
+                        style: AppTypography.hostGroteskSemiBold.copyWith(
+                          color: AppColor().whiteColor,
+                          fontSize: 12.sp,
+                        ),
+                      ),
                     ],
                   ),
-                )
-              : Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10.r),
-                    color: Colors.white,
-                  ),
-                  child: ConstantNetworkImage(
-                    isLoad: true,
-                    imageUrl: imageUrl,
-                    boxFit: BoxFit.cover,
-                    height: 222.h,
-                    width: double.infinity,
-                  ),
                 ),
-          SizedBox(height: 20.h),
-          Text(
-            title.toString().replaceAll(
-              title[0].toString(),
-              title[0].toUpperCase(),
-            ),
-            maxLines: 2,
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.merriweather(
-              fontSize: 23.sp,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 15.h),
-          Text(
-            headline,
-            maxLines: 2,
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.inter(fontSize: 15.sp),
-          ),
-          SizedBox(height: 15.h),
+              ),
 
-          CommonButtonWidget(
-            isDisabled: isOfferApplied,
-            isOutlineButton: false,
-            onTap: isOfferApplied ? null : onTapCTA,
-            buttonName: ctaText.replaceAll("  ", " "),
-          ),
-          SizedBox(height: 20.h),
-          // if ((description?.isNotEmpty ?? false) && onTapLearnMore != null)
-          InkWell(
-            onTap: onTapLearnMore,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Learn More",
-                  style: GoogleFonts.roboto(
-                    color: AppColor.dynamicColor,
-                    fontSize: 17.h,
-                    fontWeight: FontWeight.w700,
-                  ),
+            // 🔹 Main Text & Button
+            Positioned(
+              bottom: 10,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 10.h),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        SizedBox(
+                          width: 200.w,
+                          child: Column(
+                            children: [
+                              // Title
+                              Text(
+                                widget.title,
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontFamily: 'GalanoGrotesque-SemiBold',
+                                    color: AppColor().whiteColor,
+                                    fontSize: 20.sp,
+                                    fontWeight: FontWeight.bold,
+                                    height: 1),
+                              ),
+                              SizedBox(height: 4.h),
+                              // Headline
+                              Text(
+                                widget.headline,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontFamily: 'Host Grotesk',
+                                  color: AppColor().whiteColor.withValues(alpha: 0.9),
+                                  fontSize: 13.sp,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(width: 10.w),
+                        Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                CommonRoundedButton(
+                                  onTap: widget.isOfferApplied
+                                      ? null
+                                      : widget.onTapCTA,
+                                  icon:
+                                      getCTAIcon(widget.ctaText) ?? Icons.link,
+                                ),
+                                SizedBox(width: 10.w),
+                                CommonForwardButton(
+                                  onTap: widget.onTapLearnMore,
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                Icon(
-                  Icons.navigate_next_outlined,
-                  size: 25,
-                  color: AppColor.dynamicColor,
-                ),
-              ],
+              ),
             ),
-          ),
-          SizedBox(height: 10.h),
-        ],
+          ],
+        ),
       ),
     );
   }

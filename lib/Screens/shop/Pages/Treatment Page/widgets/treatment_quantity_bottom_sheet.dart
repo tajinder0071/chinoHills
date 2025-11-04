@@ -1,11 +1,12 @@
-import 'package:chino_hills/Screens/shop/Pages/Treatment%20Page/controller/treatment_details_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../../CSS/app_strings.dart';
+import 'package:chino_hills/CSS/app_strings.dart';
+import 'package:chino_hills/Model/treatment_details_model.dart';
+import 'package:chino_hills/Screens/shop/Pages/Treatment%20Page/controller/treatment_details_controller.dart';
+import '../../../../../CSS/appTypography.dart';
 import '../../../../../CSS/color.dart';
-import '../../../../../Model/treatment_details_model.dart';
 
 class TreatmentQuantityBottomSheet extends StatefulWidget {
   final VoidCallback addToCart, onBack;
@@ -33,39 +34,24 @@ class _TreatmentQuantityBottomSheetState
     print(ctn.treatmentDetailsModel.treatment!.variations!.length == 1);
     if (ctn.treatmentDetailsModel.treatment!.variations!.length == 1 &&
         ctn.selectedIndex == 0) {
-      if (ctn
-                  .treatmentDetailsModel
-                  .treatment!
-                  .variations![ctn.selectedIndex]
+      if (ctn.treatmentDetailsModel.treatment!.variations![ctn.selectedIndex]
                   .prices !=
               null &&
-          ctn
-              .treatmentDetailsModel
-              .treatment!
-              .variations![ctn.selectedIndex]
-              .prices!
-              .isNotEmpty) {
+          ctn.treatmentDetailsModel.treatment!.variations![ctn.selectedIndex]
+              .prices!.isNotEmpty) {
         ctn.selectedIndexKey = 0;
 
-        var firstPrice = ctn
-            .treatmentDetailsModel
-            .treatment!
-            .variations![ctn.selectedIndex]
-            .prices![0];
+        var firstPrice = ctn.treatmentDetailsModel.treatment!
+            .variations![ctn.selectedIndex].prices![0];
 
         WidgetsBinding.instance.addPostFrameCallback((_) {
           ctn.updateValidQuantity(
-            qtyLabel:
-                ctn
-                    .treatmentDetailsModel
-                    .treatment!
-                    .variations![ctn.selectedIndex]
-                    .variationName ??
+            qtyLabel: ctn.treatmentDetailsModel.treatment!
+                    .variations![ctn.selectedIndex].variationName ??
                 "",
-            price: (firstPrice.price ?? 0).toDouble(),
+            price: (firstPrice.price ?? 0),
             membershipPrice:
-                (firstPrice.membershipInfo?.membershipOfferPrice ?? 0)
-                    .toDouble(),
+                (firstPrice.membershipInfo?.membershipOfferPrice ?? 0),
             unitType: ctn.treatmentDetailsModel.treatment?.unitType ?? "",
             qty: firstPrice.qty.toString().replaceAll(".0", ""),
           );
@@ -80,7 +66,7 @@ class _TreatmentQuantityBottomSheetState
       height: Get.height * 0.59,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColor().whiteColor,
         borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
       ),
       child: Column(
@@ -99,9 +85,8 @@ class _TreatmentQuantityBottomSheetState
                   child: Center(
                     child: Text(
                       AppStrings.selectYourQuantity.toUpperCase(),
-                      style: TextStyle(
+                      style: AppTypography.hostGroteskSemiBold.copyWith(
                         fontSize: 16.sp,
-                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
@@ -112,22 +97,14 @@ class _TreatmentQuantityBottomSheetState
           ),
 
           // Variations list
-          ctn
-                  .treatmentDetailsModel
-                  .treatment!
-                  .variations![ctn.selectedIndex]
-                  .prices!
-                  .isEmpty
+          ctn.treatmentDetailsModel.treatment!.variations![ctn.selectedIndex]
+                  .prices!.isEmpty
               ? Center(child: Text(AppStrings.noVariationsAvailable))
               : Expanded(
                   child: GetBuilder<TreatmentDetailsController>(
                     builder: (_) {
-                      final prices =
-                          ctn
-                              .treatmentDetailsModel
-                              .treatment!
-                              .variations![ctn.selectedIndex]
-                              .prices ??
+                      final prices = ctn.treatmentDetailsModel.treatment!
+                              .variations![ctn.selectedIndex].prices ??
                           [];
                       return ListView.builder(
                         itemCount: prices.length,
@@ -135,15 +112,13 @@ class _TreatmentQuantityBottomSheetState
                           var priceData = prices[pIndex];
                           // String key = "${ctn.selectedIndex}-$pIndex";
                           var key = pIndex;
-                          var qty = priceData.qty.toString().replaceAll(
-                            ".0",
-                            "",
-                          );
-                          var price = (priceData.price ?? 0).toDouble();
+                          var qty =
+                              priceData.qty.toString().replaceAll(".0", "");
+                          var price = (priceData.price ?? 0);
                           var memPrice =
                               (priceData.membershipInfo?.membershipOfferPrice ??
                                       0)
-                                  .toDouble();
+                                 ;
                           print(ctn.selectedIndex);
                           var unitType =
                               ctn.treatmentDetailsModel.treatment?.unitType;
@@ -160,10 +135,7 @@ class _TreatmentQuantityBottomSheetState
                               ctn.updateSelectedQuantity(
                                 price: price,
                                 membershipPrice: memPrice,
-                                unitType:
-                                    ctn
-                                        .treatmentDetailsModel
-                                        .treatment
+                                unitType: ctn.treatmentDetailsModel.treatment
                                         ?.unitType ??
                                     "",
                                 qty: qty,
@@ -198,8 +170,7 @@ class _TreatmentQuantityBottomSheetState
                     return logic.isAddingCart
                         ? CircularProgressIndicator(
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              AppColor().whiteColor,
-                            ),
+                                AppColor().whiteColor),
                           )
                         : Text(
                             AppStrings.addToCart,
@@ -234,26 +205,26 @@ class _TreatmentQuantityBottomSheetState
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(color: AppColor.dynamicColor, width: 2),
-          color: isActive ? AppColor.dynamicColor : Colors.white,
+          color: isActive ? AppColor.dynamicColor : AppColor().whiteColor,
         ),
         child: isActive
-            ? Icon(Icons.circle, size: 8.w, color: Colors.white)
+            ? Icon(Icons.circle, size: 8.w, color: AppColor().whiteColor)
             : null,
       ),
       title: Text(
         "$qty $variationName",
-        style: GoogleFonts.roboto(fontWeight: FontWeight.bold),
+        style: AppTypography.hostGroteskSemiBold.copyWith(fontWeight: FontWeight.bold),
       ),
       subtitle: Padding(
         padding: EdgeInsets.only(top: 4.0.h),
         child: Row(
           children: [
             Text(
-              "\$${price}",
+              "\$$price",
               // 👈 Added $ and fixed to 2 decimals
-              style: GoogleFonts.merriweather(
+              style: AppTypography.hostGroteskRegular.copyWith(
                 fontSize: 13.sp,
-                color: Colors.black54,
+                color: AppColor().blackColor.withOpacity(.5),
               ),
             ),
             memPrice == 0
@@ -262,16 +233,16 @@ class _TreatmentQuantityBottomSheetState
                     margin: EdgeInsets.symmetric(horizontal: 6.w),
                     height: 12.h,
                     width: 1.w,
-                    color: Colors.grey,
+                    color: AppColor().greyColor,
                   ),
             memPrice == 0
                 ? SizedBox.shrink()
                 : Text(
-                    "\$${memPrice} ${AppStrings.member}", // 👈 Added $
-                    style: GoogleFonts.merriweather(
+                    "\$$memPrice ${AppStrings.member}",
+                    // 👈 Added $
+                    style: AppTypography.hostGroteskSemiBold.copyWith(
                       fontSize: 13.sp,
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
+                      color: AppColor().blackColor,
                     ),
                   ),
           ],

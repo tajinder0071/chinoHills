@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-import '../../../CSS/color.dart';
+import 'package:chino_hills/CSS/color.dart';
 
 class BottomButton extends StatelessWidget {
   final VoidCallback? onReset;
@@ -58,10 +57,10 @@ class BottomButton extends StatelessWidget {
                     colors: [
                       isApplyButtonEnabled!
                           ? AppColor.dynamicColor
-                          : AppColor.dynamicColor.withOpacity(0.5),
+                          : AppColor.dynamicColor.withValues(alpha: 0.5),
                       isApplyButtonEnabled!
                           ? AppColor.dynamicColor
-                          : AppColor.dynamicColor.withOpacity(0.3),
+                          : AppColor.dynamicColor.withValues(alpha: 0.3),
                     ],
                     begin: Alignment.centerLeft,
                     end: Alignment.centerRight,

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shimmer/shimmer.dart';
-
-import '../CSS/color.dart';
+import 'package:chino_hills/CSS/color.dart';
 
 class BecomeAMemberLoading extends StatelessWidget {
   const BecomeAMemberLoading({super.key});
@@ -19,7 +18,7 @@ class BecomeAMemberLoading extends StatelessWidget {
           itemBuilder: (ctx, index) {
             return Container(
               height: 150.h,
-              width: 190.w,
+              width: 250.w,
               margin: EdgeInsets.only(left: 5.h, right: 5.h),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5.r),

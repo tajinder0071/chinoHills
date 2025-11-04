@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:chino_hills/CSS/appTypography.dart';
 
 import '../CSS/color.dart';
 
@@ -11,28 +12,34 @@ class CommonButtonWidget extends StatelessWidget {
   final bool isLoading;
   final double margin;
   final bool isDisabled;
+  final double width;
+  final Color outlineColor;
 
-  CommonButtonWidget({
-    super.key,
-    required this.onTap,
-    required this.buttonName,
-    this.margin = 0.0,
-    this.isOutlineButton = false,
-    this.isLoading = false,
-    this.isDisabled = false,
-  });
+  final Color innerColor;
+
+  CommonButtonWidget(
+      {super.key,
+      required this.onTap,
+      required this.buttonName,
+      this.margin = 0.0,
+      this.isOutlineButton = false,
+      this.isLoading = false,
+      this.isDisabled = false,
+      this.width = double.infinity,
+      this.outlineColor = Colors.white,
+      required this.innerColor});
 
   @override
   Widget build(BuildContext context) {
     return isOutlineButton
         ? SizedBox(
             height: 50.h,
-            width: double.infinity,
+            width: width,
             child: OutlinedButton(
               style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: Colors.white),
+                side: BorderSide(color: outlineColor),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0.r),
+                  borderRadius: BorderRadius.circular(30.0.r),
                 ),
               ),
               onPressed: onTap,
@@ -40,8 +47,8 @@ class CommonButtonWidget extends StatelessWidget {
                 buttonName,
                 style: GoogleFonts.poppins(
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  fontSize: 16.sp,
+                  color: outlineColor,
+                  fontSize: 13.sp,
                 ),
               ),
             ),
@@ -49,18 +56,18 @@ class CommonButtonWidget extends StatelessWidget {
         : Padding(
             padding: EdgeInsets.all(margin),
             child: SizedBox(
-              width: double.infinity,
-              height: 50.h,
+              width: width,
+              height: 60.h,
               child: ElevatedButton(
                 onPressed: isDisabled ? null : onTap,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColor.dynamicColor,
+                  backgroundColor: innerColor,
                   disabledBackgroundColor: Colors.grey.shade400,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.r),
+                    borderRadius: BorderRadius.circular(30.r),
                   ),
-                  elevation: 0,
-                  shadowColor: AppColor.dynamicColor,
+                  elevation: 14,
+                  shadowColor: AppColor().blackColor.withOpacity(0.6),
                 ),
                 child: isLoading
                     ? CircularProgressIndicator(
@@ -71,10 +78,9 @@ class CommonButtonWidget extends StatelessWidget {
                         buttonName,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
+                        style: AppTypography.galanoGrostesqueSemiBold.copyWith(
                           color: Colors.white,
-                          fontSize: 18.h,
-                          fontWeight: FontWeight.w500,
+                          fontSize: 16.sp,
                         ),
                       ),
               ),

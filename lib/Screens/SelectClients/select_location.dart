@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../common_Widgets/common_network_image_widget.dart';
-import '../../common_Widgets/no_record.dart';
-import '../../loading/cart_list_load.dart';
+import 'package:chino_hills/Screens/SelectClients/controller/search_location_controller.dart';
+import 'package:chino_hills/common_Widgets/common_network_image_widget.dart';
+import 'package:chino_hills/common_Widgets/no_record.dart';
+import 'package:chino_hills/loading/cart_list_load.dart';
+import 'package:chino_hills/util/route_manager.dart';
+import '../../common_Widgets/common_app_bar.dart';
 import '../../util/common_page.dart';
 import 'package:get/get.dart';
 import '../../CSS/color.dart';
-import '../../../../../util/local_store_data.dart';
-import '../../util/route_manager.dart';
-import 'controller/search_location_controller.dart';
 
 class SelectLocation extends StatelessWidget {
   SelectLocation({super.key});
@@ -21,11 +21,8 @@ class SelectLocation extends StatelessWidget {
     searchLocation.viewClient();
     return Scaffold(
       backgroundColor: AppColor().background,
-      appBar: commonAppBar(
-        isLeading: true,
-        title: "Select Your Location",
-        action: [],
-      ),
+      appBar:
+      CommonAppBar(title: "Select Your Location"),
       body: GetBuilder<SearchLocationController>(
         builder: (controller) => Center(
           child: Column(
@@ -39,12 +36,9 @@ class SelectLocation extends StatelessWidget {
                               horizontal: 10.w, vertical: 10.h),
                           shrinkWrap: true,
                           itemBuilder: (context, index) => InkWell(
-                            onTap: () async{
-                              LocalStorage localStorage = LocalStorage();
-                            var uId= await localStorage.getUId();
+                            onTap: () {
                               controller.selectClient(
                                   controller.clientList[index].id,
-                                uId
                                   );
                             },
                             child: Padding(
@@ -55,7 +49,7 @@ class SelectLocation extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(10.r),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.grey.withOpacity(0.2),
+                                      color: Colors.grey.withValues(alpha: 0.2),
                                       spreadRadius: 1,
                                       blurRadius: 5,
                                       offset: const Offset(

@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../CSS/color.dart';
-import '../../../common_Widgets/common_button_widget.dart';
+import 'package:chino_hills/CSS/color.dart';
+import 'package:chino_hills/common_Widgets/common_button_widget.dart';
+
 import '../Controller/cart_controller.dart';
 
 class ConvenienceFeetBottomSheet extends StatelessWidget {
@@ -80,6 +81,7 @@ class ConvenienceFeetBottomSheet extends StatelessWidget {
             Spacer(),
             Divider(),
             CommonButtonWidget(
+              innerColor: AppColor.dynamicColor,
               margin: 10.0,
               onTap: () => Get.back(),
               buttonName: "Got it",

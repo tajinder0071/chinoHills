@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-import '../../../CSS/color.dart';
-import '../../../common_Widgets/common_button_widget.dart';
+import 'package:chino_hills/CSS/color.dart';
+import 'package:chino_hills/common_Widgets/common_button_widget.dart';
 
 class OfferAppliedPage extends StatelessWidget {
   final VoidCallback onTapShop, onTapCart;
@@ -72,6 +71,7 @@ class OfferAppliedPage extends StatelessWidget {
             ),
             SizedBox(height: 20.h),
             CommonButtonWidget(
+              innerColor: AppColor.dynamicColor,
               onTap: onTapCart,
               buttonName: "Continue to cart",
             ),

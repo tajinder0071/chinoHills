@@ -1,17 +1,20 @@
+import 'dart:developer';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:icons_plus/icons_plus.dart';
+import 'package:chino_hills/CSS/appTypography.dart';
 import 'package:chino_hills/CSS/app_strings.dart';
 import 'package:chino_hills/CSS/color.dart';
 import 'package:chino_hills/Screens/Dashboard/Home/home_page.dart';
 import 'package:chino_hills/Screens/cartList/Controller/cart_controller.dart';
 import 'package:chino_hills/util/base_services.dart';
 import 'package:chino_hills/util/common_page.dart';
+import '../../common_Widgets/common_affirm_badge_widget.dart';
 import '../../util/local_stoage.dart';
-import '../../util/local_store_data.dart';
 import '../../util/route_manager.dart';
-import '../Account/widget/wallet_page.dart';
+import '../Wallet_Page/wallet_page.dart';
 import '../Discover/discover_page.dart';
 import '../Reward/reward_page.dart';
 import '../shop/controller/shop_controller.dart';
@@ -35,6 +38,32 @@ class DashboardScreenState extends State<DashboardScreen> {
   final LocalStorage localStorage = LocalStorage();
   dynamic isUser;
 
+  final ScrollController homeScrollController = ScrollController();
+  bool _showBanner = true; // Banner visibility
+
+  final List<IconData> _icons = [
+    Iconsax.home_outline,
+    Iconsax.discover_1_outline,
+    Iconsax.shop_outline,
+    Iconsax.gift_outline,
+    Iconsax.wallet_1_outline,
+  ];
+  final List<IconData> _filledIcons = [
+    Iconsax.home_bold,
+    Iconsax.discover_bold,
+    Iconsax.shop_bold,
+    Iconsax.gift_bold,
+    Iconsax.wallet_bold,
+  ];
+
+  final List<String> _labels = [
+    "Home",
+    "Discover",
+    "Shop",
+    "Rewards",
+    "Wallet",
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -43,6 +72,15 @@ class DashboardScreenState extends State<DashboardScreen> {
     getUser();
     fetchAppLogo();
     controller.cartList();
+
+    // 🔹 Listen to scroll changes
+    homeScrollController.addListener(() {
+      if (homeScrollController.position.pixels > 10 && _showBanner) {
+        setState(() => _showBanner = false);
+      } else if (homeScrollController.position.pixels <= 10 && !_showBanner) {
+        setState(() => _showBanner = true);
+      }
+    });
   }
 
   Future<void> fetchAppLogo() async {
@@ -51,6 +89,7 @@ class DashboardScreenState extends State<DashboardScreen> {
       var response = await hitAppLogoAPI();
       if (response['success'] == true) {
         logoPath = CommonPage().image_url + response['data'][0]['linked_image'];
+        log("logoPath$logoPath");
       }
     } catch (e) {
       Get.log(e.toString());
@@ -64,14 +103,15 @@ class DashboardScreenState extends State<DashboardScreen> {
     Get.log("User ID : $isUser");
   }
 
-  void _onItemTapped(int index) {
-    setState(() => _selectedIndex = index);
-    local.saveData(AppStrings.shopIndex, 0);
-  }
+  // void _onItemTapped(int index) {
+  //   setState(() => _selectedIndex = index);
+  //   local.saveData(AppStrings.shopIndex, 0);
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
       backgroundColor: AppColor().background,
       appBar: _getAppBar(_selectedIndex),
       body: _getPage(_selectedIndex),
@@ -101,6 +141,10 @@ class DashboardScreenState extends State<DashboardScreen> {
           onTap: () {
             setState(() => _selectedIndex = 2);
           },
+          scrollController: homeScrollController,
+          onPageChanged: (pageIndex) {
+            setState(() => _showBanner = pageIndex == 0);
+          },
         );
       case 1:
         return DiscoverPage(
@@ -110,7 +154,12 @@ class DashboardScreenState extends State<DashboardScreen> {
           },
         );
       case 2:
-        return ShopPage();
+        return ShopPage(
+          onBrowseByConcernOnTap: () {
+            setState(() => _selectedIndex = 2);
+            ShopController.shop.goToTabByName(AppStrings.browseByConcern);
+          },
+        );
       case 3:
         return RewardPage();
       case 4:
@@ -124,13 +173,14 @@ class DashboardScreenState extends State<DashboardScreen> {
             ShopController.shop.goToTabByName(AppStrings.membership);
           },
         );
+
       default:
         return Container();
     }
   }
 
   PreferredSizeWidget _getAppBar(int index) {
-    if (index == 0) return _buildHomeAppBar();
+    if (index == 0) return _buildHomeAppBar(context);
     if (index >= 1 && index <= 4) {
       return _buildCommonAppBar(
         title: _getAppBarTitle(index),
@@ -140,108 +190,87 @@ class DashboardScreenState extends State<DashboardScreen> {
     return AppBar(elevation: 0, backgroundColor: AppColor().background);
   }
 
-  AppBar _buildCommonAppBar({
+  PreferredSize _buildCommonAppBar({
     required String title,
     required BuildContext context,
   }) {
-    return AppBar(
-      scrolledUnderElevation: 0.0,
-      elevation: 0,
-      backgroundColor: AppColor().background,
-      title: Text(
-        title,
-        style: TextStyle(
-          fontSize: 17.sp,
-          fontWeight: FontWeight.w500,
-          color: AppColor().blackColor,
+    // Dynamic AppBar height
+    final double appBarHeight = isTablet(context) ? 60.h : kToolbarHeight;
+
+    return PreferredSize(
+      preferredSize: Size.fromHeight(appBarHeight),
+      child: AppBar(
+        scrolledUnderElevation: 0.0,
+        elevation: 0,
+        backgroundColor: AppColor().background,
+        title: Text(
+          title,
+          style: TextStyle(
+            fontSize: isTablet(context) ? 22.sp : 17.sp,
+            fontWeight: FontWeight.w500,
+            color: AppColor().blackColor,
+          ),
         ),
+        actions: _buildAppBarActions(context),
+        centerTitle: false,
+        // optional
+        toolbarHeight: appBarHeight, // extra safety
       ),
-      actions: _buildAppBarActions(context),
     );
   }
 
-  AppBar _buildHomeAppBar() {
-    return AppBar(
-      scrolledUnderElevation: 0.0,
-      elevation: 0,
-      backgroundColor: AppColor().background,
-      title: isLogoLoading
-          ? SizedBox(
-              height: 25.h,
-              width: 25.w,
-              child: Center(
-                child: CircularProgressIndicator(
-                  color: AppColor.dynamicColorWithOpacity,
-                ),
-              ),
-            )
-          : logoPath.isEmpty
-          ? SizedBox.shrink()
-          : SizedBox(
-              height: 60.h,
-              width: 80.w,
-              child: Image.network(
-                logoPath,
-                fit: BoxFit.contain,
-                errorBuilder: (context, url, error) {
-                  return Container(
-                    height: 50.h,
-                    width: 50.w,
-                    clipBehavior: Clip.antiAlias,
-                    decoration: BoxDecoration(
-                      color: Colors.black12,
-                      borderRadius: BorderRadius.circular(10.r),
-                    ),
-                    child: Center(child: Icon(Icons.error)),
-                  );
-                },
-              ),
+  PreferredSize _buildHomeAppBar(BuildContext context) {
+    final double appBarHeight = isTablet(context) ? 60.h : kToolbarHeight;
+    final double bannerHeight = isTablet(context) ? 70.h : 55.h;
+
+    return PreferredSize(
+      preferredSize: Size.fromHeight(appBarHeight + bannerHeight),
+      child: SafeArea(
+        top: true,
+        bottom: false,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              height: _showBanner ? bannerHeight : 0.h,
+              child: BannerAffirmBadge(cardView: false, isButton: true),
             ),
-      actions: _buildAppBarActions(context),
+          ],
+        ),
+      ),
     );
   }
 
   List<Widget> _buildAppBarActions(BuildContext context) {
     return [
       InkWell(
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
+        splashColor: AppColor().transparent,
+        highlightColor: AppColor().transparent,
         onTap: () => Get.toNamed(RouteManager.searchPage),
         child: SizedBox(
           height: 30.h,
           width: 30.w,
-          child: Icon(
-            Iconsax.search_normal_outline,
-            size: isTablet(context) ? 30.h : 20.h,
-          ),
-        ),
-      ),
-      SizedBox(width: 10.w),
-      InkWell(
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
-        onTap: () => Get.toNamed(RouteManager.settingsTab),
-        child: SizedBox(
-          height: 30.h,
-          width: 30.w,
-          child: Icon(
-            Iconsax.user_outline,
-            size: isTablet(context) ? 30.h : 20.h,
-          ),
+          child: Icon(Iconsax.search_normal_outline,
+              size: isTablet(context) ? 30.h : 20.h),
         ),
       ),
       SizedBox(width: 10.w),
       GetBuilder<CartController>(
         builder: (cartController) {
           return InkWell(
-            splashColor: Colors.transparent,
-            highlightColor: Colors.transparent,
+            splashColor: AppColor().transparent,
+            highlightColor: AppColor().transparent,
             child: Badge.count(
               count: cartController.cartItemCount ?? 0,
               backgroundColor: AppColor.dynamicColor,
+              textStyle: TextStyle(
+                fontSize: 10.sp,
+                fontWeight: FontWeight.bold,
+                color: AppColor().whiteColor,
+              ),
               child: Icon(
-                Iconsax.shopping_cart_outline,
-                size: isTablet(context) ? 30.h : 23.h,
+                Iconsax.shopping_bag_outline,
+                size: isTablet(context) ? 30.h : 22.h,
               ),
             ),
             onTap: () {
@@ -252,78 +281,101 @@ class DashboardScreenState extends State<DashboardScreen> {
         },
       ),
       SizedBox(width: 10.w),
+      InkWell(
+        splashColor: AppColor().transparent,
+        highlightColor: AppColor().transparent,
+        onTap: () => Get.toNamed(RouteManager.settingsTab),
+        child: SizedBox(
+            height: 30.h,
+            width: 30.w,
+            child: Icon(Iconsax.user_outline,
+                size: isTablet(context) ? 30.h : 20.h)),
+      ),
+      SizedBox(width: 10.w),
     ];
   }
 
   Widget _buildBottomNavigationBar() {
     return Theme(
       data: Theme.of(context).copyWith(
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
+        splashColor: AppColor().transparent,
+        highlightColor: AppColor().transparent,
       ),
-      child: BottomNavigationBar(
-        backgroundColor: AppColor().whiteColor,
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        type: BottomNavigationBarType.fixed,
-        elevation: 8.0,
-        selectedItemColor: AppColor.dynamicColor,
-        unselectedItemColor: AppColor().black80,
-        showUnselectedLabels: true,
-        selectedFontSize: 13,
-        unselectedFontSize: 12,
-        items: [
-          BottomNavigationBarItem(
-            icon: Transform.scale(
-              scale: _selectedIndex == 0 ? 1.1 : 1.0, // magnify selected
-              child: Icon(
-                Iconsax.home_2_outline,
-                size: isTablet(context) ? 30.h : 23.h,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 12.h),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(40.r),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 0.w, vertical: 10.h),
+              decoration: BoxDecoration(
+                color: AppColor().whiteColor.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(40.r),
+                border: Border.all(
+                  color: AppColor().whiteColor.withValues(alpha: 0.3),
+                  width: 1.2.w,
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: List.generate(_icons.length, (index) {
+                  final isSelected = _selectedIndex == index;
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _selectedIndex = index;
+                        if (_selectedIndex == 0) {
+                          _showBanner = true;
+                        }
+                      });
+                    },
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isSelected ? 16.w : 0,
+                        vertical: 8.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? AppColor.dynamicColor
+                            : AppColor().transparent,
+                        borderRadius: BorderRadius.circular(30.r),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(5.w),
+                        child: Row(
+                          children: [
+                            Icon(
+                              isSelected ? _filledIcons[index] : _icons[index],
+                              color: isSelected
+                                  ? AppColor().whiteColor
+                                  : AppColor().blackColor.withValues(alpha: 0.8),
+                            ),
+                            SizedBox(width: 5.w),
+                            if (isSelected) ...[
+                              SizedBox(width: 6.w),
+                              Text(
+                                _labels[index],
+                                style:
+                                    AppTypography.hostGroteskSemiBold.copyWith(
+                                  color: AppColor().whiteColor,
+                                  fontSize: 15.sp,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }),
               ),
             ),
-            label: AppStrings.home,
           ),
-          BottomNavigationBarItem(
-            icon: Transform.scale(
-              scale: _selectedIndex == 1 ? 1.1 : 1.0,
-              child: Icon(
-                Iconsax.discover_outline,
-                size: isTablet(context) ? 30.h : 23.h,
-              ),
-            ),
-            label: AppStrings.discover,
-          ),
-          BottomNavigationBarItem(
-            icon: Transform.scale(
-              scale: _selectedIndex == 2 ? 1.1 : 1.0,
-              child: Icon(
-                Iconsax.shop_outline,
-                size: isTablet(context) ? 30.h : 23.h,
-              ),
-            ),
-            label: AppStrings.shop,
-          ),
-          BottomNavigationBarItem(
-            icon: Transform.scale(
-              scale: _selectedIndex == 3 ? 1.1 : 1.0,
-              child: Icon(
-                Iconsax.gift_outline,
-                size: isTablet(context) ? 30.h : 23.h,
-              ),
-            ),
-            label: AppStrings.rewards,
-          ),
-          BottomNavigationBarItem(
-            icon: Transform.scale(
-              scale: _selectedIndex == 4 ? 1.1 : 1.0,
-              child: Icon(
-                Iconsax.wallet_3_outline,
-                size: isTablet(context) ? 30.h : 23.h,
-              ),
-            ),
-            label: AppStrings.wallet,
-          ),
-        ],
+        ),
       ),
     );
   }

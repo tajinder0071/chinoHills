@@ -1,11 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import '../../../util/base_services.dart';
-import '../../../../../util/local_store_data.dart';
+import 'package:chino_hills/util/base_services.dart';
+import 'package:chino_hills/util/services.dart';
+
+import '../../../util/local_stoage.dart';
 import '../../../CSS/color.dart';
-import '../../../util/services.dart';
 
 class AccountDetailController extends GetxController {
   TextEditingController phoneController = TextEditingController();
@@ -18,8 +18,8 @@ class AccountDetailController extends GetxController {
   var dob = "".obs;
 
   GlobalKey<FormState> key = GlobalKey();
-
   Future getDetail() async {
+
     isLoading.value = true;
     update();
     try {

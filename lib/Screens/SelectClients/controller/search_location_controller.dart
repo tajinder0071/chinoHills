@@ -1,10 +1,10 @@
 import 'package:get/get.dart';
+import 'package:chino_hills/util/base_services.dart';
+import 'package:chino_hills/util/local_stoage.dart';
 
 import '../../../Model/choose_client_model.dart';
 import '../../../Model/search_client_model.dart';
 import '../../../Model/view_client_model.dart';
-import '../../../util/base_services.dart';
-import '../../../../../util/local_store_data.dart';
 import '../../../util/route_manager.dart';
 
 class SearchLocationController extends GetxController {
@@ -46,12 +46,9 @@ class SearchLocationController extends GetxController {
 
   List<ChooseDatum> chooseList = [];
 
-  Future<void> selectClient(id, user_id) async {
+  Future<void> selectClient(id) async {
     load = true;
     chooseList.clear();
-    //call local storage
-    LocalStorage localStorage = LocalStorage();
-    // update();
     try {
       ChooseClientModel response = await hitSelectClient(id);
       chooseList.addAll(response.data!);
@@ -60,10 +57,10 @@ class SearchLocationController extends GetxController {
       localStorage.saveData("user_uuid", response.data![0].userId.toString());
       localStorage.saveData("user_name",
           "${response.data![0].firstName} ${response.data![0].lastName}");
-      localStorage.saveData("email", response.data![0].userEmail.toString());
-      localStorage.saveData("first_name", response.data![0].firstName.toString());
-      localStorage.saveData("last_name", response.data![0].lastName.toString());
-      localStorage.saveData("client_id", id.toString());
+      localStorage.saveData("email", response.data![0].userEmail);
+      localStorage.saveData("first_name", response.data![0].firstName);
+      localStorage.saveData("last_name", response.data![0].lastName);
+      // localStorage.saveData("client_id", id.toString());
       load = false;
       update();
     } on Exception catch (e) {

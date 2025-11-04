@@ -1,33 +1,31 @@
 import 'package:get/get.dart';
-
+import 'package:chino_hills/Screens/Complete%20Profile/complete_profile.dart';
+import 'package:chino_hills/Screens/Dashboard/Home/widget/learn_more_page.dart';
+import 'package:chino_hills/Screens/Dashboard/Home/widget/members_ship_details_page.dart';
+import 'package:chino_hills/Screens/Dashboard/Home/widget/scqn_qr.dart';
+import 'package:chino_hills/Screens/Dashboard/Home/widget/search_page.dart';
+import 'package:chino_hills/Screens/Dashboard/dashboard_screen.dart';
+import 'package:chino_hills/Screens/Login/login_page.dart';
+import 'package:chino_hills/Screens/Offers/offerPage.dart';
+import 'package:chino_hills/Screens/Offers/widget/offer_dfetail.dart';
+import 'package:chino_hills/Screens/SelectClients/widget/find_your_location.dart';
+import 'package:chino_hills/Screens/Signup%20Reward%20Page/signup_reward_page.dart';
+import 'package:chino_hills/Screens/Signup%20Reward%20Page/widgets/refer_friends_widgets.dart';
+import 'package:chino_hills/Screens/cartList/cart_list.dart';
+import 'package:chino_hills/Screens/shop/Pages/Treatment%20Page/widgets/treatment_details_page.dart';
+import 'package:chino_hills/Screens/Otp%20Page/otp_verification_page.dart';
+import 'package:chino_hills/Screens/Register/controller/register_controller.dart';
+import 'package:chino_hills/Screens/Register/register_page.dart';
+import 'package:chino_hills/binding/cart_billing.dart';
 import '../Model/detail_browse_model.dart';
 import '../Model/discover_model.dart' as discover;
-
 import '../Screens/Account/widget/accountDetail.dart';
 import '../Screens/Account/widget/setting_page.dart';
-import '../Screens/Complete Profile/complete_profile.dart';
-import '../Screens/Dashboard/Home/widget/learn_more_page.dart';
-import '../Screens/Dashboard/Home/widget/members_ship_details_page.dart';
-import '../Screens/Dashboard/Home/widget/scqn_qr.dart';
-import '../Screens/Dashboard/Home/widget/search_page.dart';
-import '../Screens/Dashboard/dashboard_screen.dart';
-import '../Screens/Login/login_page.dart';
-import '../Screens/Offers/offerPage.dart';
-import '../Screens/Offers/widget/offer_dfetail.dart';
-import '../Screens/Otp Page/otp_verification_page.dart';
-import '../Screens/Register/controller/register_controller.dart';
-import '../Screens/Register/register_page.dart';
 import '../Screens/Reward/widget/reward_detail_screen.dart';
 import '../Screens/SelectClients/select_location.dart';
-import '../Screens/SelectClients/widget/find_your_location.dart';
 import '../Screens/SelectClients/widget/search_by_client.dart';
-import '../Screens/Signup Reward Page/signup_reward_page.dart';
-import '../Screens/Signup Reward Page/widgets/refer_friends_widgets.dart';
-import '../Screens/cartList/cart_list.dart';
 import '../Screens/order/order_list.dart';
 import '../Screens/shop/Pages/BrowseByConcern/widgets/brows_concern_detail.dart';
-import '../Screens/shop/Pages/Treatment Page/widgets/treatment_details_page.dart';
-import '../binding/cart_billing.dart';
 
 class RouteManager {
   //TODO >> define route name
@@ -78,8 +76,9 @@ class RouteManager {
         final args = Get.arguments as Map<String, dynamic>;
         var id = args['id'];
         var title = args['title'];
+        var hideButtons = args['hideButtons'];
         return RewardDetailScreen(
-            id: id, title: title); // Pass `id` if required by the screen
+            id: id, title: title, hideButtons: hideButtons);
       },
       transition: Transition.fadeIn,
       maintainState: false,
@@ -187,8 +186,8 @@ class RouteManager {
             if (value == null) return discover.ServiceType.PACKAGE;
 
             return discover.ServiceType.values.firstWhere(
-                  (val) =>
-              val.name.toUpperCase() ==
+              (val) =>
+                  val.name.toUpperCase() ==
                   value.replaceAll("ServiceType.", "").trim().toUpperCase(),
               orElse: () {
                 print("Unknown type: $value");

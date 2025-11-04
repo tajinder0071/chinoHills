@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get_state_manager/src/simple/get_state.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-import '../../../CSS/color.dart';
-import '../../../Model/offer_list_model.dart';
+import 'package:chino_hills/CSS/color.dart';
+import 'package:chino_hills/Model/offer_list_model.dart';
+import 'package:chino_hills/common_Widgets/common_app_bar.dart';
 import '../../../common_Widgets/cacheNetworkImage.dart';
 import '../../../util/common_page.dart';
 
@@ -16,7 +15,7 @@ class OfferDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: commonAppBar(isLeading: true, title: 'Learn More', action: []),
+      appBar: CommonAppBar(title: "Learn More"),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

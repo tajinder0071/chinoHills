@@ -18,16 +18,16 @@ class TreatmentListModel {
         treatments: json["treatments"] == null
             ? []
             : List<Treatment>.from(
-            json["treatments"]!.map((x) => Treatment.fromJson(x))),
+                json["treatments"]!.map((x) => Treatment.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
-    "headerDetails": headerDetails?.toJson(),
-    "success": success,
-    "treatments": treatments == null
-        ? []
-        : List<dynamic>.from(treatments!.map((x) => x.toJson())),
-  };
+        "headerDetails": headerDetails?.toJson(),
+        "success": success,
+        "treatments": treatments == null
+            ? []
+            : List<dynamic>.from(treatments!.map((x) => x.toJson())),
+      };
 }
 
 class HeaderDetails {
@@ -42,16 +42,16 @@ class HeaderDetails {
   });
 
   factory HeaderDetails.fromJson(Map<String, dynamic> json) => HeaderDetails(
-    headerTitle: json["headerTitle"],
-    headerDescription: json["headerDescription"],
-    headerimage: json["headerimage"],
-  );
+        headerTitle: json["headerTitle"],
+        headerDescription: json["headerDescription"],
+        headerimage: json["headerimage"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "headerTitle": headerTitle,
-    "headerDescription": headerDescription,
-    "headerimage": headerimage,
-  };
+        "headerTitle": headerTitle,
+        "headerDescription": headerDescription,
+        "headerimage": headerimage,
+      };
 }
 
 class Treatment {
@@ -84,41 +84,41 @@ class Treatment {
   });
 
   factory Treatment.fromJson(Map<String, dynamic> json) => Treatment(
-    membershipOfferPrice: json["membership_offer_price"],
-    offeroffText: json["offeroffText"],
-    price: json["price"],
-    createdAt: json["created_at"] == null
-        ? null
-        : DateTime.parse(json["created_at"]),
-    name: json["name"],
-    image: json["image"],
-    description: json["description"],
-    treatmentVariationId: json["treatment_variation_id"],
-    concerns: json["concerns"] == null
-        ? []
-        : List<String>.from(json["concerns"]!.map((x) => x)),
-    bodyAreas: json["body_areas"] == null
-        ? []
-        : List<dynamic>.from(json["body_areas"]!.map((x) => x)),
-    id: json["id"],
-    type: json["type"],
-  );
+        membershipOfferPrice: json["membership_offer_price"],
+        offeroffText: json["offeroffText"],
+        price: json["price"],
+        createdAt: json["created_at"] == null
+            ? null
+            : DateTime.parse(json["created_at"]),
+        name: json["name"],
+        image: json["image"],
+        description: json["description"],
+        treatmentVariationId: json["treatment_variation_id"],
+        concerns: json["concerns"] == null
+            ? []
+            : List<String>.from(json["concerns"]!.map((x) => x)),
+        bodyAreas: json["body_areas"] == null
+            ? []
+            : List<dynamic>.from(json["body_areas"]!.map((x) => x)),
+        id: json["id"],
+        type: json["type"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "membership_offer_price": membershipOfferPrice,
-    "offeroffText": offeroffText,
-    "price": price,
-    "created_at": createdAt?.toIso8601String(),
-    "name": name,
-    "image": image,
-    "description": description,
-    "treatment_variation_id": treatmentVariationId,
-    "concerns":
-    concerns == null ? [] : List<dynamic>.from(concerns!.map((x) => x)),
-    "body_areas": bodyAreas == null
-        ? []
-        : List<dynamic>.from(bodyAreas!.map((x) => x)),
-    "id": id,
-    "type": type,
-  };
+        "membership_offer_price": membershipOfferPrice,
+        "offeroffText": offeroffText,
+        "price": price,
+        "created_at": createdAt?.toIso8601String(),
+        "name": name,
+        "image": image,
+        "description": description,
+        "treatment_variation_id": treatmentVariationId,
+        "concerns":
+            concerns == null ? [] : List<dynamic>.from(concerns!.map((x) => x)),
+        "body_areas": bodyAreas == null
+            ? []
+            : List<dynamic>.from(bodyAreas!.map((x) => x)),
+        "id": id,
+        "type": type,
+      };
 }

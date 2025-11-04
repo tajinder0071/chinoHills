@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../../../Model/cart_model.dart';
+import 'package:chino_hills/CSS/app_strings.dart';
+import 'package:chino_hills/Model/cart_model.dart';
+import 'package:chino_hills/Screens/cartList/Controller/cart_controller.dart';
+import '../../../CSS/appTypography.dart';
 import '../../../common_Widgets/common_terms_condition_widget.dart';
 import '../../../util/common_page.dart';
-import '../Controller/cart_controller.dart';
 import 'conveniece_feet_bottom_sheet.dart';
 
 class OrderSummaryCard extends StatelessWidget {
   List<Item> cartData;
-  var offerType;
+  var offerType, discountPrice, nimaCashAppliedAmount;
+  bool isNimaCashApplied;
 
-  OrderSummaryCard(this.cartData, this.offerType, {super.key});
+  OrderSummaryCard(this.cartData, this.offerType, this.discountPrice,
+      {super.key, required this.isNimaCashApplied, this.nimaCashAppliedAmount});
 
   @override
   Widget build(BuildContext context) {
-    List discountList = cartData.map((item) => item.discountPrice).toList();
-    double totalDiscount = discountList.fold(0, (sum, d) => sum + d);
-    print("totalDiscount${totalDiscount}");
+    // List discountList = cartData.map((item) => item.discountPrice).toList();
+    var totalDiscount = discountPrice;
     return Container(
       margin: const EdgeInsets.all(0),
       decoration: BoxDecoration(
@@ -42,75 +44,136 @@ class OrderSummaryCard extends StatelessWidget {
               children: [
                 Text(
                   'Order Summary (${CartController.cart.cartItemCount})',
-                  style: GoogleFonts.roboto(
-                      fontSize: 16.sp, fontWeight: FontWeight.bold),
+                  style: AppTypography.galanoGrostesqueSemiBold.copyWith(
+                    fontSize: 16.sp,
+                  ),
                 ),
                 Divider(height: 24.h, thickness: 1.2),
                 _buildRow(
                     'Subtotal',
                     formatCurrency(CartController.cart.totalCost),
                     Colors.black),
-                '${totalDiscount}' == "0.0"
+                '$totalDiscount' == "0.0"
                     ? SizedBox.shrink()
                     : SizedBox(height: 12.h),
-                '${totalDiscount}' == "0.0"
+                '$totalDiscount' == "0.0"
                     ? SizedBox.shrink()
                     : _buildRow(
-                    offerType.toString() == "Promo Code"
-                        ? 'Discount (Promotion)'
-                        : offerType.toString() == 'Membership'
-                        ? 'Membership Discount'
-                        : 'Discount (Reward)',
-                    formatCurrency('-${totalDiscount}'),
-                    Colors.green),
-                SizedBox(height: 12.h),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        Get.bottomSheet(
-                          ConvenienceFeetBottomSheet(),
-                          isScrollControlled: true,
-                        );
-                      },
-                      child: Row(
+                        offerType.toString() == "Promo Code"
+                            ? 'Discount (Promotion)'
+                            : offerType.toString() == 'Membership'
+                                ? 'Membership Discount'
+                                : 'Discount (Reward)',
+                        formatCurrency('-$totalDiscount'),
+                        Colors.green),
+                CartController.cart.totalConvenienceFee.toString() == "0" ||
+                        CartController.cart.totalConvenienceFee.toString() ==
+                            "0.0"
+                    ? SizedBox.shrink()
+                    : SizedBox(height: 12.h),
+                CartController.cart.totalConvenienceFee.toString() == "0.0" ||
+                        CartController.cart.totalConvenienceFee.toString() ==
+                            "0"
+                    ? SizedBox.shrink()
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            'Convenience Fee',
-                            style: GoogleFonts.merriweather(fontSize: 13.sp),
+                          InkWell(
+                            onTap: () {
+                              Get.bottomSheet(
+                                ConvenienceFeetBottomSheet(),
+                                isScrollControlled: true,
+                              );
+                            },
+                            child: Row(
+                              children: [
+                                Text(
+                                  'Convenience Fee',
+                                  style: AppTypography.hostGroteskSemiBold
+                                      .copyWith(fontSize: 13.sp),
+                                ),
+                                SizedBox(width: 4.w),
+                                Icon(Icons.info_outline,
+                                    size: 18.h, color: Colors.grey)
+                              ],
+                            ),
                           ),
-                          SizedBox(width: 4.w),
-                          Icon(Icons.info_outline,
-                              size: 18.h, color: Colors.grey)
+                          Text(
+                            formatCurrency(
+                                CartController.cart.totalConvenienceFee),
+                            style: AppTypography.hostGroteskRegular
+                                .copyWith(fontSize: 13.sp),
+                          ),
                         ],
                       ),
-                    ),
-                    Text(
-                      formatCurrency(CartController.cart.totalConvenienceFee),
-                      style: TextStyle(fontSize: 13.sp),
-                    ),
-                  ],
-                ),
-                Divider(height: 32.h, thickness: 1.2),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Order Total',
-                        style: GoogleFonts.roboto(
-                            fontSize: 13.sp, fontWeight: FontWeight.bold)),
-                    Text(
-                      formatCurrency(CartController.cart.finalTotalCost),
-                      style: TextStyle(
-                          fontSize: 13.sp, fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
+                isNimaCashApplied ? SizedBox(height: 12.h) : SizedBox.shrink(),
+                isNimaCashApplied
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'NimaCash Balance',
+                            style: AppTypography.hostGroteskSemiBold
+                                .copyWith(fontSize: 13.sp),
+                          ),
+                          Text(
+                            "-${formatCurrency(nimaCashAppliedAmount)}",
+                            style: AppTypography.hostGroteskRegular
+                                .copyWith(fontSize: 13.sp, color: Colors.green),
+                          ),
+                        ],
+                      )
+                    : SizedBox.shrink(),
+                CartController.cart.finalTotalCost.toString().startsWith("-") ||
+                        CartController.cart.finalTotalCost.toString() == "0" ||
+                        CartController.cart.totalConvenienceFee.toString() ==
+                            "0.0"
+                    ? SizedBox.shrink()
+                    : Divider(height: 32.h, thickness: 1.2),
+                CartController.cart.finalTotalCost.toString().startsWith("-") ||
+                        CartController.cart.finalTotalCost.toString() == "0" ||
+                        CartController.cart.totalConvenienceFee.toString() ==
+                            "0.0"
+                    ? SizedBox.shrink()
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Order Total',
+                              style: AppTypography.hostGroteskSemiBold.copyWith(
+                                  fontSize: 13.sp,
+                                  fontWeight: FontWeight.bold)),
+                          Text(
+                            formatCurrency(CartController.cart.finalTotalCost),
+                            style: AppTypography.hostGroteskRegular.copyWith(
+                                fontSize: 13.sp, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
                 SizedBox(height: 20.h),
+                Row(
+                  children: [
+                    Text(
+                      "Treat now, pay later with",
+                      style: AppTypography.hostGroteskSemiBold.copyWith(
+                        fontSize: 12.sp,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 10.w,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 8.0),
+                      child: Image.asset(
+                        "assets/images/affirm_logo.png",
+                        height: 20.h,
+                      ),
+                    ),
+                  ],
+                ),
                 GetBuilder<CartController>(builder: (controller) {
                   DateTime now = DateTime.now();
                   DateTime nextMonthDate =
-                  DateTime(now.year, now.month + 1, now.day);
+                      DateTime(now.year, now.month + 1, now.day);
 
                   String formattedDate =
                       "${nextMonthDate.day.toString().padLeft(2, '0')}/${nextMonthDate.month.toString().padLeft(2, '0')}/${nextMonthDate.year.toString().substring(2)}";
@@ -120,12 +183,12 @@ class OrderSummaryCard extends StatelessWidget {
                     children: [
                       controller.isMemberAvailable
                           ? Text(
-                        '${controller.memberTitle} will renew on $formattedDate at ${controller.memberPrice}/month',
-                        style: GoogleFonts.roboto(
-                            fontSize: 10.sp,
-                            color: Colors.black54,
-                            fontWeight: FontWeight.bold),
-                      )
+                              '${controller.memberTitle} will renew on $formattedDate at ${controller.memberPrice}/month',
+                              style: AppTypography.hostGroteskSemiBold.copyWith(
+                                fontSize: 10.sp,
+                                color: Colors.black54,
+                              ),
+                            )
                           : SizedBox.shrink(),
                       controller.isMemberAvailable
                           ? SizedBox(height: 10.h)
@@ -133,25 +196,34 @@ class OrderSummaryCard extends StatelessWidget {
                     ],
                   );
                 }),
+                SizedBox(height: 20.h),
                 Padding(
                   padding:
-                  EdgeInsets.symmetric(horizontal: 0.0.w, vertical: 6.0.h),
+                      EdgeInsets.symmetric(horizontal: 0.0.w, vertical: 6.0.h),
                   child: Text(
-                    "Important Terms and Conditions: All financing subject to credit approval. APRs depend on creditworthiness, term length, and other factors. “As low as” does not guarantee your rate or payment options as this is dependent on your creditworthiness. Check with your provider about additional amounts required for procedure that may be ineligible for financing. Scheduled payments in example based on the full 24-month term. Length of financing is up to you and/or your creditworthiness.",
-                    style: GoogleFonts.roboto(
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.black87),
+                    AppStrings.ImpTermCondition,
+                    style: AppTypography.hostGroteskRegular
+                        .copyWith(fontSize: 12.sp, color: Colors.black87),
                   ),
                 ),
               ],
             ),
           ),
+          SizedBox(height: 10.h),
           // Terms and conditions
-          Padding(
-            padding: const EdgeInsets.only(left: 10.0),
-            child: CommonTermsConditionWidget(),
+          GetBuilder<CartController>(
+            builder: (controller) {
+              return CommonTermsConditionWidget(
+                isneed: true,
+                isActivated: controller.isAccepted,
+                onChange: (val) {
+                  controller.isAccepted = val ?? false;
+                  controller.update(); // ✅ trigger UI rebuild
+                },
+              );
+            },
           ),
+
           SizedBox(height: 20.h),
           getBrand(),
         ],
@@ -163,8 +235,11 @@ class OrderSummaryCard extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: GoogleFonts.merriweather(fontSize: 13.sp)),
-        Text(amount, style: TextStyle(fontSize: 13.sp, color: color)),
+        Text(label,
+            style: AppTypography.hostGroteskSemiBold.copyWith(fontSize: 13.sp)),
+        Text(amount,
+            style: AppTypography.hostGroteskRegular
+                .copyWith(fontSize: 13.sp, color: color)),
       ],
     );
   }

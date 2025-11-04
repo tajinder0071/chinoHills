@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../CSS/color.dart';
-import '../../../Model/best_selling_model.dart';
-import '../../../Model/home_model.dart';
+import 'package:chino_hills/CSS/color.dart';
+import 'package:chino_hills/Model/best_selling_model.dart';
+import 'package:chino_hills/Model/home_model.dart';
+import 'package:chino_hills/util/local_stoage.dart';
+import '../../../Model/detail_browse_model.dart';
 import '../../../Model/tab_list_model.dart';
+import '../../../Model/wallet_Nima_Cash_Model.dart';
 import '../../../util/base_services.dart';
 import '../../../Model/visit_model.dart';
-import '../../../util/local_store_data.dart';
 import '../../Dashboard/Home/controller/membership_detail_controller.dart';
 
 class ShopController extends GetxController with GetTickerProviderStateMixin {
   static ShopController get shop => Get.find();
   late TabController tabController;
   List<HomeDatum> homeData = [];
+  List<OfferCards>? offerData;
+
   var load = false;
   var userName;
   LocalStorage localStorage = LocalStorage();
@@ -27,9 +31,45 @@ class ShopController extends GetxController with GetTickerProviderStateMixin {
   List<BestTreatment> treatment = [];
   List<BestPackage> package = [];
 
+  final currentPage = 0.obs;
+  var currentPageForHeaderImage = 0;
+  RxBool isLoading = false.obs;
+
+  Rx<WalletNimaCashModel> walletData = WalletNimaCashModel().obs;
+  RxList<NimaCashHistory> nimaCashHistory = <NimaCashHistory>[].obs;
+  RxDouble nimaCashBalance = 0.0.obs;
+  final pageController = PageController();
+
+  void onPageChanged(int index) {
+    currentPage.value = index;
+  }
 
   final GlobalKey<RefreshIndicatorState> refreshIndicatorKey =
-  GlobalKey<RefreshIndicatorState>();
+      GlobalKey<RefreshIndicatorState>();
+  Future<void> fetchWalletNimaCash() async {
+    isLoading.value = true;
+    try {
+      Get.log("Starting wallet API call...");
+
+      final response = await walletNimaCash();
+
+      walletData.value = response;
+      nimaCashBalance.value = response.nimaCashBalance ?? 0.0;
+      nimaCashHistory.value = response.nimaCashHistory ?? [];
+
+      Get.log("✓ Wallet data fetched successfully");
+      Get.log("✓ NIMA Cash Balance: ${nimaCashBalance.value}");
+      Get.log("✓ History items: ${nimaCashHistory.length}");
+
+    } catch (e) {
+      Get.log("✗ Wallet error: $e");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  double getBalance() => nimaCashBalance.value;
+  List<NimaCashHistory> getHistory() => nimaCashHistory;
 
   Future<void> handleRefresh() async {
     await homeApi();
@@ -64,7 +104,7 @@ class ShopController extends GetxController with GetTickerProviderStateMixin {
     }
 
     final index = tabList.indexWhere(
-          (tab) => tab.toString().toLowerCase().trim() == matchName,
+      (tab) => tab.toString().toLowerCase().trim() == matchName,
     );
 
     if (index != -1) {
@@ -158,14 +198,9 @@ class ShopController extends GetxController with GetTickerProviderStateMixin {
     try {
       HomeModel response = await hitHomeApi();
       print("Home Api :: $response");
-
       homeData.addAll(response.data!);
-
-      // Handle dynamic color from the first item
       String hex = homeData[0].color.toString().replaceAll('#', '');
       if (hex.length == 6) hex = 'FF$hex';
-      // Color dynamicColor = localStorage.readData("dynamicColor");
-      // Save and assign color to AppColor
       Color dynamicColor = Color(int.parse(hex, radix: 16));
       AppColor.dynamicColor = dynamicColor;
       load = false;
@@ -189,9 +224,11 @@ class ShopController extends GetxController with GetTickerProviderStateMixin {
   late final Animation<double> blinkAnimation;
   late final Animation<double> scaleAnimation;
 
-  PageController pageController = PageController();
+  // PageController pageController = PageController();
+  //
+  // var currentPage = 0;
 
-  var currentPage=0;
+  var isScroll = false;
 
   @override
   void onInit() {
@@ -199,6 +236,7 @@ class ShopController extends GetxController with GetTickerProviderStateMixin {
       vsync: this,
       duration: const Duration(seconds: 1),
     )..repeat(reverse: true);
+    //add if scrolling controlller
 
     blinkAnimation =
         Tween<double>(begin: 1.0, end: 0.0).animate(blinkController);
@@ -210,14 +248,12 @@ class ShopController extends GetxController with GetTickerProviderStateMixin {
     homeApi();
     super.onInit();
   }
-
   void updateTabList(List<String> newTabs) {
     tabList = newTabs;
     tabController.dispose();
     tabController = TabController(length: tabList.length, vsync: Get.find());
     update();
   }
-
   @override
   void onClose() {
     blinkController.dispose();

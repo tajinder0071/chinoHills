@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'package:get/get.dart';
-import '../../../Model/signup_reward_model.dart';
-import '../../../util/base_services.dart';
-import '../../../util/local_store_data.dart';
+import 'package:chino_hills/Model/signup_reward_model.dart';
+import 'package:chino_hills/util/base_services.dart';
+import 'package:chino_hills/util/local_stoage.dart';
+
+import '../../../util/route_manager.dart';
 
 class RewardUnlockedController extends GetxController {
   var sliderValue = 0.0.obs;
@@ -12,6 +14,7 @@ class RewardUnlockedController extends GetxController {
   Timer? _timer;
   LocalStorage localStorage = LocalStorage();
   List<RewardDatum> rewardData = [];
+
 
   @override
   void onClose() {
@@ -42,7 +45,7 @@ class RewardUnlockedController extends GetxController {
       if (response.success == true) {
         rewardData.addAll(response.data!);
         rewardPoints.value =
-        "\$ ${rewardData[0].discountType == "btn-amount" ? "\$" : ""}${rewardData[0].discountAmount!}${rewardData[0].discountType == "btn-amount" ? "" : ""}";
+            "\$ ${rewardData[0].discountType == "btn-amount" ? "\$" : ""}${rewardData[0].discountAmount!}${rewardData[0].discountType == "btn-amount" ? "" : ""}";
         localStorage.saveData("rewardPoints", rewardPoints.value.toString());
         localStorage.saveData("client_id", response.clientId.toString());
         //read user_id from local storage
@@ -69,3 +72,25 @@ class RewardUnlockedController extends GetxController {
     }
   }
 }
+//----------------------FOR NEW NIMA DESIGN----------------------
+/*
+final currentPage = 0.obs;
+final pageController = PageController();
+
+void onPageChanged(int index) {
+  currentPage.value = index;
+}
+
+
+void jumpToPage(int page) {
+  pageController.animateToPage(
+    page,
+    duration: const Duration(milliseconds: 300),
+    curve: Curves.easeInOut,
+  );
+}
+@override
+void onClose() {
+  pageController.dispose();
+  super.onClose();
+}*/

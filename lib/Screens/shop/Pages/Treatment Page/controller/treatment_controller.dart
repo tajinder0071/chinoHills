@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../../Model/treatment_list_model.dart';
-import '../../../../../util/base_services.dart';
-import '../../../../../util/local_store_data.dart';
+import 'package:chino_hills/Model/treatment_list_model.dart';
+import 'package:chino_hills/util/base_services.dart';
+import 'package:chino_hills/util/local_stoage.dart';
+
 
 class TreatmentController extends GetxController {
   static TreatmentController get instance => Get.find();
@@ -34,7 +35,7 @@ class TreatmentController extends GetxController {
   ];
 
   final GlobalKey<RefreshIndicatorState> refreshIndicatorKey =
-  GlobalKey<RefreshIndicatorState>();
+      GlobalKey<RefreshIndicatorState>();
 
   var isTreatmentCheck = false.obs;
 
@@ -49,7 +50,7 @@ class TreatmentController extends GetxController {
     try {
       treatmentData.clear();
       treatmentListModel =
-      await hitAllTreatmentAPI(selectedOptions, selectedArea, selectFilter);
+          await hitAllTreatmentAPI(selectedOptions, selectedArea, selectFilter);
       treatmentData.addAll(treatmentListModel.treatments!);
       packageHeaderImage = treatmentListModel.headerDetails!.headerimage ??
           "https://assets.repeatmd.app/00005468-656d-6552-6573-6f7572636532.jpg";

@@ -3,8 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
-import '../../../CSS/color.dart';
-import '../../../util/local_store_data.dart';
+import 'package:chino_hills/CSS/color.dart';
+import 'package:chino_hills/util/local_stoage.dart';
 import '../../../util/route_manager.dart';
 
 class PaymentSuccessPopup extends StatelessWidget {
@@ -75,12 +75,9 @@ class PaymentSuccessPopup extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _DetailRow(label: 'Transaction ID', value: transactionId),
+                  transactionId.isNotEmpty ? _DetailRow(label: 'Transaction ID', value: transactionId): SizedBox.shrink(),
                   _DetailRow(label: 'Date', value: getCurrentFormattedDate()),
-                  _DetailRow(
-                      label: 'Type of Transaction', value: transactionType),
-                  const _DetailRow(
-                      label: 'Status', value: 'Success', status: true),
+                  const _DetailRow(label: 'Status', value: 'Success'),
                 ],
               ),
             ),
@@ -89,6 +86,7 @@ class PaymentSuccessPopup extends StatelessWidget {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
+                  Get.back();
                   Get.back();
                   Get.back();
                   LocalStorage localStorage = LocalStorage();
@@ -130,25 +128,25 @@ class _DetailRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final valueWidget = status
         ? Row(
-      children: [
-        Icon(Icons.check_circle, size: 16.sp, color: Colors.green),
-        SizedBox(width: 4.w),
-        Text(
-          'Success',
-          style: TextStyle(color: Colors.green, fontSize: 14.sp),
-        ),
-      ],
-    )
+            children: [
+              Icon(Icons.check_circle, size: 16.sp, color: Colors.green),
+              SizedBox(width: 4.w),
+              Text(
+                'Success',
+                style: TextStyle(color: Colors.green, fontSize: 14.sp),
+              ),
+            ],
+          )
         : Text(
-      value,
-      style: TextStyle(
-        fontWeight: FontWeight.w500,
-        fontSize: 14.sp,
-      ),
-      textAlign: TextAlign.right,
-      maxLines: 2,
-      overflow: TextOverflow.visible,
-    );
+            value,
+            style: TextStyle(
+              fontWeight: FontWeight.w500,
+              fontSize: 14.sp,
+            ),
+            textAlign: TextAlign.right,
+            maxLines: 2,
+            overflow: TextOverflow.visible,
+          );
 
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 4.h),

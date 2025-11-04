@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../CSS/color.dart';
+import 'package:chino_hills/CSS/color.dart';
 
 class NfcLoadingScreen extends StatelessWidget {
   const NfcLoadingScreen({super.key});

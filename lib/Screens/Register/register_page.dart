@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:chino_hills/util/route_manager.dart';
 import '../../CSS/color.dart';
 import '../../util/common_page.dart';
-import '../../util/route_manager.dart';
 import 'controller/register_controller.dart';
 
 class RegisterPage extends GetView<RegisterController> {
@@ -22,7 +22,7 @@ class RegisterPage extends GetView<RegisterController> {
               padding: EdgeInsets.symmetric(horizontal: 10.h),
               child: Column(children: [
                 SizedBox(height: 50.h),
-                Text("Can we get your number?",
+                Text("Can we get\n your number?",
                     style: GoogleFonts.sarabun(
                         fontSize: 20.sp, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center),
@@ -178,6 +178,29 @@ class RegisterPage extends GetView<RegisterController> {
                         child: Text("Login".toUpperCase())),
                   ],
                 ),
+                SizedBox(height: 12.h),
+                // GridView(
+                //   shrinkWrap: true,
+                //   physics: NeverScrollableScrollPhysics(),
+                //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                //       crossAxisCount: 2,
+                //       childAspectRatio: 1.6,
+                //       mainAxisSpacing: 10.h,
+                //       crossAxisSpacing: 10.h),
+                //   children: [
+                //     FeatureItemWidget(
+                //         text: "Free reward for new members!",
+                //         icon: Bootstrap.star),
+                //     FeatureItemWidget(
+                //         text: "Earn rewards for visits & purchases",
+                //         icon: Bootstrap.gift),
+                //     FeatureItemWidget(
+                //         text: "Free birthday gifts", icon: Bootstrap.cake),
+                //     FeatureItemWidget(
+                //         text: "Member only offers & events",
+                //         icon: AntDesign.credit_card_outline),
+                //   ],
+                // ),
                 SizedBox(height: 10.h),
               ]),
             ),
@@ -192,7 +215,7 @@ class RegisterPage extends GetView<RegisterController> {
             color: AppColor().background),
         child: Center(
           child: Text(
-            'Powered by: Scanacart™ Technology',
+            'Powered by: Birdhaus™ Technology',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: AppColor().blueColor,

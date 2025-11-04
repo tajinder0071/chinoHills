@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-import '../../../CSS/color.dart';
+import 'package:chino_hills/CSS/color.dart';
 
 class FeatureItemWidget extends StatelessWidget {
   final String text;
@@ -30,7 +29,7 @@ class FeatureItemWidget extends StatelessWidget {
         children: [
           Container(
             decoration: BoxDecoration(
-              color: AppColor.dynamicColor.withOpacity(0.1),
+              color: AppColor.dynamicColor.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             padding: EdgeInsets.all(8.h),

@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:icons_plus/icons_plus.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:chino_hills/CSS/appTypography.dart';
 import '../../CSS/app_strings.dart';
 import '../../CSS/color.dart';
-import '../../Model/availRewardModel.dart';
 import '../../common_Widgets/common_refer_widget.dart';
 import '../../loading/reward_load.dart';
 import '../../util/common_page.dart';
@@ -34,7 +32,7 @@ class RewardPage extends StatelessWidget {
               key: controller.refreshIndicatorKey,
               color: AppColor.dynamicColor,
               showChildOpacityTransition: false,
-              backgroundColor: Colors.white,
+              backgroundColor: AppColor().whiteColor,
               onRefresh: controller.handleRefresh,
               child: ListView(
                 children: [
@@ -43,293 +41,297 @@ class RewardPage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        // Username section
-                        TextSection(
-                          text: controller.userName.value.toUpperCase(),
-                          style: GoogleFonts.poppins(
-                            fontSize: 20.sp,
-                            fontWeight: FontWeight.bold,
+                        Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.all(20.w),
+                          decoration: BoxDecoration(
                             color: AppColor.dynamicColor,
+                            borderRadius: BorderRadius.circular(20.r),
                           ),
-                        ),
-                        SizedBox(height: 25.h),
-
-                        // Reward progress section
-                        reward.response.nextReward!.unlockAtCount.toString() ==
-                                    "0" ||
-                                reward.response.nextReward!.unlockAtCount
-                                        .toString() ==
-                                    ""
-                            ? Column(
-                                children: [
-                                  Icon(
-                                    Icons.qr_code_scanner,
-                                    size: 70,
-                                    color: Colors.grey.shade400,
-                                  ),
-                                  SizedBox(height: 10.h),
-                                  Text(
-                                    "New rewards are coming soon. Please stay tuned!",
-                                    textAlign: TextAlign.center,
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 18.sp,
-                                      fontWeight: FontWeight.w400,
-                                      color: Colors.grey.shade700,
-                                    ),
-                                  ),
-                                ],
-                              )
-                            : Column(
-                                children: [
-                                  TextSection(
-                                    text:
-                                        'Only ${int.parse(reward.response.nextReward!.unlockAtCount.toString().replaceAll(".0", ""))} more visits or spend \$${reward.response.nextReward!.unlockSpend.toString()} for your next reward',
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 16.sp,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                  SizedBox(height: 15.h),
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(20.r),
-                                    child: LinearProgressIndicator(
-                                      minHeight: 12.h,
-                                      value:
-                                          (double.tryParse(
-                                                reward
-                                                    .response
-                                                    .nextReward!
-                                                    .progressPercentage
-                                                    .toString(),
-                                              ) ??
-                                              0) /
-                                          100,
-                                      semanticsLabel: 'Reward Progress',
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        AppColor.dynamicColor,
-                                      ),
-                                      backgroundColor: Colors.grey[200],
-                                    ),
-                                  ),
-                                ],
-                              ),
-
-                        SizedBox(height: 20.h),
-
-                        // Scan instruction text
-                        reward.unloackReward.isEmpty
-                            ? SizedBox.shrink()
-                            : TextSection(
-                                text: AppStrings.scanText,
-                                style: GoogleFonts.poppins(
-                                  fontSize: 13.sp,
-                                  color: Colors.grey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              TextSection(
+                                text: "Hi, ${controller.userName.value}",
+                                style: AppTypography.galanoGrostesqueSemiBold
+                                    .copyWith(
+                                  fontSize: 17.sp,
+                                  color: AppColor().whiteColor,
                                 ),
                               ),
-                        SizedBox(height: 20.h),
-
-                        // QR Scan button
-                        reward.unloackReward.isEmpty
-                            ? SizedBox.shrink()
-                            : ElevatedButton.icon(
-                                onPressed: () =>
-                                    Get.toNamed(
-                                      RouteManager.qRCodeScannerPage,
-                                    )!.then((val) {
-                                      controller.available();
-                                    }),
-                                icon: Icon(
-                                  AntDesign.scan_outline,
-                                  color: Colors.white,
-                                  size: 23.h,
-                                ),
-                                label: Text(
-                                  "Check in for rewards",
-                                  style: GoogleFonts.sarabun(
-                                    color: Colors.white,
-                                    fontSize: 17.sp,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColor.dynamicColor,
-                                  elevation: 3,
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 25.w,
-                                    vertical: 14.h,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30.r),
-                                  ),
-                                ),
+                              SizedBox(
+                                height: 10.h,
                               ),
-
-                        SizedBox(height: 30.h),
-
-                        // Upcoming rewards section
-                        reward.unloackReward.isEmpty
-                            ? SizedBox.shrink()
-                            : SectionTitle(title: 'Upcoming Rewards'),
-                        reward.unloackReward.isEmpty
-                            ? SizedBox.shrink()
-                            : Container(
-                                margin: EdgeInsets.only(top: 20.h),
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 10.w,
-                                  vertical: 15.h,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(16.r),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black12,
-                                      blurRadius: 8,
-                                      offset: Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                child: Column(
-                                  children: [
-                                    ListView.builder(
-                                      physics: NeverScrollableScrollPhysics(),
-                                      shrinkWrap: true,
-                                      itemCount: reward.show
-                                          ? reward.unloackReward.length
-                                          : (reward.unloackReward.length > 3
-                                                ? 3
-                                                : reward.unloackReward.length),
-                                      itemBuilder: (context, index) => InkWell(
-                                        onTap: () {
-                                          Get.toNamed(
-                                            RouteManager.rewardDetailScreen,
-                                            arguments: {
-                                              "id": reward
-                                                  .unloackReward[index]
-                                                  .id,
-                                              "title": reward
-                                                  .unloackReward[index]
-                                                  .rewardTitle
-                                                  .toString(),
-                                            },
-                                          );
-                                        },
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                            vertical: 12.h,
-                                            horizontal: 8.w,
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    BadgeWidget(
-                                                      label:
-                                                          "${int.parse(reward.unloackReward[index].visitsNeeded.toString().replaceAll(".0", ""))} MORE VISITS",
-                                                      color: AppColor
-                                                          .dynamicColor
-                                                          .withAlpha(120),
-                                                    ),
-                                                    SizedBox(height: 8.h),
-                                                    Text(
-                                                      reward
-                                                          .unloackReward[index]
-                                                          .rewardTitle
-                                                          .toString(),
-                                                      style:
-                                                          GoogleFonts.poppins(
-                                                            fontSize: 14.sp,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            color: Colors
-                                                                .grey[700],
-                                                          ),
-                                                    ),
-                                                    reward
-                                                                .unloackReward[index]
-                                                                .discountAmount !=
-                                                            ""
-                                                        ? Text(
-                                                            "Can convert to \$${reward.unloackReward[index].discountAmount}",
-                                                            style:
-                                                                GoogleFonts.poppins(
-                                                                  fontSize:
-                                                                      13.sp,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w500,
-                                                                  color: Colors
-                                                                      .grey
-                                                                      .shade500,
-                                                                ),
-                                                          )
-                                                        : SizedBox.shrink(),
-                                                  ],
-                                                ),
-                                              ),
-                                              Icon(
-                                                Icons.lock,
-                                                color: Colors.grey.shade500,
-                                                size: 22.w,
-                                              ),
-                                            ],
+                              reward.response == null
+                                  ? Column(
+                                      children: [
+                                        Icon(Icons.qr_code_scanner,
+                                            size: 70,
+                                            color: AppColor().greyColor.withValues(alpha: .4)),
+                                        SizedBox(height: 10.h),
+                                        Text(
+                                          "New rewards are coming soon. Please stay tuned!",
+                                          textAlign: TextAlign.center,
+                                          style: AppTypography
+                                              .galanoGrostesqueRegular
+                                              .copyWith(
+                                            fontSize: 15.sp,
+                                            color: AppColor().greyColor.withValues(alpha: .7),
                                           ),
                                         ),
-                                      ),
-                                    ),
-
-                                    // See more / Hide button
-                                    reward.unloackReward.length > 3
-                                        ? InkWell(
-                                            onTap: () {
-                                              reward.show = !reward.show;
-                                              controller.update();
-                                            },
-                                            child: Padding(
-                                              padding: EdgeInsets.only(
-                                                top: 10.h,
-                                              ),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.end,
+                                      ],
+                                    )
+                                  : Column(
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            RichText(
+                                              textAlign: TextAlign.start,
+                                              text: TextSpan(
+                                                style: AppTypography
+                                                    .hostGroteskBold
+                                                    .copyWith(
+                                                  fontSize: 17.sp,
+                                                  color: AppColor().whiteColor,
+                                                ),
                                                 children: [
-                                                  Text(
-                                                    reward.show
-                                                        ? "Hide"
-                                                        : "See more",
-                                                    style:
-                                                        GoogleFonts.merriweather(
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          fontSize: 14.sp,
-                                                          color: Colors
-                                                              .blue
-                                                              .shade900,
-                                                        ),
-                                                  ),
-                                                  SizedBox(width: 5.w),
-                                                  Icon(
-                                                    reward.show
-                                                        ? Icons
-                                                              .keyboard_arrow_up_outlined
-                                                        : Icons
-                                                              .keyboard_arrow_down_rounded,
-                                                    color: Colors.blue.shade900,
-                                                    size: 22,
+                                                  TextSpan(text: 'Only\n'),
+                                                  TextSpan(
+                                                    text: reward.response
+                                                                .nextReward ==
+                                                            null
+                                                        ? ''
+                                                        : '${int.parse(
+                                                            reward
+                                                                .response
+                                                                .nextReward!
+                                                                .unlockAtCount
+                                                                .toString()
+                                                                .replaceAll(
+                                                                    ".0", ""),
+                                                          )} More Visit',
+                                                    style: AppTypography
+                                                        .hostGroteskBold
+                                                        .copyWith(
+                                                      fontSize: 17.sp,
+                                                      color:
+                                                          AppColor().whiteColor,
+                                                    ),
                                                   ),
                                                 ],
                                               ),
                                             ),
-                                          )
-                                        : SizedBox.shrink(),
-                                  ],
+                                            TextSection(
+                                              text: "Or",
+                                              style: AppTypography
+                                                  .galanoGrostesqueSemiBold
+                                                  .copyWith(
+                                                fontSize: 19.sp,
+                                                color: AppColor().whiteColor,
+                                              ),
+                                            ),
+                                            RichText(
+                                              textAlign: TextAlign.start,
+                                              text: TextSpan(
+                                                style: AppTypography
+                                                    .hostGroteskRegular
+                                                    .copyWith(
+                                                  fontSize: 18.sp,
+                                                  color: AppColor().whiteColor,
+                                                ),
+                                                children: [
+                                                  const TextSpan(
+                                                      text: "Spend "),
+                                                  TextSpan(
+                                                    text:
+                                                        "\$${reward.response.nextReward!.unlockSpend.toString()}",
+                                                    style: AppTypography
+                                                        .hostGroteskBold
+                                                        .copyWith(
+                                                      fontSize: 18.sp,
+                                                      color:
+                                                          AppColor().whiteColor,
+                                                    ),
+                                                  ),
+                                                  const TextSpan(
+                                                      text:
+                                                          "\nFor Your Next\nReward"),
+                                                ],
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                              SizedBox(height: 10.h),
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(20.r),
+                                child: LinearProgressIndicator(
+                                  minHeight: 5.h,
+                                  value: (double.tryParse(reward.response
+                                              .nextReward!.progressPercentage
+                                              .toString()) ??
+                                          0) /
+                                      100,
+                                  semanticsLabel: 'Reward Progress',
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      AppColor().whiteColor),
+                                  backgroundColor:
+                                      AppColor().whiteColor.withValues(alpha: 0.3),
                                 ),
+                              ),
+                              SizedBox(height: 5.h),
+
+                              // Scan instruction text
+                              reward.unloackReward.isEmpty
+                                  ? SizedBox.shrink()
+                                  : TextSection(
+                                      text: AppStrings.scanText,
+                                      style: AppTypography.hostGroteskRegular
+                                          .copyWith(
+                                        fontSize: 14.sp,
+                                        color: AppColor().whiteColor,
+                                      ),
+                                      alignment: TextAlign.start,
+                                    ),
+                              SizedBox(height: 10.h),
+
+                              // QR Scan button
+                              reward.unloackReward.isEmpty
+                                  ? SizedBox.shrink()
+                                  : ElevatedButton.icon(
+                                      onPressed: () => Get.toNamed(
+                                              RouteManager.qRCodeScannerPage)!
+                                          .then((val) {
+                                        controller.available();
+                                      }),
+                                      label: Text(
+                                        AppStrings.checkInForRewards,
+                                        style: AppTypography.hostGroteskSemiBold
+                                            .copyWith(
+                                          color: AppColor().whiteColor,
+                                          fontSize: 14.sp,
+                                        ),
+                                      ),
+                                      style: ElevatedButton.styleFrom(
+                                          backgroundColor: AppColor()
+                                              .whiteColor
+                                              .withValues(alpha: 0.3),
+                                          elevation: 3,
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 18.w, vertical: 5.h),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(30.r),
+                                          ),
+                                          side: BorderSide(
+                                              width: 0.8,
+                                              color: AppColor().whiteColor)),
+                                    ),
+                            ],
+                          ),
+                        ),
+
+                        SizedBox(height: 15.h),
+                        // Upcoming rewards section
+                        reward.unloackReward.isEmpty
+                            ? SizedBox.shrink()
+                            : SectionTitle(title: 'Upcoming Rewards'),
+                        SizedBox(height: 10.h),
+                        reward.unloackReward.isEmpty
+                            ? SizedBox.shrink()
+                            : Column(
+                                children: [
+                                  ListView.builder(
+                                    padding: EdgeInsets.zero,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    shrinkWrap: true,
+                                    itemCount: reward.show
+                                        ? reward.unloackReward.length
+                                        : (reward.unloackReward.length > 3
+                                            ? 3
+                                            : reward.unloackReward.length),
+                                    itemBuilder: (context, index) {
+                                      final item = reward.unloackReward[index];
+                                      return Padding(
+                                        padding:
+                                            EdgeInsets.symmetric(vertical: 5.h),
+                                        child: InkWell(
+                                          splashColor: AppColor().transparent,
+                                          highlightColor:
+                                              AppColor().transparent,
+                                          onTap: () {
+                                            Get.toNamed(
+                                              RouteManager.rewardDetailScreen,
+                                              arguments: {
+                                                "id": reward
+                                                    .unloackReward[index].id,
+                                                "title": reward
+                                                    .unloackReward[index]
+                                                    .rewardTitle
+                                                    .toString(),
+                                                "hideButtons": true,
+                                              },
+                                            );
+                                          },
+                                          child: RewardRowWidget(
+                                            visitsNeeded:
+                                                item.visitsNeeded.toString(),
+                                            rewardTitle:
+                                                item.rewardTitle.toString(),
+                                            discountAmount:
+                                                item.discountAmount.toString(),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+
+                                  // See more / Hide button
+                                  reward.unloackReward.length > 3
+                                      ? InkWell(
+                                          onTap: () {
+                                            reward.show = !reward.show;
+                                            controller.update();
+                                          },
+                                          child: Padding(
+                                            padding: EdgeInsets.only(top: 10.h),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              children: [
+                                                Text(
+                                                  reward.show
+                                                      ? "Hide"
+                                                      : "See more",
+                                                  style: AppTypography
+                                                      .hostGroteskRegular
+                                                      .copyWith(
+                                                          fontSize: 14.sp,
+                                                          color: AppColor()
+                                                              .blueColor
+                                                              .withValues(alpha: .9)),
+                                                ),
+                                                SizedBox(width: 5.w),
+                                                Icon(
+                                                  reward.show
+                                                      ? Icons
+                                                          .keyboard_arrow_up_outlined
+                                                      : Icons
+                                                          .keyboard_arrow_down_rounded,
+                                                  color: AppColor()
+                                                      .blueColor
+                                                      .withValues(alpha: .9),
+                                                  size: 22,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        )
+                                      : SizedBox.shrink(),
+                                ],
                               ),
                       ],
                     ),
@@ -356,7 +358,10 @@ class RewardPage extends StatelessWidget {
                                       "${reward.avail[index].discountAmount}",
                                   onTap: () => Get.toNamed(
                                     RouteManager.rewardDetailScreen,
-                                    arguments: {"id": reward.avail[index].id},
+                                    arguments: {
+                                      "id": reward.avail[index].id,
+                                      "hideButtons": false,
+                                    },
                                   ),
                                   rewardTitle:
                                       '${reward.avail[index].rewardTitle}',
@@ -387,17 +392,16 @@ class BadgeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
       decoration: BoxDecoration(
         color: color,
-        borderRadius: BorderRadius.circular(8.r),
+        borderRadius: BorderRadius.circular(6.r),
       ),
       child: Text(
         label,
-        style: GoogleFonts.poppins(
-          color: Colors.white,
-          fontSize: 11.sp,
-          fontWeight: FontWeight.bold,
+        style: AppTypography.galanoGrostesqueSemiBold.copyWith(
+          color: AppColor().whiteColor,
+          fontSize: 12.sp,
         ),
       ),
     );
@@ -427,11 +431,11 @@ class RewardCard extends StatelessWidget {
         margin: EdgeInsets.symmetric(vertical: 6.h),
         padding: EdgeInsets.all(15.w),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColor().whiteColor,
           borderRadius: BorderRadius.circular(14.r),
           boxShadow: [
             BoxShadow(
-              color: Colors.black12,
+              color: AppColor().blackColor.withValues(alpha: .2),
               blurRadius: 6,
               offset: Offset(0, 3),
             ),
@@ -444,26 +448,20 @@ class RewardCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   BadgeWidget(
-                    label: "REDEEM NOW",
-                    color: AppColor.dynamicColor,
-                  ),
+                      label: "REDEEM NOW", color: AppColor.dynamicColor),
                   SizedBox(height: 10.h),
                   Text(
                     rewardTitle,
-                    style: GoogleFonts.poppins(
+                    style: AppTypography.galanoGrostesqueSemiBold.copyWith(
                       fontSize: 15.sp,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey.shade800,
+                      color: AppColor().greyColor.withValues(alpha: .8),
                     ),
                   ),
                 ],
               ),
             ),
-            Icon(
-              Icons.arrow_forward_ios,
-              color: AppColor.dynamicColor,
-              size: 20.w,
-            ),
+            Icon(Icons.arrow_forward_ios,
+                color: AppColor.dynamicColor, size: 20.w),
           ],
         ),
       ),
@@ -482,10 +480,9 @@ class SectionTitle extends StatelessWidget {
     return Text(
       title.toUpperCase(),
       textAlign: TextAlign.center,
-      style: GoogleFonts.poppins(
-        fontWeight: FontWeight.bold,
-        fontSize: 16.sp,
-        color: Colors.grey.shade700,
+      style: AppTypography.hostGroteskBold.copyWith(
+        fontSize: 15.sp,
+        color: AppColor().lightBlackColor,
       ),
     );
   }
@@ -507,5 +504,70 @@ class TextSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(text, textAlign: alignment, style: style);
+  }
+}
+
+class RewardRowWidget extends StatelessWidget {
+  final String visitsNeeded;
+  final String rewardTitle;
+  final String discountAmount;
+
+  const RewardRowWidget({
+    super.key,
+    required this.visitsNeeded,
+    required this.rewardTitle,
+    required this.discountAmount,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+          shape: BoxShape.rectangle,
+          color: AppColor().lightGrey,
+          borderRadius: BorderRadius.circular(10.r)),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  BadgeWidget(
+                    label:
+                        "${int.parse(visitsNeeded.replaceAll(".0", ""))} MORE VISITS",
+                    color: AppColor.dynamicColor.withAlpha(120),
+                  ),
+                  SizedBox(height: 8.h),
+                  Text(
+                    rewardTitle,
+                    style: AppTypography.galanoGrostesqueSemiBold.copyWith(
+                      fontSize: 14.sp,
+                      color: AppColor().greyColor.withValues(alpha: .7),
+                    ),
+                  ),
+                  discountAmount.isNotEmpty
+                      ? Text(
+                          "Can convert to \$${discountAmount}",
+                          style: AppTypography.hostGroteskSemiBold.copyWith(
+                            fontSize: 13.sp,
+                            color: AppColor().greyColor.withValues(alpha: .5),
+                          ),
+                        )
+                      : SizedBox.shrink(),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.lock,
+              color: AppColor().greyColor.withValues(alpha: .5),
+              size: 22.w,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

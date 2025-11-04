@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:get/get.dart';
+import 'package:chino_hills/Model/discover_model.dart';
+import 'package:chino_hills/util/base_services.dart';
+import 'package:chino_hills/util/local_stoage.dart';
+import 'package:chino_hills/util/route_manager.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../../../CSS/color.dart';
-import '../../../Model/discover_model.dart';
-import '../../../util/base_services.dart';
-import '../../../util/local_store_data.dart';
-import '../../../util/route_manager.dart';
 import '../../../util/services.dart';
 import '../../cartList/Controller/cart_controller.dart';
 import '../widgets/offer_applied_widget.dart';
@@ -23,7 +24,7 @@ class DiscoverController extends GetxController {
 
   DiscoverModel model = DiscoverModel();
   final GlobalKey<RefreshIndicatorState> refreshIndicatorKey =
-  GlobalKey<RefreshIndicatorState>();
+      GlobalKey<RefreshIndicatorState>();
 
   Future<void> handleRefresh() async {
     await fetchDiscoverList();
@@ -71,11 +72,11 @@ class DiscoverController extends GetxController {
   }
 
   Future<void> addPromoCode(
-      String promoCode,
-      VoidCallback goToShop,
-      BuildContext context, {
-        List<ServiceName>? treatement,
-      }) async {
+    String promoCode,
+    VoidCallback goToShop,
+    BuildContext context, {
+    List<ServiceName>? treatement,
+  }) async {
     isAddingPromo = true;
     update();
     try {

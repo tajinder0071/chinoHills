@@ -1,13 +1,13 @@
-import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:chino_hills/CSS/appTypography.dart';
+import 'package:chino_hills/Screens/order/controller/order_controller.dart';
+import 'package:chino_hills/common_Widgets/common_app_bar.dart';
+import 'package:chino_hills/util/common_page.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../CSS/color.dart';
-import '../../CSS/image_page.dart';
-import '../../util/common_page.dart';
-import 'controller/order_controller.dart';
 
 class OrderDetailsPage extends StatelessWidget {
   const OrderDetailsPage(this.orderId, {super.key});
@@ -31,11 +31,7 @@ class OrderDetailsPage extends StatelessWidget {
 
         return Scaffold(
           backgroundColor: AppColor().whiteColor,
-          appBar: commonAppBar(
-            isLeading: true,
-            title: "Order Details",
-            action: [],
-          ),
+          appBar: CommonAppBar(title: "Order Details"),
           body: ListView(
             shrinkWrap: true,
             children: [
@@ -53,10 +49,9 @@ class OrderDetailsPage extends StatelessWidget {
                   padding: const EdgeInsets.all(16),
                   child: Text(
                     "No items found in this order.",
-                    style: TextStyle(
+                    style: AppTypography.hostGroteskRegular.copyWith(
                       fontSize: 16.sp,
                       color: Colors.black54,
-                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 )
@@ -95,9 +90,8 @@ class OrderDetailsPage extends StatelessWidget {
         var item = order.orderitems![index];
 
         final String imagePath = item.image ?? "";
-        final String name = item.itemName?.isNotEmpty == true
-            ? item.itemName!
-            : "Unnamed Item";
+        final String name =
+            item.itemName?.isNotEmpty == true ? item.itemName! : "Unnamed Item";
         final double price = (item.price ?? 0).toDouble();
         final double offerPrice = (item.offerPrice ?? 0).toDouble();
         final int quantity = item.quantity ?? 0;
@@ -111,7 +105,7 @@ class OrderDetailsPage extends StatelessWidget {
             border: Border.all(color: Colors.grey.shade200),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.05),
+                color: Colors.grey.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -136,7 +130,7 @@ class OrderDetailsPage extends StatelessWidget {
                       ),
                       child: Center(
                         child: Image.asset(
-                          AppImages.noAvailableImage,
+                          "assets/images/Image_not_available.png",
                           color: AppColor().blackColor,
                           fit: BoxFit.cover,
                         ),
@@ -165,25 +159,23 @@ class OrderDetailsPage extends StatelessWidget {
                   children: [
                     Text(
                       name,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
+                      style: AppTypography.galanoGrostesqueMedium.copyWith(
+                        fontSize: 16.sp,
                       ),
                     ),
                     const SizedBox(height: 4),
                     if (offerPrice > 0) ...[
                       Text(
                         formatCurrency(price - offerPrice),
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
+                        style: AppTypography.hostGroteskRegular.copyWith(
+                          fontSize: 14.sp,
                           color: Colors.black,
                         ),
                       ),
                       Text(
                         formatCurrency(price), // original price
-                        style: const TextStyle(
-                          fontSize: 14,
+                        style: AppTypography.hostGroteskRegular.copyWith(
+                          fontSize: 14.sp,
                           color: Colors.black54,
                           decoration: TextDecoration.lineThrough,
                         ),
@@ -191,17 +183,17 @@ class OrderDetailsPage extends StatelessWidget {
                     ] else
                       Text(
                         formatCurrency(price),
-                        style: const TextStyle(
-                          fontSize: 14,
+                        style: AppTypography.hostGroteskRegular.copyWith(
+                          fontSize: 14.sp,
                           color: Colors.black54,
                         ),
                       ),
                     const SizedBox(height: 4),
                     Text(
                       "$quantity ${capitalize(item.itemType)}",
-                      style: const TextStyle(
+                      style: AppTypography.hostGroteskRegular.copyWith(
                         fontWeight: FontWeight.w500,
-                        fontSize: 14,
+                        fontSize: 14.sp,
                       ),
                     ),
                   ],
@@ -221,7 +213,7 @@ class OrderDetailsPage extends StatelessWidget {
       highlightColor: Colors.grey.shade100,
       child: Container(
         margin: EdgeInsets.only(bottom: 12.h),
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
@@ -236,7 +228,7 @@ class OrderDetailsPage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -246,13 +238,13 @@ class OrderDetailsPage extends StatelessWidget {
                     width: double.infinity,
                     color: Colors.grey.shade300,
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Container(
                     height: 12.h,
                     width: 100.w,
                     color: Colors.grey.shade300,
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Container(
                     height: 12.h,
                     width: 80.w,
@@ -260,7 +252,7 @@ class OrderDetailsPage extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
+            )
           ],
         ),
       ),
@@ -270,28 +262,28 @@ class OrderDetailsPage extends StatelessWidget {
   Widget _shipmentCard(String trID, String type) {
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.grey.shade200),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.05),
+            color: Colors.grey.withValues(alpha: 0.05),
             blurRadius: 8,
-            offset: const Offset(0, 4),
+            offset: Offset(0, 4),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Shipment Details",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 12),
+          Text("Shipment Details",
+              style: AppTypography.galanoGrostesqueSemiBold.copyWith(
+                fontSize: 18.sp,
+              )),
+          SizedBox(height: 12),
           _shipmentRow("Order Type", "Online Purchase"),
         ],
       ),
@@ -307,19 +299,23 @@ class OrderDetailsPage extends StatelessWidget {
     final double discount = (cartTotal + convenienceFee) - totalAmount;
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         color: Colors.white,
-        border: const Border(top: BorderSide(color: Colors.grey, width: 0.2)),
+        border: Border(
+          top: BorderSide(color: Colors.grey, width: 0.2),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             "Payment Detail",
-            style: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.bold),
+            style: AppTypography.galanoGrostesqueSemiBold.copyWith(
+              fontSize: 17.sp,
+            ),
           ),
           SizedBox(height: 20.h),
           summaryRow(
@@ -327,7 +323,8 @@ class OrderDetailsPage extends StatelessWidget {
             "$totalCount products", // ✅ changed to products
             formatCurrency(cartTotal),
           ),
-          formatCurrency(discount > 0 ? discount : 0) == "\$0.00"
+          formatCurrency(discount > 0 ? discount : 0) == "\$0.00" ||
+                  formatCurrency(discount > 0 ? discount : 0) == "\$0"
               ? SizedBox.shrink()
               : summaryRow(
                   "Discount",
@@ -335,15 +332,15 @@ class OrderDetailsPage extends StatelessWidget {
                   '-${formatCurrency(discount > 0 ? discount : 0)}',
                   valueColor: Colors.green,
                 ),
-          summaryRow("Convenience Fee", "", formatCurrency(convenienceFee)),
-          const Divider(),
           summaryRow(
-            "Total amount",
+            "Convenience Fee",
             "",
-            formatCurrency(totalAmount),
-            isBold: true,
+            formatCurrency(convenienceFee),
           ),
-          const SizedBox(height: 12),
+          Divider(),
+          summaryRow("Total amount", "", formatCurrency(totalAmount),
+              isBold: true),
+          SizedBox(height: 12),
         ],
       ),
     );
@@ -357,7 +354,7 @@ class OrderDetailsPage extends StatelessWidget {
     Color? valueColor,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: EdgeInsets.symmetric(vertical: 4),
       child: Row(
         crossAxisAlignment: subtitle.isNotEmpty
             ? CrossAxisAlignment.start
@@ -368,20 +365,22 @@ class OrderDetailsPage extends StatelessWidget {
             child: RichText(
               text: TextSpan(
                 text: title,
-                style: TextStyle(
-                  fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-                  fontSize: 14,
-                  color: Colors.black,
-                ),
+                style: isBold
+                    ? AppTypography.hostGroteskSemiBold.copyWith(
+                        fontSize: 14.sp,
+                        color: valueColor ?? Colors.black,
+                      )
+                    : AppTypography.hostGroteskRegular.copyWith(
+                        fontSize: 14.sp,
+                        color: valueColor ?? Colors.black,
+                      ),
                 children: subtitle.isNotEmpty
                     ? [
-                        const TextSpan(text: "\n"),
+                        TextSpan(text: "\n"),
                         TextSpan(
                           text: subtitle,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey,
-                          ),
+                          style: AppTypography.hostGroteskSemiBold
+                              .copyWith(fontSize: 12.sp, color: Colors.grey),
                         ),
                       ]
                     : [],
@@ -390,11 +389,15 @@ class OrderDetailsPage extends StatelessWidget {
           ),
           Text(
             value,
-            style: TextStyle(
-              fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-              fontSize: 14,
-              color: valueColor ?? Colors.black,
-            ),
+            style: isBold
+                ? AppTypography.hostGroteskSemiBold.copyWith(
+                    fontSize: 14.sp,
+                    color: valueColor ?? Colors.black,
+                  )
+                : AppTypography.hostGroteskRegular.copyWith(
+                    fontSize: 14.sp,
+                    color: valueColor ?? Colors.black,
+                  ),
           ),
         ],
       ),
@@ -403,7 +406,7 @@ class OrderDetailsPage extends StatelessWidget {
 
   Widget _shipmentRow(String title, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: EdgeInsets.symmetric(vertical: 4),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -411,12 +414,17 @@ class OrderDetailsPage extends StatelessWidget {
             flex: 2,
             child: Text(
               title,
-              style: const TextStyle(fontWeight: FontWeight.w500),
+              style:
+                  AppTypography.hostGroteskSemiBold.copyWith(fontSize: 14.sp),
             ),
           ),
           Expanded(
             flex: 3,
-            child: Text(value, style: const TextStyle(color: Colors.black54)),
+            child: Text(
+              value,
+              style: AppTypography.hostGroteskRegular
+                  .copyWith(color: Colors.black54, fontSize: 14.sp),
+            ),
           ),
         ],
       ),

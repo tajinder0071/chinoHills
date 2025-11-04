@@ -2,12 +2,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:chino_hills/CSS/color.dart';
+import 'package:chino_hills/common_Widgets/common_app_bar.dart';
+import 'package:chino_hills/util/common_page.dart';
+import 'package:chino_hills/util/route_manager.dart';
 import 'package:share_plus/share_plus.dart';
-import '../../../CSS/color.dart';
-import '../../../util/common_page.dart';
-import '../../../util/route_manager.dart';
+import '../../../CSS/appTypography.dart';
 import 'delete_widget.dart';
 import 'logout_widget.dart';
 
@@ -42,9 +43,8 @@ class SettingsTab extends StatelessWidget {
           // Title
           Text(
             'Invite & Earn',
-            style: GoogleFonts.sarabun(
+            style: AppTypography.hostGroteskSemiBold.copyWith(
               fontSize: 20.sp,
-              fontWeight: FontWeight.bold,
             ),
           ),
           SizedBox(height: 8.h),
@@ -52,7 +52,8 @@ class SettingsTab extends StatelessWidget {
           Text(
             'Spread the word and share the love!\nInvite your friends to join and enjoy amazing services together.',
             textAlign: TextAlign.center,
-            style: GoogleFonts.sarabun(fontSize: 15.sp, color: Colors.black54),
+            style: AppTypography.galanoGrostesqueSemiBold
+                .copyWith(fontSize: 15.sp, color: Colors.black54),
           ),
           SizedBox(height: 20.h),
           // Buttons
@@ -72,8 +73,8 @@ class SettingsTab extends StatelessWidget {
                 ),
                 child: Text(
                   'Maybe Later',
-                  style: GoogleFonts.sarabun(
-                      fontSize: 16.sp, color: AppColor.dynamicColor),
+                  style: AppTypography.hostGroteskSemiBold
+                      .copyWith(fontSize: 16.sp, color: AppColor.dynamicColor),
                 ),
               ),
               // Invite Button
@@ -91,8 +92,8 @@ class SettingsTab extends StatelessWidget {
                 ),
                 child: Text(
                   'Send Invite',
-                  style: GoogleFonts.sarabun(
-                      fontSize: 16.sp, color: AppColor().whiteColor),
+                  style: AppTypography.hostGroteskSemiBold
+                      .copyWith(fontSize: 16.sp, color: AppColor().whiteColor),
                 ),
               ),
             ],
@@ -106,8 +107,8 @@ class SettingsTab extends StatelessWidget {
     final box = context.findRenderObject() as RenderBox?;
 
     final String shareText = Platform.isAndroid
-        ? "https://play.google.com/store/apps/details?id=com.io.chino_hills"
-        : "https://apps.apple.com/us/app/ch-eyecare/id6752308586";
+        ? "https://play.google.com/store/apps/details?id=com.app.nima"
+        : "https://apps.apple.com/us/app/nima-newport/id6745820609";
 
     await Share.share(
       "$shareText\n\nSend a friend \$25\nTowards Any Service!",
@@ -127,13 +128,25 @@ class SettingsTab extends StatelessWidget {
           title: 'Order history',
           icon: Iconsax.folder_open,
           onTap: () => Get.toNamed(RouteManager.orderHistory)),
+      /*MenuItem(
+          title: 'Reward history',
+          icon: Iconsax.gift,
+          onTap: () => Get.toNamed('/reward-history')),
+      MenuItem(
+          title: 'Visit history',
+          icon: Iconsax.scanning,
+          onTap: () => Get.toNamed('/visit-history')),
+      MenuItem(
+          title: 'Contact us',
+          icon: Iconsax.message_question,
+          onTap: () => Get.toNamed('/contact')),*/
       MenuItem(
           title: 'Refer a Friend',
           icon: Iconsax.share,
           onTap: () {
             showReferFriendDialog();
           }),
-      /*MenuItem(
+      /* MenuItem(
         title: 'Select Your Location',
         icon: Iconsax.location,
         onTap: () {
@@ -141,12 +154,6 @@ class SettingsTab extends StatelessWidget {
           Get.toNamed(RouteManager.selectLocationPage);
         },
       ),*/
-      MenuItem(
-          title: 'Delete Account',
-          icon: Iconsax.profile_delete,
-          onTap: () {
-            showDeleteBottomSheet(context);
-          }),
       MenuItem(
           title: 'Log out',
           icon: Iconsax.logout,
@@ -156,41 +163,129 @@ class SettingsTab extends StatelessWidget {
     ];
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColor().whiteColor,
-        scrolledUnderElevation: 0.0,
-        leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: Icon(Icons.arrow_back)),
-        title: Text(
-          "Your Account",
-          style: GoogleFonts.sarabun(
-              color: Colors.black,
-              fontSize: 17.sp,
-              fontWeight: FontWeight.w700),
-        ),
-      ),
+      appBar: CommonAppBar(title: "Your Account"),
       backgroundColor: Colors.white,
-      body: ListView.builder(
-        itemCount: menuItems.length,
-        itemBuilder: (context, index) {
-          final item = menuItems[index];
-          return ListTile(
-            leading: Icon(
-              item.icon,
-              color: Colors.black,
-              size: isTablet(context) ? 30.h : 23.h,
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: menuItems.length,
+                itemBuilder: (context, index) {
+                  final item = menuItems[index];
+                  return Container(
+                    margin:
+                        EdgeInsets.symmetric(vertical: 5.h, horizontal: 10.w),
+                    decoration: BoxDecoration(
+                      color: AppColor.dynamicColor.withValues(alpha: .09),
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                        onTap: item.onTap,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            // Leading Icon
+                            CircleAvatar(
+                              backgroundColor: AppColor.dynamicColor,
+                              radius: 23.h,
+                              child: Icon(
+                                item.icon,
+                                color: AppColor().whiteColor,
+                                size: isTablet(context) ? 30.h : 23.h,
+                              ),
+                            ),
+
+                            SizedBox(width: 15.w),
+
+                            // Title
+                            Expanded(
+                              child: Text(
+                                item.title,
+                                style: AppTypography.galanoGrostesqueSemiBold
+                                    .copyWith(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+
+                            // Trailing Icon
+                            CircleAvatar(
+                              backgroundColor: AppColor.dynamicColor,
+                              child: Icon(
+                                Icons.arrow_forward_ios,
+                                size: 16.h,
+                                color: AppColor().whiteColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
-            title: Text(item.title,
-                style: GoogleFonts.sarabun(
-                    fontSize: 16.sp, fontWeight: FontWeight.w500)),
-            trailing: Icon(Icons.arrow_forward_ios,
-                size: 16.h, color: AppColor.dynamicColor),
-            onTap: item.onTap,
-          );
-        },
+            GestureDetector(
+              onTap: () => showDeleteBottomSheet(context),
+              child: Padding(
+                padding: EdgeInsets.only(bottom: 15.h),
+                child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 10.w),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10.r),
+                      color: AppColor().redColor.withValues(alpha: .2)),
+                  padding:
+                      EdgeInsets.symmetric(vertical: 10.h, horizontal: 15.w),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Leading
+                      CircleAvatar(
+                        backgroundColor: AppColor().redColor,
+                        radius: 20.h,
+                        child: Icon(
+                          Icons.delete,
+                          color: AppColor().whiteColor,
+                          size: isTablet(context) ? 30.h : 23.h,
+                        ),
+                      ),
+
+                      SizedBox(width: 15.w),
+
+                      // Title
+                      Expanded(
+                        child: Text(
+                          "Delete Account",
+                          style: AppTypography.hostGroteskSemiBold.copyWith(
+                            fontSize: 16.sp,
+                          ),
+                        ),
+                      ),
+
+                      // Trailing
+                      Container(
+                        padding: EdgeInsets.all(10.h),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: AppColor().redColor,
+                        ),
+                        child: Icon(
+                          Icons.arrow_forward_ios,
+                          size: 16.h,
+                          color: AppColor().whiteColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

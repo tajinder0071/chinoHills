@@ -61,6 +61,8 @@ dependencies:
   public_ip_address: ^1.2.1
   upgrader: ^11.5.0
   flutter_phone_direct_caller: ^2.2.1
+  webview_flutter: ^4.13.0
+  flutter_intl_phone_field: ^0.0.7
 
 dev_dependencies:
   flutter_test:
@@ -86,9 +88,10 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/
     - assets/lottie/
     - assets/images/
+    - assets/new_images/
+
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -102,6 +105,21 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
+  fonts:
+    - family: GalanoGrotesqueAlt
+      fonts:
+        - asset: assets/Font_family/galano-grotesque-alt/GalanoGrotesqueAltRegular.otf
+        - asset: assets/Font_family/galano-grotesque-alt/GalanoGrotesqueAltMedium.otf
+          weight: 500
+        - asset: assets/Font_family/galano-grotesque-alt/GalanoGrotesqueAltSemiBold.otf
+          weight: 600
+        - asset: assets/Font_family/galano-grotesque-alt/GalanoGrotesqueAltBold.otf
+          weight: 700
+    - family: HostGrotesk
+      fonts:
+        - asset: assets/Font_family/host-grotesk/HostGrotesk-Regular-BF65bb091d50206.otf
+        - asset: assets/Font_family/host-grotesk/HostGrotesk-Medium-BF65bb091d2b74a.otf
+          weight: 500
   # fonts:
   #   - family: Schyler
   #     fonts:

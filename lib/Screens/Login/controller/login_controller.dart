@@ -1,16 +1,15 @@
-import 'package:chino_hills/CSS/color.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:chino_hills/util/local_stoage.dart';
+import 'package:chino_hills/util/route_manager.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../../../util/base_services.dart';
-import '../../../../../util/local_store_data.dart';
-import '../../../util/route_manager.dart';
 
 class LoginController extends GetxController {
   final TextEditingController phoneController = TextEditingController();
   RxBool isLoading = false.obs;
-  RxBool isLoadings = false.obs;
   RxBool isAlreadyRegister = false.obs;
   RxBool isChecked = false.obs;
   GlobalKey<FormState> formKey = GlobalKey();
@@ -18,23 +17,29 @@ class LoginController extends GetxController {
 
   Future<void> loginUser(context) async {
     isLoading.value = true;
-    var clientId = await nLocalStorage.getCId();
-    String cleanedPhoneNumber = phoneController.text.replaceAll(
-      RegExp(r'\D'),
-      '',
-    );
+    String cleanedPhoneNumber =
+        phoneController.text.replaceAll(RegExp(r'\D'), '');
+    if (cleanedPhoneNumber.length < 10) {
+      isLoading.value = false;
+      update();
+      Get.snackbar(
+        'Invalid Phone Number',
+        'Phone number must be at least 10 digits.',
+        backgroundColor: Colors.red.shade100,
+        colorText: Colors.black,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
     Get.log("The Phone Number : $cleanedPhoneNumber");
     Map<String, dynamic> loginMap = {
       "phone_number": int.parse(cleanedPhoneNumber),
-      "device_id": _appHash.toString(),
-      "client_id": clientId,
+      "device_id": _appHash.toString()
     };
-
     Map<String, dynamic> registerMap = {
       "phone_number": int.parse(cleanedPhoneNumber),
       "privacy_Check": isChecked.value == true ? 1 : 0,
-      "device_id": _appHash.toString(),
-      "client_id": clientId,
+      "device_id": _appHash.toString()
     };
     update();
     try {
@@ -46,10 +51,9 @@ class LoginController extends GetxController {
         isChecked.value
             ? nLocalStorage.saveData("isNewUser", true)
             : nLocalStorage.saveData("isNewUser", false);
-        Get.toNamed(
-          RouteManager.otpVerificationPage,
-          parameters: {"phoneNumber": cleanedPhoneNumber},
-        );
+        Get.toNamed(RouteManager.otpVerificationPage, parameters: {
+          "phoneNumber": cleanedPhoneNumber,
+        });
 
         isLoading.value = false;
         formKey.currentState?.reset();
@@ -73,8 +77,6 @@ class LoginController extends GetxController {
     }
   }
 
-
-
   //! Open the TermOfServices....
   void openTermOfServices() async {
     //! Open Terms
@@ -84,12 +86,10 @@ class LoginController extends GetxController {
     });
   }
 
-  // ✅ Get app hash and send to backend
+// ✅ Get app hash and send to backend
   String _appHash = "";
 
   Future<void> fetchAndSendAppHash() async {
-    var clientId = await nLocalStorage.getCId();
-    print("clientId:: ${clientId}");
     try {
       _appHash = await SmsAutoFill().getAppSignature;
       debugPrint("🔐 App Signature Hash: $_appHash");
@@ -98,5 +98,4 @@ class LoginController extends GetxController {
     }
   }
 }
-
 //add condition such the phone number should not be less then 10 digits

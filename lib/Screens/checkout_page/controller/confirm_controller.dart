@@ -11,6 +11,7 @@ class ConfirmOrderController extends GetxController {
     isLoading.value = false;
 
     // Navigate or perform action
+    //Fluttertoast.showToast(msg: 'Coming Soon', );
     Get.offAll(DashboardScreen(selectIndex: 0),binding: CommonBinding());
   }
 }

@@ -1,8 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:chino_hills/CSS/color.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-import '../CSS/color.dart';
 
 class BrowseConcernLoad extends StatelessWidget {
   const BrowseConcernLoad({super.key});

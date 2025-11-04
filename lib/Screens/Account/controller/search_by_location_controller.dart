@@ -4,7 +4,7 @@ import 'package:get/get_rx/src/rx_workers/utils/debouncer.dart';
 
 import '../../../Model/client_list_model.dart';
 import '../../../util/base_services.dart';
-import '../../../../../util/local_store_data.dart';
+import '../../../util/local_stoage.dart';
 
 class SearchbyController extends GetxController {
   var searchQuery = ''.obs;
@@ -39,7 +39,7 @@ class SearchbyController extends GetxController {
     if (query.isEmpty) return;
 
     LocalStorage localStorage = LocalStorage();
-    var userId =await localStorage.getUId();
+    var userId = await localStorage.getUId();
 
     clientList.clear();
     load = true;

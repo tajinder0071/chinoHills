@@ -1,25 +1,24 @@
 import 'package:chino_hills/util/common_page.dart';
-import 'package:chino_hills/util/route_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:chino_hills/Screens/Splash/splash_page.dart';
+import 'package:chino_hills/util/route_manager.dart';
 
-import 'CSS/color.dart';
-import 'Screens/Splash/splash_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SharedPreferences prefs = await SharedPreferences.getInstance();
+  await GetStorage.init();
   Stripe.publishableKey = CommonPage().stripePublishKey;
+  await Stripe.instance.applySettings();
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -32,18 +31,19 @@ class MyApp extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        return GetMaterialApp(
-          title: 'Chino Hills',
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            useMaterial3: true,
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: AppColor().blackColor,
-              primary: AppColor().blackColor,
-            ),
+        return GestureDetector(
+          onTap: () {
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          behavior: HitTestBehavior.translucent,
+          child: GetMaterialApp(
+            title: 'Nima',
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData.light(),
+            themeMode: ThemeMode.light,
+            home: SplashScreen(),
+            getPages: RouteManager.routes,
           ),
-          home: SplashScreen(),
-          getPages: RouteManager.routes,
         );
       },
     );

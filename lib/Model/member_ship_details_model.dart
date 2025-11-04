@@ -19,10 +19,10 @@ class MemberShipDetailsModel {
       );
 
   Map<String, dynamic> toJson() => {
-    "message": message,
-    "membership": membership?.toJson(),
-    "success": success,
-  };
+        "message": message,
+        "membership": membership?.toJson(),
+        "success": success,
+      };
 }
 
 class Membership {
@@ -34,6 +34,7 @@ class Membership {
   String? membershipImage;
   SignupBonus? signupBonus;
   var membershipPricing;
+  var beautyBank;
   String? membershipTitle;
   var minimumCommitment;
   String? membershipDescription;
@@ -49,6 +50,7 @@ class Membership {
     this.membershipImage,
     this.signupBonus,
     this.membershipPricing,
+    required this.beautyBank,
     this.membershipTitle,
     this.minimumCommitment,
     this.membershipDescription,
@@ -57,57 +59,59 @@ class Membership {
   });
 
   factory Membership.fromJson(Map<String, dynamic> json) => Membership(
-    offeroffText: json["offeroffText"],
-    offerName: json["offerName"],
-    membershipId: json["membership_id"],
-    includedTreatments: json["includedTreatments"] == null
-        ? []
-        : List<IncludedTreatment>.from(json["includedTreatments"]!
-        .map((x) => IncludedTreatment.fromJson(x))),
-    isActive: json["is_active"],
-    membershipImage: json["membership_image"],
-    signupBonus: json["signupBonus"] == null
-        ? null
-        : (json["signupBonus"] is List)
-        ? null
-        : SignupBonus.fromJson(json["signupBonus"]),
-    membershipPricing: json["membership_pricing"],
-    membershipTitle: json["membership_title"],
-    minimumCommitment: json["minimum_commitment"],
-    membershipDescription: json["membership_description"],
-    membershipMilestoneBonuses: json["membershipMilestoneBonuses"] == null
-        ? []
-        : List<MembershipMilestoneBonuses>.from(
-        json["membershipMilestoneBonuses"]
-            .map((x) => MembershipMilestoneBonuses.fromJson(x))),
-    benefits: json["benefits"] == null
-        ? []
-        : List<Benefit>.from(
-        json["benefits"]!.map((x) => Benefit.fromJson(x))),
-  );
+        offeroffText: json["offeroffText"],
+        offerName: json["offerName"],
+        membershipId: json["membership_id"],
+        includedTreatments: json["includedTreatments"] == null
+            ? []
+            : List<IncludedTreatment>.from(json["includedTreatments"]!
+                .map((x) => IncludedTreatment.fromJson(x))),
+        isActive: json["is_active"],
+        membershipImage: json["membership_image"],
+        signupBonus: json["signupBonus"] == null
+            ? null
+            : (json["signupBonus"] is List)
+                ? null
+                : SignupBonus.fromJson(json["signupBonus"]),
+        membershipPricing: json["membership_pricing"],
+        beautyBank: json["beauty_bank"],
+        membershipTitle: json["membership_title"],
+        minimumCommitment: json["minimum_commitment"],
+        membershipDescription: json["membership_description"],
+        membershipMilestoneBonuses: json["membershipMilestoneBonuses"] == null
+            ? []
+            : List<MembershipMilestoneBonuses>.from(
+                json["membershipMilestoneBonuses"]
+                    .map((x) => MembershipMilestoneBonuses.fromJson(x))),
+        benefits: json["benefits"] == null
+            ? []
+            : List<Benefit>.from(
+                json["benefits"]!.map((x) => Benefit.fromJson(x))),
+      );
 
   Map<String, dynamic> toJson() => {
-    "offeroffText": offeroffText,
-    "offerName": offerName,
-    "membership_id": membershipId,
-    "includedTreatments": includedTreatments == null
-        ? []
-        : List<dynamic>.from(includedTreatments!.map((x) => x.toJson())),
-    "is_active": isActive,
-    "membership_image": membershipImage,
-    "signupBonus": signupBonus?.toJson(),
-    "membership_pricing": membershipPricing,
-    "membership_title": membershipTitle,
-    "minimum_commitment": minimumCommitment,
-    "membership_description": membershipDescription,
-    "membershipMilestoneBonuses": membershipMilestoneBonuses == null
-        ? []
-        : List<dynamic>.from(
-        membershipMilestoneBonuses!.map((x) => x.toJson())),
-    "benefits": benefits == null
-        ? []
-        : List<dynamic>.from(benefits!.map((x) => x.toJson())),
-  };
+        "offeroffText": offeroffText,
+        "offerName": offerName,
+        "membership_id": membershipId,
+        "includedTreatments": includedTreatments == null
+            ? []
+            : List<dynamic>.from(includedTreatments!.map((x) => x.toJson())),
+        "is_active": isActive,
+        "membership_image": membershipImage,
+        "signupBonus": signupBonus?.toJson(),
+        "membership_pricing": membershipPricing,
+        "beauty_bank": beautyBank,
+        "membership_title": membershipTitle,
+        "minimum_commitment": minimumCommitment,
+        "membership_description": membershipDescription,
+        "membershipMilestoneBonuses": membershipMilestoneBonuses == null
+            ? []
+            : List<dynamic>.from(
+                membershipMilestoneBonuses!.map((x) => x.toJson())),
+        "benefits": benefits == null
+            ? []
+            : List<dynamic>.from(benefits!.map((x) => x.toJson())),
+      };
 }
 
 class Benefit {
@@ -122,16 +126,16 @@ class Benefit {
   });
 
   factory Benefit.fromJson(Map<String, dynamic> json) => Benefit(
-    availability: json["availability"],
-    amount: json["amount"],
-    benefitTitle: json["benefit_title"],
-  );
+        availability: json["availability"],
+        amount: json["amount"],
+        benefitTitle: json["benefit_title"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "availability": availability,
-    "amount": amount,
-    "benefit_title": benefitTitle,
-  };
+        "availability": availability,
+        "amount": amount,
+        "benefit_title": benefitTitle,
+      };
 }
 
 class IncludedTreatment {
@@ -156,20 +160,20 @@ class IncludedTreatment {
         treatmentItems: json["treatmentItems"] == null
             ? []
             : List<TreatmentItem>.from(
-            json["treatmentItems"]!.map((x) => TreatmentItem.fromJson(x))),
+                json["treatmentItems"]!.map((x) => TreatmentItem.fromJson(x))),
         id: json["id"],
         choosedOption: json["choosed_option"],
       );
 
   Map<String, dynamic> toJson() => {
-    "headertitle": headertitle,
-    "treatment_group_name": treatmentGroupName,
-    "treatmentItems": treatmentItems == null
-        ? []
-        : List<dynamic>.from(treatmentItems!.map((x) => x.toJson())),
-    "id": id,
-    "choosed_option": choosedOption,
-  };
+        "headertitle": headertitle,
+        "treatment_group_name": treatmentGroupName,
+        "treatmentItems": treatmentItems == null
+            ? []
+            : List<dynamic>.from(treatmentItems!.map((x) => x.toJson())),
+        "id": id,
+        "choosed_option": choosedOption,
+      };
 }
 
 class TreatmentItem {
@@ -186,18 +190,18 @@ class TreatmentItem {
   });
 
   factory TreatmentItem.fromJson(Map<String, dynamic> json) => TreatmentItem(
-    quantity: json["quantity"],
-    treatmentId: json["treatment_id"],
-    id: json["id"],
-    treatmentName: json["treatment_name"],
-  );
+        quantity: json["quantity"],
+        treatmentId: json["treatment_id"],
+        id: json["id"],
+        treatmentName: json["treatment_name"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "quantity": quantity,
-    "treatment_id": treatmentId,
-    "id": id,
-    "treatment_name": treatmentName,
-  };
+        "quantity": quantity,
+        "treatment_id": treatmentId,
+        "id": id,
+        "treatment_name": treatmentName,
+      };
 }
 
 class SignupBonus {
@@ -216,25 +220,25 @@ class SignupBonus {
   });
 
   factory SignupBonus.fromJson(Map<String, dynamic> json) => SignupBonus(
-    bonusDescription: json["bonus_description"],
-    id: json["id"],
-    treatmentChoiceCount: json["treatment_choice_count"],
-    choosedOption: json["choosed_option"],
-    signupBonusTreatments: json["signupBonusTreatments"] == null
-        ? []
-        : List<SignupBonusTreatment>.from(json["signupBonusTreatments"]!
-        .map((x) => SignupBonusTreatment.fromJson(x))),
-  );
+        bonusDescription: json["bonus_description"],
+        id: json["id"],
+        treatmentChoiceCount: json["treatment_choice_count"],
+        choosedOption: json["choosed_option"],
+        signupBonusTreatments: json["signupBonusTreatments"] == null
+            ? []
+            : List<SignupBonusTreatment>.from(json["signupBonusTreatments"]!
+                .map((x) => SignupBonusTreatment.fromJson(x))),
+      );
 
   Map<String, dynamic> toJson() => {
-    "bonus_description": bonusDescription,
-    "id": id,
-    "treatment_choice_count": treatmentChoiceCount,
-    "choosed_option": choosedOption,
-    "signupBonusTreatments": signupBonusTreatments == null
-        ? []
-        : List<dynamic>.from(signupBonusTreatments!.map((x) => x.toJson())),
-  };
+        "bonus_description": bonusDescription,
+        "id": id,
+        "treatment_choice_count": treatmentChoiceCount,
+        "choosed_option": choosedOption,
+        "signupBonusTreatments": signupBonusTreatments == null
+            ? []
+            : List<dynamic>.from(signupBonusTreatments!.map((x) => x.toJson())),
+      };
 }
 
 class SignupBonusTreatment {
@@ -259,11 +263,11 @@ class SignupBonusTreatment {
       );
 
   Map<String, dynamic> toJson() => {
-    "quantity": quantity,
-    "treatment_id": treatmentId,
-    "id": id,
-    "treatment_name": treatmentName,
-  };
+        "quantity": quantity,
+        "treatment_id": treatmentId,
+        "id": id,
+        "treatment_name": treatmentName,
+      };
 }
 
 class MembershipMilestoneBonuses {
@@ -276,11 +280,11 @@ class MembershipMilestoneBonuses {
 
   MembershipMilestoneBonuses(
       {this.headertitle,
-        this.milestonedescription,
-        this.monthText,
-        this.milestoneTreatmentItems,
-        this.id,
-        this.choosedOption});
+      this.milestonedescription,
+      this.monthText,
+      this.milestoneTreatmentItems,
+      this.id,
+      this.choosedOption});
 
   MembershipMilestoneBonuses.fromJson(Map<String, dynamic> json) {
     headertitle = json['headertitle'];
@@ -347,12 +351,12 @@ class OfferoffText {
   });
 
   factory OfferoffText.fromJson(Map<String, dynamic> json) => OfferoffText(
-    offertext: json["OFFERTEXT"],
-    offername: json["OFFERNAME"],
-  );
+        offertext: json["OFFERTEXT"],
+        offername: json["OFFERNAME"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "OFFERTEXT": offertext,
-    "OFFERNAME": offername,
-  };
+        "OFFERTEXT": offertext,
+        "OFFERNAME": offername,
+      };
 }
