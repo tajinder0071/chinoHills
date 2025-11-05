@@ -431,7 +431,7 @@ class MembersShipDetailsPage extends StatelessWidget {
                           ],
                         ),
               Positioned(
-                  top: -20,
+                  top: -5,
                   left: 0,
                   right: 0,
                   child: CommonAppBar(

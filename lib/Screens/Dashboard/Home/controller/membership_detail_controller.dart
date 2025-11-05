@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:chino_hills/CSS/color.dart';
 import 'package:chino_hills/Model/term_condition_model.dart';
 import 'package:chino_hills/Screens/cartList/Controller/cart_controller.dart';
-
 import '../../../../Model/member_ship_details_model.dart';
 import '../../../../common_Widgets/added_to_cart_bottom_sheet.dart';
 import '../../../../util/base_services.dart';

@@ -20,13 +20,15 @@ class SplashScreen extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             image: DecorationImage(image: AssetImage(AppImages.splashBg),
-            fit: BoxFit.contain)
+            fit: BoxFit.contain,
+              colorFilter: ColorFilter.mode(AppColor.dynamicColor, BlendMode.srcIn)
+            )
           ),
           child: Center(
             child: ScaleTransition(
               scale: controller.animation,
               alignment: Alignment.center,
-              child: Image.asset(AppImages.splashLogo, height: 110.h),
+              child: Image.asset(AppImages.appLogo, height: 110.h),
             ),
           ),
         ),

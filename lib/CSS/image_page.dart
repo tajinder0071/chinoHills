@@ -25,6 +25,8 @@ class AppImages {
   static String splashLogo = "assets/new_images/splash_logo.png";
   static String splashBg = "assets/new_images/splash_bg.png";
   static String noDataFoundBg = "assets/new_images/no_data_found_bg.png";
+  static String appLogo = "assets/images/app_logo.png";
+
 
 
 

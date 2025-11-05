@@ -457,9 +457,9 @@ class MembershipPerk {
 }
 
 class MembershipList {
-  int membershipPricing;
+  var membershipPricing;
   String offeroffText;
-  int membershipId;
+  var membershipId;
   String membershipTitle;
   String membershipDescription;
   String membershipImage;

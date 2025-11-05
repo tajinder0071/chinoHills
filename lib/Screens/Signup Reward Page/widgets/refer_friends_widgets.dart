@@ -81,7 +81,7 @@ class _ReferFriendPageState extends State<ReferFriendPage> {
   void onShare(BuildContext context) async {
     final box = context.findRenderObject() as RenderBox?;
     await Share.share(
-      "https://play.google.com/store/apps/details?id=com.app.nima",
+      "https://play.google.com/store/apps/details",
       subject:
           "Send a friend \$${widget.rewardPoints ?? "Not available"}\nTowards Any Service!",
       sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
