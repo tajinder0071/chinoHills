@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-
 import '../CSS/appTypography.dart';
 import '../CSS/color.dart';
 
@@ -202,14 +201,14 @@ InlineSpan buildPriceTextSpan({
   String separator = isPackage == true ? "\n" : " | ";
 
   // Member text formatting
-  String memberText = hasMember ? "${separator}${currencyMemberPrice} Member" : "";
+  String memberText = hasMember ? "$separator$currencyMemberPrice Member" : "";
 
   return TextSpan(
     children: [
       TextSpan(
         text: baseText,
         style: GoogleFonts.sarabun(
-          color: isPackage? Colors.black.withOpacity(0.65) : Colors.white,
+          color: isPackage? Colors.black.withValues(alpha: 0.65) : Colors.white,
           fontWeight: FontWeight.w500,
           fontSize: 16.sp,
           height: 1.4,
@@ -219,7 +218,7 @@ InlineSpan buildPriceTextSpan({
         TextSpan(
           text: memberText,
           style: GoogleFonts.sarabun(
-            color: isPackage? Colors.black.withOpacity(0.65) : Colors.white,
+            color: isPackage? Colors.black.withValues(alpha: 0.65) : Colors.white,
             fontWeight: FontWeight.w600,
             fontSize: 16.sp,
             height: 1.4,

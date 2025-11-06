@@ -36,7 +36,7 @@ class AppStrings {
   static const scanText =
       "Scan In Store Or Shop In-App To\nGet Closer To Your Next Reward.";
   static const walletText =
-      "Earn NIMACash through rewards by checking in or shopping in the app—then spend it like cash for instant savings!";
+      "Earn CHINOCash through rewards by checking in or shopping in the app—then spend it like cash for instant savings!";
   static const checkInForRewards = 'Check In For Rewards';
 
   // -------------------- Browse / Shop --------------------

@@ -112,7 +112,7 @@ class OrderSummaryCard extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'NimaCash Balance',
+                            'ChinoCash Balance',
                             style: AppTypography.hostGroteskSemiBold
                                 .copyWith(fontSize: 13.sp),
                           ),

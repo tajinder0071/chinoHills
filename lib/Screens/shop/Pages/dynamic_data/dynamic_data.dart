@@ -22,7 +22,7 @@ import 'package:upgrader/upgrader.dart';
 class DynamicData extends StatefulWidget {
   final String dynamicId;
 
-  const DynamicData({required this.dynamicId, Key? key}) : super(key: key);
+  const DynamicData({required this.dynamicId, super.key});
 
   @override
   State<DynamicData> createState() => _DynamicDataState();
@@ -59,12 +59,12 @@ class _DynamicDataState extends State<DynamicData> {
           key: controller.refreshIndicatorKey,
           onRefresh: controller.handleRefresh,
           child: Scaffold(
-            backgroundColor: AppColor().greyColor.withOpacity(0.05),
+            backgroundColor: AppColor().greyColor.withValues(alpha: 0.05),
             body: Obx(() {
               if (controller.isLoading.value) {
                 return Shimmer.fromColors(
-                  baseColor: AppColor().greyColor.withOpacity(.3),
-                  highlightColor: AppColor().greyColor.withOpacity(.1),
+                  baseColor: AppColor().greyColor.withValues(alpha: .3),
+                  highlightColor: AppColor().greyColor.withValues(alpha: .1),
                   child: Column(
                     children: [
                       Container(
@@ -398,7 +398,7 @@ class _DynamicDataState extends State<DynamicData> {
       width: double.infinity,
       height: 220.h,
       decoration: BoxDecoration(
-        color: AppColor.dynamicColor.withOpacity(.96),
+        color: AppColor.dynamicColor.withValues(alpha: .96),
         borderRadius: BorderRadiusGeometry.circular(20),
       ),
       child: Stack(

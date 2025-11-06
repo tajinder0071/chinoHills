@@ -297,7 +297,7 @@ class RewardDetailScreen extends StatelessWidget {
                                           );
                                         },
                                         buttonName:
-                                            "Bank for ${formatCurrency(dController.repeatNimaCash)} in NimaCash",
+                                            "Bank for ${formatCurrency(dController.repeatNimaCash)} in ChinoCash",
                                       ),
                               ],
                             ],
