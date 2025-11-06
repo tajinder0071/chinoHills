@@ -17,6 +17,7 @@ import '../../../loading/become_a_member_loading.dart';
 import '../../../loading/browse_Concern_load.dart';
 import '../../../util/common_page.dart';
 import '../../../util/route_manager.dart';
+import '../../Dashboard/dashboard_screen.dart';
 import '../../shop/Pages/Package Page/controller/package_cotroller.dart';
 
 class WalletMembership extends StatelessWidget {
@@ -359,7 +360,9 @@ class WalletMembership extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 20.0.w),
         child: CommonButtonWidget(
           innerColor: AppColor.dynamicColor,
-          onTap: () {},
+          onTap: () {
+            Get.to(DashboardScreen(selectIndex: 2));
+          },
           isOutlineButton: true,
           buttonName: 'Shop All ${controller.memberShip.length} Memberships',
         ),
